@@ -1,0 +1,164 @@
+[
+  {
+    "id": "interview-guide",
+    "title": "AI 应用开发面试指南",
+    "url": "/ai/interview-questions/ai-interview-guide.html",
+    "category": "面试题"
+  },
+  {
+    "id": "llm-interview",
+    "title": "大模型基础面试题总结",
+    "url": "/ai/interview-questions/llm-interview-questions.html",
+    "category": "面试题"
+  },
+  {
+    "id": "agent-interview",
+    "title": "AI Agent 面试题总结",
+    "url": "/ai/interview-questions/agent-interview-questions.html",
+    "category": "面试题"
+  },
+  {
+    "id": "rag-interview",
+    "title": "RAG 面试题总结",
+    "url": "/ai/interview-questions/rag-interview-questions.html",
+    "category": "面试题"
+  },
+  {
+    "id": "system-design-interview",
+    "title": "AI 系统设计面试题总结",
+    "url": "/ai/interview-questions/ai-system-design-interview-questions.html",
+    "category": "面试题"
+  },
+  {
+    "id": "llm-operation",
+    "title": "万字拆解 LLM 运行机制",
+    "url": "/ai/llm-basis/llm-operation-mechanism.html",
+    "category": "大模型基础"
+  },
+  {
+    "id": "llm-api",
+    "title": "大模型 API 调用工程实践",
+    "url": "/ai/llm-basis/llm-api-engineering.html",
+    "category": "大模型基础"
+  },
+  {
+    "id": "structured-output",
+    "title": "大模型结构化输出详解",
+    "url": "/ai/llm-basis/structured-output-function-calling.html",
+    "category": "大模型基础"
+  },
+  {
+    "id": "llm-evaluation",
+    "title": "AI 应用评测体系",
+    "url": "/ai/llm-basis/llm-evaluation.html",
+    "category": "大模型基础"
+  },
+  {
+    "id": "agent-basis",
+    "title": "AI Agent 核心概念详解",
+    "url": "/ai/agent/agent-basis.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "agent-memory",
+    "title": "AI Agent 记忆系统详解",
+    "url": "/ai/agent/agent-memory.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "prompt-engineering",
+    "title": "提示词工程实战指南",
+    "url": "/ai/agent/prompt-engineering.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "context-engineering",
+    "title": "上下文工程实战指南",
+    "url": "/ai/agent/context-engineering.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "agent-skills",
+    "title": "万字详解 Agent Skills",
+    "url": "/ai/agent/skills.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "mcp",
+    "title": "万字拆解 MCP 协议",
+    "url": "/ai/agent/mcp.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "harness-engineering",
+    "title": "Harness Engineering 详解",
+    "url": "/ai/agent/harness-engineering.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "workflow",
+    "title": "AI 工作流详解",
+    "url": "/ai/agent/workflow-graph-loop.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "loop-engineering",
+    "title": "Loop Engineering 详解",
+    "url": "/ai/agent/loop-engineering.html",
+    "category": "AI Agent"
+  },
+  {
+    "id": "rag-basis",
+    "title": "RAG 基础概念详解",
+    "url": "/ai/rag/rag-basis.html",
+    "category": "RAG"
+  },
+  {
+    "id": "rag-document",
+    "title": "RAG 文档处理与切分策略",
+    "url": "/ai/rag/rag-document-processing.html",
+    "category": "RAG"
+  },
+  {
+    "id": "rag-vector",
+    "title": "RAG 向量索引算法和向量数据库",
+    "url": "/ai/rag/rag-vector-store.html",
+    "category": "RAG"
+  },
+  {
+    "id": "rag-update",
+    "title": "RAG 知识库文档更新策略",
+    "url": "/ai/rag/rag-knowledge-update.html",
+    "category": "RAG"
+  },
+  {
+    "id": "graphrag",
+    "title": "GraphRAG 详解",
+    "url": "/ai/rag/graphrag.html",
+    "category": "RAG"
+  },
+  {
+    "id": "rag-optimization",
+    "title": "RAG 检索优化",
+    "url": "/ai/rag/rag-optimization.html",
+    "category": "RAG"
+  },
+  {
+    "id": "ai-system-design",
+    "title": "AI 应用系统设计",
+    "url": "/ai/system-design/ai-application-architecture.html",
+    "category": "AI 系统设计"
+  },
+  {
+    "id": "llm-gateway",
+    "title": "大模型网关详解",
+    "url": "/ai/system-design/llm-gateway.html",
+    "category": "AI 系统设计"
+  },
+  {
+    "id": "ai-voice",
+    "title": "AI 语音技术详解",
+    "url": "/ai/system-design/ai-voice.html",
+    "category": "AI 系统设计"
+  }
+]

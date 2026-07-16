@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm install",
+  "startCommand": "node server.js",
+  "env": {
+    "PORT": "3001",
+    "MIMO_API_KEY": "your-mimo-api-key",
+    "MIMO_API_BASE": "https://api.xiaomimimo.com/v1",
+    "JWT_SECRET": "your-random-secret-change-me",
+    "JWT_EXPIRES_IN": "7d",
+    "FRONTEND_URL": "https://your-cloudflare-pages-url.pages.dev",
+    "GITHUB_CLIENT_ID": "your-github-client-id",
+    "GITHUB_CLIENT_SECRET": "your-github-client-secret",
+    "GITHUB_CALLBACK_URL": "https://successful-energy-production-918c.up.railway.app/api/auth/github/callback"
+  }
+}
