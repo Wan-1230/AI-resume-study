@@ -1,6 +1,6 @@
 # AI面试宝典 🎯
 
-基于 RAG（检索增强生成）的智能面试准备平台，专注于 AI 应用开发领域的面试题目练习、AI 智能答疑和简历优化。
+基于 RAG（检索增强生成）的智能面试准备平台，专注于 AI 应用开发领域的面试题目练习、AI 智能答疑和简历优化。采用 TF-IDF 向量检索 + LLM 生成的混合架构。
 
 ## ✨ 功能特性
 
@@ -10,7 +10,7 @@
 - 打字机效果展示 AI 对话能力
 
 ### 🤖 AI 智能助手
-- 基于 **RAG 架构**：ChromaDB 向量检索 + MiMo LLM 生成
+- 基于 **RAG 架构**：TF-IDF 语义检索 + MiMo LLM 生成
 - 支持流式（SSE）对话，实时逐字输出
 - 自动检索知识库，提供准确、有引用的回答
 - 预设推荐问题，快速上手
@@ -49,7 +49,7 @@
 | **文件处理** | PDF.js / Mammoth / XLSX / docx |
 | **动画** | OGL (WebGL) / GSAP |
 | **后端** | Node.js + Express |
-| **向量数据库** | ChromaDB |
+| **向量检索** | TF-IDF（内存模式） |
 | **LLM** | MiMo API |
 | **认证** | JWT + bcrypt + GitHub OAuth |
 
@@ -101,7 +101,7 @@
 │   │   ├── users.js              # 用户数据管理
 │   │   └── admin.js              # 管理员验证
 │   ├── rag/                      # RAG 核心模块
-│   │   ├── vectorstore.js        # ChromaDB 向量存储
+│   │   ├── vectorstore.js        # TF-IDF 向量存储
 │   │   ├── retriever.js          # 语义检索
 │   │   └── generator.js          # LLM 生成
 │   ├── scripts/                  # 数据导入脚本
@@ -148,7 +148,13 @@ cp backend/.env.example backend/.env
 ```env
 # MiMo LLM API
 MIMO_API_KEY=your_mimo_api_key
-MIMO_API_BASE=https://api.xiaomimimo.com/v1
+MIMO_API_BASE=https://api.mimo.com/v1
+
+# ChromaDB 数据目录
+CHROMA_DB_PATH=./chroma_db
+
+# 服务端口
+PORT=3001
 
 # GitHub OAuth（在 GitHub Developer Settings 创建 OAuth App）
 GITHUB_CLIENT_ID=your_github_client_id
@@ -156,9 +162,10 @@ GITHUB_CLIENT_SECRET=your_github_client_secret
 GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
 
 # JWT
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_jwt_secret_key_for_token_signing
+JWT_EXPIRES_IN=7d
 
-# 前端地址
+# 前端地址（CORS + OAuth 回调使用）
 FRONTEND_URL=http://localhost:5173
 
 # 管理员账号
@@ -170,7 +177,7 @@ ADMIN_PASSWORD=your_admin_password
 
 ```bash
 cd backend
-node scripts/ingest.js    # 导入知识库文档到 ChromaDB
+node scripts/ingest.js    # 导入知识库文档到向量存储
 cd ..
 ```
 
@@ -179,7 +186,7 @@ cd ..
 ```bash
 # 终端 1：启动后端
 cd backend
-node server.js
+npm run dev
 
 # 终端 2：启动前端
 npm run dev
