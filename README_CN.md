@@ -153,7 +153,7 @@ cp backend/.env.example backend/.env
 MIMO_API_KEY=your_mimo_api_key
 MIMO_API_BASE=https://api.mimo.com/v1
 
-# ChromaDB 数据目录
+# 向量存储数据目录
 CHROMA_DB_PATH=./chroma_db
 
 # 服务端口
@@ -213,7 +213,7 @@ npm run preview     # 预览构建结果
 | 前端 | Vercel / Cloudflare Pages | 免费 |
 | 后端 | Railway | 免费额度 $5/月 |
 
-详细部署步骤见 [DEPLOY.md](./DEPLOY.md)（国际版）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（国内版）。
+详细部署步骤见 [DEPLOY.md](./DEPLOY.md)（Railway + Vercel）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（Cloudflare Pages + Railway，国内优化）。
 
 ## 🔧 可用命令
 

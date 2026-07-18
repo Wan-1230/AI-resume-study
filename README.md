@@ -153,7 +153,7 @@ Edit `backend/.env` with your configuration:
 MIMO_API_KEY=your_mimo_api_key
 MIMO_API_BASE=https://api.mimo.com/v1
 
-# ChromaDB data directory
+# Vector store data directory
 CHROMA_DB_PATH=./chroma_db
 
 # Server port
@@ -213,7 +213,7 @@ npm run preview     # Preview the build
 | Frontend | Vercel / Cloudflare Pages | Free |
 | Backend | Railway | Free tier ($5/month credit) |
 
-See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
+See [DEPLOY_CN.md](./DEPLOY_CN.md) for detailed deployment instructions (in Chinese).
 
 ## 🔧 Available Commands
 
