@@ -213,7 +213,7 @@ npm run preview     # Preview the build
 | Frontend | Vercel / Cloudflare Pages | Free |
 | Backend | Railway | Free tier ($5/month credit) |
 
-See [DEPLOY_CN.md](./DEPLOY_CN.md) for detailed deployment instructions (in Chinese).
+See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions, or [DEPLOY_CN.md](./DEPLOY_CN.md) for China-optimized deployment (in Chinese).
 
 ## 🔧 Available Commands
 
