@@ -5,7 +5,7 @@
 | 组件 | 平台 | 费用 | 国内访问 |
 |------|------|------|----------|
 | 前端 | Cloudflare Pages | 免费 | ✅ 可访问 |
-| 后端 | Railway | 免费额度 | ✅ 可访问 |
+| 后端 | Render | 免费档（750 实例小时/月） | ✅ 可访问（2026-09 实测） |
 
 ---
 
@@ -61,18 +61,30 @@ wrangler pages deploy dist --project-name=ai-interview
 
 ---
 
-## 第三步：部署后端到 Railway
+## 第三步：部署后端到 Render
 
-1. 访问 https://railway.app/
-2. 点击 "New Project" → "Deploy from GitHub repo"
-3. 选择仓库，Root Directory 填 `backend`
+> Railway 免费额度已停止发放。完整迁移说明（含 GitHub OAuth 回调、保活方案）见 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)。
+
+1. 访问 https://dashboard.render.com/ 并用 GitHub 账号登录
+2. 点击 **New +** → **Web Service**，连接你的 GitHub 仓库
+3. 配置：
+   - Root Directory：`backend`
+   - Region：Singapore
+   - Instance Type：Free
+   - Build Command：`npm install`
+   - Start Command：`node server.js`
+   - Health Check Path：`/api/health`
 4. 添加环境变量：
    ```
    MIMO_API_KEY=your_mimo_api_key_here
    MIMO_API_BASE=https://api.xiaomimimo.com/v1
-   PORT=3001
+   JWT_SECRET=一段随机字符串
+   GITHUB_CALLBACK_URL=https://你的服务域名.onrender.com/api/auth/github/callback
    ```
-5. 部署后复制域名
+   （不要设置 `PORT`，Render 会自动注入）
+5. 部署后复制域名：`https://xxxx.onrender.com`
+
+> 也可以用根目录的 `render.yaml` 蓝图一键部署：**New + → Blueprint** → 选择本仓库。
 
 ---
 
@@ -80,26 +92,26 @@ wrangler pages deploy dist --project-name=ai-interview
 
 在 Cloudflare Pages 项目中更新：
 ```
-VITE_API_BASE=https://你的Railway域名/api
+VITE_API_BASE=https://你的服务域名.onrender.com
 ```
 
 ---
 
 ## 常见问题
 
-### Q: Railway 国内能访问吗？
-A: 可以访问，速度一般但可用。如果速度不满意，可以考虑使用国内云服务器。
+### Q: Render 国内能访问吗？
+A: 可以。`render.com` 与 `*.onrender.com` 实测国内可直连；免费服务选新加坡区域延迟更友好。注意免费档 15 分钟无流量会休眠，唤醒需 30~60 秒。
 
 ### Q: Cloudflare Pages 国内速度如何？
 A: Cloudflare 在国内有节点，速度不错，无需备案。
 
 ### Q: 需要买域名吗？
-A: Cloudflare Pages 会提供免费域名（xxx.pages.dev），不需要买域名。
+A: Cloudflare Pages 提供 `xxx.pages.dev`，Render 提供 `xxxx.onrender.com`，都不需要买域名。
 
 ---
 
 ## 费用说明
 
 - **Cloudflare Pages**: 完全免费，无限流量
-- **Railway**: 免费额度 $5/月，轻度使用足够
+- **Render**: 免费档 750 实例小时/月（单个服务足够 24/7 运行），15 分钟无流量休眠
 - **总费用**: 基本免费

@@ -1,0 +1,39 @@
+# Render 部署蓝图 — AI 面试助手后端
+# 文档: https://render.com/docs/blueprint-spec
+# 使用: Render Dashboard → New + → Blueprint → 选择本仓库，自动读取本文件
+services:
+  - type: web
+    name: ai-interview-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      # === 必须在 Render 控制台填入真实值的变量（sync: false）===
+      - key: MIMO_API_KEY
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      # 格式: https://<服务名>.onrender.com/api/auth/github/callback
+      - key: GITHUB_CALLBACK_URL
+        sync: false
+      # 前端正式域名（CORS 白名单）。*.pages.dev 已默认放行；
+      # 前端在 Vercel 时必须设置，否则留空 = 允许所有来源
+      - key: FRONTEND_URL
+        sync: false
+
+      # === 自动生成的变量 ===
+      - key: JWT_SECRET
+        generateValue: true
+
+      # === 固定值 ===
+      - key: MIMO_API_BASE
+        value: https://api.xiaomimimo.com/v1
+      - key: JWT_EXPIRES_IN
+        value: 7d

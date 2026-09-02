@@ -211,7 +211,7 @@ npm run preview     # Preview the build
 | Component | Recommended Platform | Cost |
 |-----------|---------------------|------|
 | Frontend | Vercel / Cloudflare Pages | Free |
-| Backend | Railway | Free tier ($5/month credit) |
+| Backend | Render | Free tier (750 instance-hours/month, sleeps after 15 min idle) |
 
 See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions, or [DEPLOY_CN.md](./DEPLOY_CN.md) for China-optimized deployment (in Chinese).
 

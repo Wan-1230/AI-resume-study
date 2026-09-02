@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "RAG backend for AI Interview Question Bank",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node server.js",
     "ingest": "node scripts/ingest.js",
@@ -13,7 +16,6 @@
     "axios": "^1.18.1",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
-    "chromadb": "^1.9.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

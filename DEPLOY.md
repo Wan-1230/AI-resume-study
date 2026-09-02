@@ -22,20 +22,29 @@ git commit -m "准备部署"
 git push origin main
 ```
 
-### 第二步：部署后端到 Railway
+### 第二步：部署后端到 Render
 
-1. 访问 https://railway.app/ 并登录
-2. 点击 "New Project" → "Deploy from GitHub repo"
-3. 选择你的仓库
-4. 选择 `backend` 目录作为根目录
-5. 添加环境变量：
+> Railway 免费额度已停止发放，后端平台改为 Render。完整说明见 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)。
+
+1. 访问 https://dashboard.render.com/ 并用 GitHub 账号登录
+2. 点击 "New +" → "Web Service"，连接你的 GitHub 仓库
+3. 配置：
+   - Root Directory：`backend`
+   - Region：Singapore
+   - Instance Type：Free
+   - Build Command：`npm install`
+   - Start Command：`node server.js`
+   - Health Check Path：`/api/health`
+4. 添加环境变量：
    ```
    MIMO_API_KEY=your_mimo_api_key_here
    MIMO_API_BASE=https://api.xiaomimimo.com/v1
-   PORT=3001
+   JWT_SECRET=一段随机字符串
    ```
-6. 点击 Deploy
-7. 部署成功后，复制 Railway 提供的域名
+   （不要设置 `PORT`，Render 会自动注入）
+5. 点击 Deploy，部署成功后复制 `https://xxxx.onrender.com` 域名
+
+> 也可以用根目录的 `render.yaml` 蓝图一键部署：**New + → Blueprint** → 选择本仓库。
 
 ### 第三步：部署前端到 Vercel
 
@@ -47,7 +56,7 @@ git push origin main
    - Root Directory: ./（默认）
 5. 添加环境变量：
    ```
-   VITE_API_BASE=https://你的Railway域名/api
+   VITE_API_BASE=https://你的Render域名.onrender.com
    ```
 6. 点击 Deploy
 
@@ -63,7 +72,7 @@ git push origin main
 ## 常见问题
 
 ### Q: 跨域错误怎么办？
-A: 在 Railway 环境变量中添加：
+A: 在 Render 环境变量中添加：
 ```
 FRONTEND_URL=https://你的Vercel域名
 ```
@@ -74,8 +83,11 @@ A: 确保后端 `data/questions.json` 文件已正确部署
 ### Q: AI 助手不工作？
 A: 检查 `MIMO_API_KEY` 是否正确配置
 
+### Q: 后端第一次访问很慢？
+A: Render 免费档 15 分钟无流量会休眠，唤醒需要 30~60 秒，属正常现象
+
 ## 费用说明
 
 - **Vercel**: 免费版每月 100GB 流量
-- **Railway**: 免费版每月 $5 额度
+- **Render**: 免费档 750 实例小时/月（15 分钟无流量休眠）
 - **总费用**: 个人项目基本免费

@@ -211,9 +211,9 @@ npm run preview     # 预览构建结果
 | 组件 | 推荐平台 | 费用 |
 |------|----------|------|
 | 前端 | Vercel / Cloudflare Pages | 免费 |
-| 后端 | Railway | 免费额度 $5/月 |
+| 后端 | Render | 免费档（750 实例小时/月，15 分钟无流量休眠） |
 
-详细部署步骤见 [DEPLOY.md](./DEPLOY.md)（Railway + Vercel）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（Cloudflare Pages + Railway，国内优化）。
+详细部署步骤见 [DEPLOY.md](./DEPLOY.md)（Render + Vercel）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（Cloudflare Pages + Render，国内优化）。也可参考 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)。
 
 ## 🔧 可用命令
 
