@@ -1,0 +1,80 @@
+{
+  "config": {
+    "k": 5,
+    "min_score": 0.3,
+    "positives": 45,
+    "negatives": 15
+  },
+  "metrics": {
+    "hit_rate_at_1": 0.5333,
+    "hit_rate_at_3": 0.6667,
+    "hit_rate_at_5": 0.7333,
+    "mrr_at_5": 0.6144,
+    "negative_abstain_rate": 0,
+    "positive_hit_retention": 0.7333,
+    "positive_top1_score": {
+      "min": 0.5323,
+      "p50": 0.6454,
+      "p90": 0.714,
+      "max": 0.7618
+    },
+    "negative_top1_score": {
+      "min": 0.4256,
+      "p50": 0.5868,
+      "p90": 0.6353,
+      "max": 0.7281
+    },
+    "threshold_sweep": [
+      {
+        "threshold": 0.3,
+        "negative_abstain": 0,
+        "positive_hit_kept": 0.7333
+      },
+      {
+        "threshold": 0.35,
+        "negative_abstain": 0,
+        "positive_hit_kept": 0.7333
+      },
+      {
+        "threshold": 0.4,
+        "negative_abstain": 0,
+        "positive_hit_kept": 0.7333
+      },
+      {
+        "threshold": 0.45,
+        "negative_abstain": 0.0667,
+        "positive_hit_kept": 0.7333
+      },
+      {
+        "threshold": 0.5,
+        "negative_abstain": 0.2,
+        "positive_hit_kept": 0.7333
+      },
+      {
+        "threshold": 0.55,
+        "negative_abstain": 0.2667,
+        "positive_hit_kept": 0.7111
+      },
+      {
+        "threshold": 0.6,
+        "negative_abstain": 0.6667,
+        "positive_hit_kept": 0.5778
+      }
+    ]
+  },
+  "misses": [
+    "p04 「模型为什么会一本正经地胡说八道，怎么缓解…」top5 未命中",
+    "p17 「自己写的 MCP 服务要上线，安全上得注意什么…」top5 未命中",
+    "p22 「为什么要把文本变成一串数字，不做这一步会怎样…」top5 未命中",
+    "p25 「为什么正式环境不应用代码直连大模型，中间要加一层…」top5 未命中",
+    "a04 「检索增强这块的高频题目汇总…」top5 未命中",
+    "a08 「让模型必须返回能解析的 JSON，有哪些手段…」top5 未命中",
+    "a10 「智能体的规划、工具调用这些核心概念怎么理解…」top5 未命中",
+    "a14 「最近很火的技能包机制到底是什么，和工具有什么区别…」top5 未命中",
+    "a15 「MCP 的传输方式和整体架构长什么样…」top5 未命中",
+    "a16 「围绕模型的那层外壳工程是在解决什么问题…」top5 未命中",
+    "a17 「编排多步骤任务时，节点之间怎么传数据和兜底…」top5 未命中",
+    "a20 「多个模型和多个供应商要统一管起来，怎么设计…」top5 未命中"
+  ],
+  "backend": "chromadb"
+}

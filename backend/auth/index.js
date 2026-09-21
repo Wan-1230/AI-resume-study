@@ -24,6 +24,14 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // ==================== GitHub OAuth ====================
 
+/**
+ * 登录方式探测：未配置 OAuth 时，前端应直接不显示 GitHub 按钮，
+ * 而不是给访客一个点下去必然 500 的链接。
+ */
+router.get('/providers', (req, res) => {
+  res.json({ github: Boolean(GITHUB_CLIENT_ID && GITHUB_CLIENT_SECRET) });
+});
+
 // 步骤1：重定向到 GitHub 授权页
 router.get('/github', (req, res) => {
   if (!GITHUB_CLIENT_ID) {
@@ -118,16 +126,41 @@ router.get('/github/callback', async (req, res) => {
     // 签发 JWT
     const token = generateToken(user);
 
-    // 重定向到前端回调页（所有参数 URL 编码，防止 JWT 特殊字符导致解析错误）
-    const safeUser = users.sanitizeUser(user);
-    const tokenParam = encodeURIComponent(token);
-    const userParam = encodeURIComponent(JSON.stringify(safeUser));
-    res.redirect(`${FRONTEND_URL}/auth/callback?token=${tokenParam}&user=${userParam}`);
+    // JWT 不进 URL：整个授权在弹窗里完成，结果用 postMessage 交回 opener。
+    // 走 URL 查询参数会把 token 留在浏览器历史、Referer 与反向代理日志里。
+    res.type('html').send(renderOAuthHandoff({ type: 'github_oauth', token, user: users.sanitizeUser(user) }));
   } catch (error) {
     console.error('GitHub OAuth error:', error.message);
     res.redirect(`${FRONTEND_URL}/login?error=GitHub 登录失败，请重试`);
   }
 });
+
+/**
+ * 弹窗回执页：把登录结果 postMessage 给打开弹窗的前端页，然后自行关闭。
+ * targetOrigin 固定用服务端配置的 FRONTEND_URL，不接受任何查询参数，避免被当作开放重定向用。
+ */
+function renderOAuthHandoff(payload) {
+  // 把 "<" 转义掉，防止 JSON 内容里出现 </script> 提前闭合脚本标签
+  const data = JSON.stringify(payload).replace(/</g, '\\u003c');
+  const target = JSON.stringify(FRONTEND_URL);
+
+  return `<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>GitHub 登录</title></head>
+<body style="font-family:system-ui;color:#8b8b9a;background:#0a0a0f;padding:2rem;text-align:center">
+<p>正在返回应用…</p>
+<script>
+(function () {
+  var target = ${target};
+  if (window.opener && !window.opener.closed) {
+    window.opener.postMessage(${data}, target);
+    window.close();
+  } else {
+    location.replace(target + '/login?error=' + encodeURIComponent('请回到登录页重新发起 GitHub 登录'));
+  }
+})();
+</script>
+</body></html>`;
+}
 
 // ==================== 邮箱注册/登录 ====================
 

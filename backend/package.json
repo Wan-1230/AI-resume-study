@@ -4,7 +4,7 @@
   "description": "RAG backend for AI Interview Question Bank",
   "main": "server.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.5"
   },
   "scripts": {
     "start": "node server.js",
@@ -13,14 +13,21 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@langchain/classic": "^1.0.46",
+    "@langchain/community": "^1.1.28",
+    "@langchain/core": "^1.2.9",
+    "@langchain/openai": "^1.5.11",
+    "@langchain/textsplitters": "^1.0.1",
     "axios": "^1.18.1",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
+    "chromadb": "^3.5.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
-    "openai": "^4.77.0"
+    "langchain": "^1.5.10"
   }
 }
