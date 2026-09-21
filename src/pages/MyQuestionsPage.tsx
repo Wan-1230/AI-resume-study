@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Edit2, Trash2, FolderOpen, Search, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '@/lib/api';
+import { api, type MyQuestionInput } from '@/lib/api';
+import { useStore } from '@/store';
 import { Question, Category } from '@/types';
 import { difficultyConfig } from '@/constants/config';
 
+const EMPTY_FORM: MyQuestionInput = {
+  title: '',
+  content: '',
+  options: ['', '', '', ''],
+  answer: '',
+  explanation: '',
+  difficulty: 'medium',
+  category_id: '',
+};
+
 export default function MyQuestionsPage() {
   const navigate = useNavigate();
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,27 +29,23 @@ export default function MyQuestionsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [jumpToPage, setJumpToPage] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
   const questionsPerPage = 20;
-  const [newQuestion, setNewQuestion] = useState<Omit<Question, 'id' | 'created_at' | 'updated_at' | 'category'>>({
-    user_id: 'mock-user-id',
-    category_id: '',
-    title: '',
-    content: '',
-    options: ['', '', '', ''],
-    answer: '',
-    explanation: '',
-    difficulty: 'medium',
-    is_public: false,
-  });
+  const [newQuestion, setNewQuestion] = useState<MyQuestionInput>(EMPTY_FORM);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetchQuestions();
     fetchCategories();
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchQuestions = async () => {
-    const result = await api.questions.getAll({ limit: 500 });
-    setQuestions(result.data);
+    try {
+      setQuestions(await api.myQuestions.list());
+    } catch (e) {
+      setPageError(e instanceof Error ? e.message : '题目列表加载失败');
+    }
   };
 
   const fetchCategories = async () => {
@@ -81,9 +89,13 @@ export default function MyQuestionsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('确定要删除这道题目吗？')) {
-      await api.questions.delete(id);
+    if (!confirm('确定要删除这道题目吗？')) return;
+    setPageError(null);
+    try {
+      await api.myQuestions.remove(id);
       setQuestions(prev => prev.filter(q => q.id !== id));
+    } catch (e) {
+      setPageError(e instanceof Error ? e.message : '删除失败');
     }
   };
 
@@ -101,32 +113,45 @@ export default function MyQuestionsPage() {
   };
 
   const handleEditSave = async (id: string) => {
-    const { id: _id, created_at: _created_at, updated_at: _updated_at, category: _category, ...updateData } = editData as Question;
-    await api.questions.update(id, updateData);
-    setQuestions(prev => prev.map(q => q.id === id ? { ...q, ...editData } as Question : q));
-    setEditingId(null);
-    setEditData({});
+    setPageError(null);
+    setSaving(true);
+    try {
+      const updated = await api.myQuestions.update(id, {
+        title: String(editData.title || ''),
+        content: String(editData.content || ''),
+        options: (editData.options || []) as string[],
+        answer: String(editData.answer || ''),
+        explanation: String(editData.explanation || ''),
+        difficulty: String(editData.difficulty || 'medium'),
+        category_id: String(editData.category_id || ''),
+      });
+      setQuestions(prev => prev.map(q => (q.id === id ? updated : q)));
+      setEditingId(null);
+      setEditData({});
+    } catch (e) {
+      setPageError(e instanceof Error ? e.message : '保存失败');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAddQuestion = async () => {
-    if (!newQuestion.title || !newQuestion.content) {
-      alert('请填写题目标题和内容');
+    if (!newQuestion.title.trim()) {
+      setPageError('请填写题目标题');
       return;
     }
-    const created = await api.questions.create(newQuestion);
-    setQuestions(prev => [created, ...prev]);
-    setShowAddModal(false);
-    setNewQuestion({
-      user_id: 'mock-user-id',
-      category_id: '',
-      title: '',
-      content: '',
-      options: ['', '', '', ''],
-      answer: '',
-      explanation: '',
-      difficulty: 'medium',
-      is_public: false,
-    });
+    setPageError(null);
+    setSaving(true);
+    try {
+      const { question: created } = await api.myQuestions.create(newQuestion);
+      setQuestions(prev => [created, ...prev]);
+      setShowAddModal(false);
+      setNewQuestion(EMPTY_FORM);
+    } catch (e) {
+      setPageError(e instanceof Error ? e.message : '添加失败');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateOption = (index: number, value: string) => {
@@ -140,6 +165,32 @@ export default function MyQuestionsPage() {
     medium: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
     hard: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
+        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-8 max-w-md w-full text-center">
+          <FolderOpen className="w-12 h-12 text-[#2a2a38] mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-[#e8e8ed] mb-2">我的题库需要登录</h2>
+          <p className="text-[#8b8b9a] text-sm mb-6">自建题目、批量导入与练习记录都保存在你的账号下。</p>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => navigate('/')}
+              className="flex-1 py-2.5 bg-[#1a1a22] text-[#8b8b9a] rounded-xl hover:bg-[#2a2a38] transition-colors"
+            >
+              返回首页
+            </button>
+            <button
+              onClick={() => navigate('/login')}
+              className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
+            >
+              去登录
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -166,6 +217,15 @@ export default function MyQuestionsPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {pageError && (
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+            <span className="text-sm text-rose-400">{pageError}</span>
+            <button onClick={() => setPageError(null)} className="text-rose-400/70 hover:text-rose-400 text-sm shrink-0">
+              关闭
+            </button>
+          </div>
+        )}
+
         <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
@@ -262,9 +322,10 @@ export default function MyQuestionsPage() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEditSave(question.id)}
-                            className="px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
+                            disabled={saving}
+                            className="px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            保存
+                            {saving ? '保存中…' : '保存'}
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
@@ -502,9 +563,10 @@ export default function MyQuestionsPage() {
               </button>
               <button
                 onClick={handleAddQuestion}
-                className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale btn-ripple"
+                disabled={saving}
+                className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale btn-ripple disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                添加题目
+                {saving ? '添加中…' : '添加题目'}
               </button>
             </div>
           </div>

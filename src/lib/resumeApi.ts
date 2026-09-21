@@ -29,14 +29,24 @@ export async function optimizeResume(
   resume: string,
   onChunk: (chunk: string) => void
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/resume/optimize`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ jd, resume })
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/resume/optimize`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ jd, resume })
+    });
+  } catch {
+    // fetch 抛异常说明请求根本没发出去（后端没起 / 地址不对），与 401、429 是不同的排查方向
+    throw new Error('无法连接后端服务，请确认 http://localhost:3001 已启动');
+  }
 
   if (!response.ok) {
-    throw new Error('请求失败');
+    const detail = await response.json().catch(() => null);
+    const reason = detail && typeof detail.error === 'string' ? detail.error : null;
+    // 401 一律翻成人话：「未提供认证令牌」对使用者没有指导意义
+    if (response.status === 401) throw new Error('请先登录后再优化简历');
+    throw new Error(reason || `请求失败（${response.status}）`);
   }
 
   const reader = response.body?.getReader();
@@ -56,20 +66,22 @@ export async function optimizeResume(
     buffer = lines.pop() || '';
 
     for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        try {
-          const data = JSON.parse(line.slice(6));
-          
-          switch (data.type) {
-            case 'chunk':
-              onChunk(data.content);
-              break;
-            case 'error':
-              throw new Error(data.error);
-          }
-        } catch (e) {
-          // 忽略解析错误
-        }
+      if (!line.startsWith('data: ')) continue;
+
+      // 只有"这一行不是完整 JSON"可以跳过；服务端明确发来的 error 事件必须冒泡
+      let data: { type?: string; content?: string; error?: string };
+      try {
+        data = JSON.parse(line.slice(6));
+      } catch {
+        continue;
+      }
+
+      switch (data.type) {
+        case 'chunk':
+          if (typeof data.content === 'string' && data.content) onChunk(data.content);
+          break;
+        case 'error':
+          throw new Error(data.error || '服务端返回错误');
       }
     }
   }

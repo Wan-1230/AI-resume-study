@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Send, Sparkles, Loader2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ChatMessage from '@/components/ChatMessage';
-import { ChatMessage as ChatMessageType, sendMessage, checkHealth } from '@/lib/chatApi';
+import { ChatMessage as ChatMessageType, sendMessageStream, checkHealth, type HealthStatus } from '@/lib/chatApi';
 
 const WELCOME_MESSAGE: ChatMessageType = {
   role: 'assistant',
@@ -32,6 +32,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  const [health, setHealth] = useState<HealthStatus | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 检查后端连接
@@ -39,9 +40,11 @@ export default function ChatPage() {
     checkHealth()
       .then(data => {
         setIsConnected(data.status === 'ok');
+        setHealth(data);
       })
       .catch(() => {
         setIsConnected(false);
+        setHealth(null);
       });
   }, []);
 
@@ -61,28 +64,52 @@ export default function ChatPage() {
       timestamp: Date.now()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage, {
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now(),
+      streaming: true,
+    }]);
     setInput('');
     setIsLoading(true);
-    
+
+    const patchLast = (patch: Partial<ChatMessageType>) =>
+      setMessages(prev => {
+        const next = [...prev];
+        next[next.length - 1] = { ...next[next.length - 1], ...patch };
+        return next;
+      });
+
     try {
-      const response = await sendMessage(userMessage.content, messages);
-      
-      const assistantMessage: ChatMessageType = {
-        role: 'assistant',
-        content: response.answer,
-        sources: response.sources,
-        timestamp: Date.now()
-      };
-      
-      setMessages(prev => [...prev, assistantMessage]);
+      // 流式：先出来源，再逐段追加答案，避免整段等 10 秒以上
+      await sendMessageStream(
+        userMessage.content,
+        messages,
+        (chunk) =>
+          setMessages(prev => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            next[next.length - 1] = { ...last, content: last.content + chunk };
+            return next;
+          }),
+        (sources) => patchLast({ sources })
+      );
+      patchLast({ streaming: false });
     } catch (error) {
-      const errorMessage: ChatMessageType = {
-        role: 'assistant',
-        content: '抱歉，处理请求时出错。请确保后端服务已启动。',
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      const reason = error instanceof Error ? error.message : '处理请求时出错';
+      setMessages(prev => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        // 已经吐出部分内容时保留内容并标注中断，别把用户已经看到的字抹掉
+        next[next.length - 1] = {
+          ...last,
+          streaming: false,
+          content: last.content
+            ? `${last.content}\n\n（回答中断：${reason}）`
+            : `抱歉，这次没成功：${reason}`,
+        };
+        return next;
+      });
     } finally {
       setIsLoading(false);
     }
@@ -132,26 +159,26 @@ export default function ChatPage() {
       {/* Messages */}
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {health && health.llm_status && health.llm_status !== 'ready' && (
+            <div className="mb-4 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3">
+              <p className="text-sm text-amber-400">
+                AI 生成当前不可用，回答只会是知识库里检索到的原文。
+                <span className="block text-amber-400/70 mt-0.5 break-all">
+                  {health.llm_status === 'disabled' ? '未配置 LLM_API_KEY' : health.llm_error || '端点不可达'}
+                </span>
+              </p>
+            </div>
+          )}
+
           <div className="space-y-6">
             {messages.map((message, index) => (
               <ChatMessage
                 key={index}
                 message={message}
-                isLoading={isLoading && index === messages.length - 1 && message.role === 'user'}
+                isLoading={Boolean(message.streaming) && !message.content}
               />
             ))}
-            
-            {isLoading && messages[messages.length - 1]?.role === 'user' && (
-              <ChatMessage
-                message={{
-                  role: 'assistant',
-                  content: '',
-                  timestamp: Date.now()
-                }}
-                isLoading={true}
-              />
-            )}
-            
+
             <div ref={messagesEndRef} />
           </div>
           

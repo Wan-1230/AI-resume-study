@@ -3,16 +3,23 @@ import { ArrowLeft, Upload, FileSpreadsheet, FileText, CheckCircle, AlertCircle,
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { api } from '@/lib/api';
+import { useStore } from '@/store';
 import { ImportData } from '@/types';
+
+interface ImportResult {
+  created: number;
+  failed: { index: number; title: string; error: string }[];
+}
 
 export default function ImportPage() {
   const navigate = useNavigate();
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
   const [files, setFiles] = useState<File[]>([]);
   const [importData, setImportData] = useState<ImportData[]>([]);
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [result, setResult] = useState<ImportResult | null>(null);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -40,8 +47,10 @@ export default function ImportPage() {
     setError(null);
     try {
       for (const file of selectedFiles) {
-        const data = await file.arrayBuffer();
-        const workbook = XLSX.read(data, { type: 'array' });
+        // CSV 必须按文本读取：交给 arrayBuffer 时 SheetJS 会按 Latin-1 解码，中文全部变乱码
+        const workbook = file.name.toLowerCase().endsWith('.csv')
+          ? XLSX.read((await file.text()).replace(/^/, ''), { type: 'string' })
+          : XLSX.read(await file.arrayBuffer(), { type: 'array' });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
@@ -62,7 +71,7 @@ export default function ImportPage() {
 
         setImportData(prev => [...prev, ...parsedData]);
       }
-    } catch (_err) {
+    } catch {
       setError('文件解析失败，请确保文件格式正确');
     } finally {
       setLoading(false);
@@ -85,13 +94,16 @@ export default function ImportPage() {
 
     setImporting(true);
     setError(null);
+    setResult(null);
     try {
-      await api.questions.importQuestions(importData, 'mock-user-id');
-      setSuccess(true);
-      setImportData([]);
-      setFiles([]);
-    } catch (_err) {
-      setError('导入失败，请重试');
+      const outcome = await api.myQuestions.import(importData);
+      setResult(outcome);
+      if (outcome.created > 0) {
+        setImportData([]);
+        setFiles([]);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '导入失败');
     } finally {
       setImporting(false);
     }
@@ -126,13 +138,47 @@ export default function ImportPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {success && (
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-6 flex items-center space-x-3">
-            <CheckCircle className="w-6 h-6 text-emerald-500" />
-            <div>
-              <p className="text-emerald-400 font-medium">导入成功</p>
-              <p className="text-[#5a5a6e] text-sm">已成功导入 {importData.length} 道题目</p>
+        {!isAuthenticated && (
+          <div className="bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+            <span className="text-sm text-[#8b8b9a]">导入的题目会保存到你登录后的账号，请先登录。</span>
+            <button onClick={() => navigate('/login')} className="shrink-0 text-sm text-primary-500 hover:text-primary-400 font-medium">
+              去登录
+            </button>
+          </div>
+        )}
+
+        {result && (
+          <div
+            className={`rounded-xl p-4 mb-6 border ${
+              result.failed.length ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              {result.failed.length ? (
+                <AlertCircle className="w-6 h-6 text-amber-500 shrink-0" />
+              ) : (
+                <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0" />
+              )}
+              <div>
+                <p className={result.failed.length ? 'text-amber-400 font-medium' : 'text-emerald-400 font-medium'}>
+                  成功导入 {result.created} 道
+                  {result.failed.length ? `，${result.failed.length} 道被跳过` : ''}
+                </p>
+                <p className="text-[#5a5a6e] text-sm">
+                  {result.created ? '可在「我的题库」查看与编辑。' : '没有题目入库。'}
+                </p>
+              </div>
             </div>
+            {result.failed.length > 0 && (
+              <ul className="mt-3 space-y-1 text-sm text-amber-400/80">
+                {result.failed.slice(0, 5).map((f) => (
+                  <li key={f.index}>
+                    第 {f.index + 1} 行「{f.title || '无标题'}」：{f.error}
+                  </li>
+                ))}
+                {result.failed.length > 5 && <li>…另有 {result.failed.length - 5} 行未通过校验</li>}
+              </ul>
+            )}
           </div>
         )}
 
@@ -257,7 +303,7 @@ export default function ImportPage() {
             {importData.length > 0 && (
               <button
                 onClick={handleImport}
-                disabled={importing}
+                disabled={importing || !isAuthenticated}
                 className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-white font-medium rounded-xl transition-all flex items-center justify-center space-x-2 btn-hover-scale btn-ripple"
               >
                 {importing ? (

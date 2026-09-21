@@ -27,7 +27,8 @@ async function parseFile(file: File): Promise<string> {
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      text += content.items.map((item: any) => item.str).join(' ') + '\n';
+      const pieces = (content.items as Array<{ str?: string }>).map((item) => item.str ?? '');
+      text += pieces.join(' ') + '\n';
     }
     
     return text;
@@ -74,7 +75,8 @@ export default function ResumePage() {
         setResult(prev => prev + chunk);
       });
     } catch (error) {
-      setResult('抱歉，优化过程中出错。请确保后端服务已启动。');
+      // 透出服务端原因：401「请先登录」被写成「后端未启动」会把人引向完全错误的排查方向
+      setResult(error instanceof Error ? `优化失败：${error.message}` : '优化失败，请稍后重试');
     } finally {
       setIsLoading(false);
     }
@@ -85,8 +87,8 @@ export default function ResumePage() {
       await navigator.clipboard.writeText(result);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      // 复制失败
+    } catch {
+      // 剪贴板被浏览器拒绝时静默失败，界面已有"已复制"状态可重试
     }
   };
 

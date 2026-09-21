@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { login, register, getGitHubOAuthUrl } from '@/lib/authApi';
+import { login, register, getGitHubOAuthUrl, getAuthProviders, getAuthOrigin, type OAuthHandoff } from '@/lib/authApi';
 import { useStore } from '@/store';
 
 // GitHub 官方图标组件
@@ -29,6 +29,56 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
+  const [githubEnabled, setGithubEnabled] = useState(false);
+  const [githubHint, setGithubHint] = useState<string | null>(null);
+  const popupRef = useRef<Window | null>(null);
+
+  useEffect(() => {
+    getAuthProviders().then((p) => setGithubEnabled(p.github));
+  }, []);
+
+  /**
+   * 接收 OAuth 弹窗回传的登录结果。
+   * token 不再经过 URL，所以这里必须校验 origin —— 否则任何页面都能伪造登录态。
+   */
+  useEffect(() => {
+    const authOrigin = getAuthOrigin();
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== authOrigin) return;
+      const data = event.data as OAuthHandoff | null;
+      if (!data || data.type !== 'github_oauth' || typeof data.token !== 'string') return;
+
+      setGithubHint(null);
+      storeLogin(data.token, data.user);
+      popupRef.current?.close();
+      popupRef.current = null;
+      navigate('/');
+    };
+
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [storeLogin, navigate]);
+
+  const openGitHubLogin = () => {
+    setGithubHint(null);
+    const popup = window.open(getGitHubOAuthUrl(), 'github_oauth', 'width=520,height=680');
+    if (!popup) {
+      setGithubHint('浏览器拦截了登录弹窗，请允许后重试');
+      return;
+    }
+    popupRef.current = popup;
+
+    // 用户中途关掉弹窗不会有回执，给个明确反馈而不是让界面静默等着
+    const timer = window.setInterval(() => {
+      if (popup.closed) {
+        window.clearInterval(timer);
+        if (popupRef.current === popup) {
+          popupRef.current = null;
+          setGithubHint('GitHub 登录未完成');
+        }
+      }
+    }, 500);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +106,7 @@ export default function AuthPage() {
         ? await login(email, password)
         : await register(email, password, username.trim() || undefined);
 
-      storeLogin(response.token, response.user as any);
+      storeLogin(response.token, response.user);
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : '操作失败，请重试');
@@ -92,24 +142,33 @@ export default function AuthPage() {
           </div>
 
           <div className="p-6">
-            {/* GitHub 登录按钮 — 使用 <a> 链接避免浏览器拦截 window.location */}
-            <a
-              href={getGitHubOAuthUrl()}
-              className="w-full py-3 bg-[#24292e] hover:bg-[#2f363d] text-white font-medium rounded-xl transition-all flex items-center justify-center space-x-3 mb-6 btn-hover-scale no-underline"
-            >
-              <GitHubIcon className="w-5 h-5" />
-              <span>{mode === 'login' ? '使用 GitHub 登录' : '使用 GitHub 注册'}</span>
-            </a>
+            {/* GitHub 登录：弹窗授权，结果由后端页面 postMessage 回传（token 不经 URL） */}
+            {githubEnabled && (
+              <>
+                <button
+                  type="button"
+                  onClick={openGitHubLogin}
+                  className="w-full py-3 bg-[#24292e] hover:bg-[#2f363d] text-white font-medium rounded-xl transition-all flex items-center justify-center space-x-3 mb-3 btn-hover-scale"
+                >
+                  <GitHubIcon className="w-5 h-5" />
+                  <span>{mode === 'login' ? '使用 GitHub 登录' : '使用 GitHub 注册'}</span>
+                </button>
 
-            {/* 分隔线 */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#2a2a38]"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-[#141419] px-4 text-[#5a5a6e]">或使用邮箱</span>
-              </div>
-            </div>
+                {githubHint && (
+                  <p className="text-xs text-amber-400 mb-3 text-center">{githubHint}</p>
+                )}
+
+                {/* 分隔线 */}
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#2a2a38]"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-[#141419] px-4 text-[#5a5a6e]">或使用邮箱</span>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* 错误提示 */}
             {error && (

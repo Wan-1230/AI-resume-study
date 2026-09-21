@@ -7,7 +7,6 @@ import ImportPage from "@/pages/ImportPage";
 import PracticePage from "@/pages/PracticePage";
 import MyQuestionsPage from "@/pages/MyQuestionsPage";
 import AuthPage from "@/pages/AuthPage";
-import AuthCallback from "@/pages/AuthCallback";
 import ChatPage from "@/pages/ChatPage";
 import ResumePage from "@/pages/ResumePage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
@@ -44,7 +43,6 @@ export default function App() {
           <Route path="/resume" element={<ResumePage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route
             path="/admin/dashboard"

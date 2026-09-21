@@ -65,6 +65,34 @@ export function getGitHubOAuthUrl(): string {
   return `${AUTH_BASE}/api/auth/github`;
 }
 
+/** 后端支持哪些登录方式；探测失败时按"不可用"处理，避免给出必然报错的按钮 */
+export async function getAuthProviders(): Promise<{ github: boolean }> {
+  try {
+    const response = await fetch(`${AUTH_BASE}/api/auth/providers`);
+    if (!response.ok) return { github: false };
+    const data = await response.json();
+    return { github: Boolean(data.github) };
+  } catch {
+    return { github: false };
+  }
+}
+
+/** OAuth 弹窗回传消息时的可信来源白名单（就是后端本身） */
+export function getAuthOrigin(): string {
+  try {
+    return new URL(AUTH_BASE).origin;
+  } catch {
+    return AUTH_BASE;
+  }
+}
+
+/** 后端 postMessage 过来的 GitHub 登录结果 */
+export interface OAuthHandoff {
+  type: 'github_oauth';
+  token: string;
+  user: AuthResponse['user'];
+}
+
 // 获取当前用户信息
 export async function getMe(token: string): Promise<AuthResponse['user']> {
   const response = await fetch(`${AUTH_BASE}/api/auth/me`, {

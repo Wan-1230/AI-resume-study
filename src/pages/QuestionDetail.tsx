@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Star, Share2, Bookmark, Eye, Clock, ChevronDown, ChevronUp, CheckCircle, XCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Star, Share2, Users, Clock, ChevronDown, ChevronUp, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '@/lib/api';
+import { api, type QuestionStats } from '@/lib/api';
 import { Question } from '@/types';
 import { useStore } from '@/store';
 import { difficultyConfig } from '@/constants/config';
@@ -13,9 +13,52 @@ export default function QuestionDetail() {
   const [loading, setLoading] = useState(true);
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const { favorites, toggleFavorite } = useStore();
+  const { favorites, toggleFavorite, isAuthenticated, favoritesError } = useStore();
 
   const isFavorited = question ? favorites.includes(question.id) : false;
+  const [inLibrary, setInLibrary] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [stats, setStats] = useState<QuestionStats | null>(null);
+
+  /** 顶部一句话反馈，自动消失 —— 够用于"已复制/已加入"这类确认，不值得引入 toast 系统 */
+  const showNote = (text: string) => {
+    setNote(text);
+    setTimeout(() => setNote(null), 2500);
+  };
+
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showNote('题目链接已复制');
+    } catch {
+      showNote('浏览器不允许自动复制，可复制地址栏链接');
+    }
+  };
+
+  /** 把系统题复制进自己的题库（可改写后自用）；explanation 留空，因为系统题没有真正的解析 */
+  const addToLibrary = async () => {
+    if (!question) return;
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const { already } = await api.myQuestions.create({
+        title: question.title,
+        content: question.content,
+        options: question.options,
+        answer: question.answer,
+        explanation: '',
+        difficulty: question.difficulty,
+        category_id: question.category_id,
+        source_id: question.id,
+      });
+      setInLibrary(true);
+      showNote(already ? '这道题已经在你的题库里了' : '已加入我的题库');
+    } catch (e) {
+      showNote(e instanceof Error ? e.message : '加入题库失败');
+    }
+  };
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -31,6 +74,8 @@ export default function QuestionDetail() {
       }
     };
     fetchQuestion();
+    setStats(null);
+    api.questions.stats(id).then(setStats);
   }, [id]);
 
   if (loading) {
@@ -91,11 +136,12 @@ export default function QuestionDetail() {
             <h1 className="text-lg font-semibold text-[#e8e8ed]">题目详情</h1>
             
             <div className="flex items-center space-x-2">
-              <button className="p-2.5 text-[#5a5a6e] hover:text-primary-500 hover:bg-primary-500/10 rounded-xl transition-all btn-hover-scale">
+              <button
+                onClick={shareLink}
+                title="复制本题链接"
+                className="p-2.5 text-[#5a5a6e] hover:text-primary-500 hover:bg-primary-500/10 rounded-xl transition-all btn-hover-scale"
+              >
                 <Share2 className="w-5 h-5" />
-              </button>
-              <button className="p-2.5 text-[#5a5a6e] hover:text-primary-500 hover:bg-primary-500/10 rounded-xl transition-all btn-hover-scale">
-                <Bookmark className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -120,7 +166,14 @@ export default function QuestionDetail() {
               </div>
               
               <button
-                onClick={() => toggleFavorite(question.id)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate('/login');
+                    return;
+                  }
+                  void toggleFavorite(question.id);
+                }}
+                title={isAuthenticated ? '收藏本题' : '登录后可收藏'}
                 className={`p-2.5 rounded-xl transition-all duration-200 btn-hover-scale ${
                   isFavorited
                     ? 'text-amber-400 bg-amber-500/10'
@@ -131,17 +184,34 @@ export default function QuestionDetail() {
               </button>
             </div>
 
+            {favoritesError && (
+              <p className="-mt-4 mb-6 text-sm text-rose-400">{favoritesError}</p>
+            )}
+
             <h2 className="text-2xl md:text-3xl font-bold text-[#e8e8ed] mb-6 leading-relaxed">{question.title}</h2>
 
             <div className="flex items-center space-x-6 text-sm text-[#5a5a6e]">
-              <span className="flex items-center space-x-2">
-                <Eye className="w-4 h-4" />
-                <span>浏览 1.2k</span>
-              </span>
-              <span className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>建议用时 5分钟</span>
-              </span>
+              {stats && stats.attempts > 0 ? (
+                <>
+                  <span className="flex items-center space-x-2">
+                    <Users className="w-4 h-4" />
+                    <span>大家做了 {stats.attempts} 次，答对 {stats.accuracy}%</span>
+                  </span>
+                  {stats.median_duration_s !== null && (
+                    <span className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4" />
+                      <span>
+                        多数人用时{' '}
+                        {stats.median_duration_s >= 60
+                          ? `${Math.round(stats.median_duration_s / 60)} 分钟`
+                          : `${stats.median_duration_s} 秒`}
+                      </span>
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span>这道题还没人做过，你答完就会看到统计</span>
+              )}
             </div>
           </div>
 
@@ -265,12 +335,14 @@ export default function QuestionDetail() {
             开始练习
           </button>
           <button
-            onClick={() => navigate('/my-questions')}
+            onClick={addToLibrary}
             className="flex-1 py-4 bg-[#141419] border border-[#1e1e28] hover:border-primary-500/20 hover:bg-[#1a1a22] text-[#8b8b9a] hover:text-primary-500 font-medium rounded-xl transition-all duration-200 btn-hover-scale"
           >
-            加入我的题库
+            {inLibrary ? '已在我的题库' : '加入我的题库'}
           </button>
         </div>
+
+        {note && <p className="mt-3 text-sm text-[#8b8b9a]">{note}</p>}
       </main>
     </div>
   );

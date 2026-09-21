@@ -15,8 +15,9 @@ export interface Category {
   id: string;
   name: string;
   description?: string;
-  created_at: string;
-  updated_at: string;
+  /** 系统题库由静态 JSON 派生，本就没有时间戳；不再用写死的 2024-01-01 冒充 */
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Question {
@@ -30,16 +31,9 @@ export interface Question {
   explanation?: string;
   difficulty: 'easy' | 'medium' | 'hard';
   is_public: boolean;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   category?: Category;
-}
-
-export interface Collection {
-  id: string;
-  user_id: string;
-  question_id: string;
-  created_at: string;
 }
 
 export interface PracticeResult {

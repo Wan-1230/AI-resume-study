@@ -10,7 +10,7 @@ interface QuestionCardProps {
 
 export default function QuestionCard({ question }: QuestionCardProps) {
   const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useStore();
+  const { favorites, toggleFavorite, isAuthenticated } = useStore();
   const isFavorited = favorites.includes(question.id);
 
   const difficultyColors = {
@@ -50,8 +50,13 @@ export default function QuestionCard({ question }: QuestionCardProps) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              toggleFavorite(question.id);
+              if (!isAuthenticated) {
+                navigate('/login');
+                return;
+              }
+              void toggleFavorite(question.id);
             }}
+            title={isAuthenticated ? '收藏本题' : '登录后可收藏'}
             className={`p-2 rounded-xl transition-all duration-200 btn-hover-scale ${
               isFavorited
                 ? 'text-amber-400 bg-amber-500/10'

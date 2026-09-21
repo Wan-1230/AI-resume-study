@@ -1,6 +1,8 @@
-import { User, Bot, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { User, Bot, Loader2, Copy, Check } from 'lucide-react';
 import { ChatMessage as ChatMessageType } from '@/lib/chatApi';
 import SourceCard from './SourceCard';
+import MarkdownLite from './MarkdownLite';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -9,7 +11,18 @@ interface ChatMessageProps {
 
 export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
   const isUser = message.role === 'user';
-  
+  const [copied, setCopied] = useState(false);
+
+  const copyAnswer = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // 浏览器拒绝剪贴板时保持原文可选，不做跳转
+    }
+  };
+
   return (
     <div className={`flex space-x-4 ${isUser ? 'justify-end' : ''}`}>
       {!isUser && (
@@ -29,13 +42,28 @@ export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
               <Loader2 className="w-4 h-4 animate-spin" />
               <span className="text-sm">思考中...</span>
             </div>
+          ) : isUser ? (
+            <div className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</div>
           ) : (
-            <div className="prose prose-sm max-w-none whitespace-pre-wrap">
-              {message.content}
-            </div>
+            <>
+              <MarkdownLite content={message.content} />
+              {message.streaming && message.content && (
+                <span className="inline-block w-1.5 h-4 bg-primary-500/70 align-middle animate-pulse" />
+              )}
+            </>
           )}
         </div>
-        
+
+        {!isUser && !isLoading && message.content && (
+          <button
+            onClick={copyAnswer}
+            className="mt-2 flex items-center space-x-1.5 text-xs text-[#5a5a6e] hover:text-primary-500 transition-colors"
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copied ? '已复制' : '复制回答'}</span>
+          </button>
+        )}
+
         {/* 来源卡片 */}
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="mt-3 space-y-2">

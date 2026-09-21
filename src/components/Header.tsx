@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Search, User, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PillNav from './PillNav';
 import { useStore } from '@/store';
@@ -13,23 +12,12 @@ function GitHubIcon({ className = 'w-5 h-5' }: { className?: string }) {
   );
 }
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
-}
-
-export default function Header({ onSearch }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const { isAuthenticated, user, logout } = useStore();
   const displayName = user?.username || user?.email?.split('@')[0] || '用户';
-
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(searchQuery);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -40,7 +28,7 @@ export default function Header({ onSearch }: HeaderProps) {
     if (href === '/' && location.pathname === '/') {
       // 在首页时，点击首页按钮返回第一页
       e.preventDefault();
-      const goToFirst = (window as any).__goToFirstPage;
+      const goToFirst = (window as unknown as { __goToFirstPage?: () => void }).__goToFirstPage;
       if (goToFirst) {
         goToFirst();
       }
@@ -74,7 +62,7 @@ export default function Header({ onSearch }: HeaderProps) {
 
         <div className="flex items-center space-x-2 sm:space-x-3">
           <a
-            href="https://github.com/Wan-1230/-"
+            href="https://github.com/Wan-1230/AI-resume-study"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 sm:p-2.5 text-[#8b8b9a] hover:text-[#e8e8ed] hover:bg-[#1a1a22] rounded-lg transition-all duration-200"

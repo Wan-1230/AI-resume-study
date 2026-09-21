@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Play, RotateCcw, Clock, CheckCircle, XCircle, Trophy, Target, Timer, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { shuffleOptions } from '@/lib/shuffleOptions';
+import { learningApi, type PracticeStats, type WrongItem } from '@/lib/learningApi';
+import { useStore } from '@/store';
 import { Question, PracticeResult } from '@/types';
 import { difficultyConfig } from '@/constants/config';
 
 type PracticeState = 'ready' | 'playing' | 'finished';
+type SaveState = 'idle' | 'saving' | 'saved' | 'failed';
 
 export default function PracticePage() {
   const navigate = useNavigate();
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -21,6 +26,11 @@ export default function PracticePage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [questionCount, setQuestionCount] = useState(10);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [stats, setStats] = useState<PracticeStats | null>(null);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [wrong, setWrong] = useState<WrongItem[]>([]);
+  const [startError, setStartError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -29,6 +39,16 @@ export default function PracticePage() {
     };
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setStats(null);
+      setWrong([]);
+      return;
+    }
+    learningApi.practice.stats().then(setStats).catch(() => setStats(null));
+    learningApi.practice.wrong(20).then(setWrong).catch(() => setWrong([]));
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -46,7 +66,9 @@ export default function PracticePage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startPractice = async () => {
+  /** source = 'wrong' 时只从错题本抽题，忽略分类/难度筛选 */
+  const startPractice = async (source: 'filters' | 'wrong' = 'filters') => {
+    setStartError(null);
     setPracticeState('playing');
     setTimeElapsed(0);
     setResults([]);
@@ -54,16 +76,62 @@ export default function PracticePage() {
     setSelectedOption(null);
     setShowAnswer(false);
 
+    // limit 不传时 api.questions.getAll 默认只给 10 题，选 20/50 题会被静默夹死，故显式取足量再抽题
     const result = await api.questions.getAll({
-      categoryId: selectedCategory || undefined,
-      difficulty: selectedDifficulty || undefined,
+      categoryId: source === 'wrong' ? undefined : (selectedCategory || undefined),
+      difficulty: source === 'wrong' ? undefined : (selectedDifficulty || undefined),
+      limit: 500,
     });
 
-    const allQuestions = result.data;
+    let pool = result.data;
+    if (source === 'wrong') {
+      const wrongIds = new Set(wrong.map((w) => w.question_id));
+      pool = pool.filter((q) => wrongIds.has(q.id));
+    }
+    if (!pool.length) {
+      setPracticeState('ready');
+      setStartError(source === 'wrong' ? '错题本是空的 —— 先做一轮练习再回来' : '这个筛选条件下没有题目，换个分类或难度');
+      return;
+    }
+
+    const allQuestions = pool;
     const shuffled = allQuestions.sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+    // 选项也乱序：防止"记住第 3 个是答案"，也避免整卷正确项都落在同一位置
+    const selected = shuffled.slice(0, Math.min(questionCount, shuffled.length)).map(shuffleOptions);
     setQuestions(selected);
     setQuestionStartTime(Date.now());
+  };
+
+  const refreshStats = () => {
+    learningApi.practice.stats().then(setStats).catch(() => {});
+  };
+
+  /** 交卷后把逐题作答上报；服务端按题库重算对错，所以这里只报「选了哪个选项」 */
+  const submitSession = async (answered: PracticeResult[]) => {
+    if (!isAuthenticated || answered.length === 0) return;
+    setSaveState('saving');
+    setSaveError(null);
+    const now = Date.now();
+    try {
+      await learningApi.practice.createSession({
+        mode: 'drill',
+        config: { count: questionCount, category: selectedCategory, difficulty: selectedDifficulty },
+        started_at: new Date(now - timeElapsed * 1000).toISOString(),
+        finished_at: new Date(now).toISOString(),
+        answers: answered.map((r) => ({
+          question_id: r.questionId,
+          chosen: r.userAnswer,
+          duration_s: r.timeSpent,
+          // 本次展示的选项顺序：服务端按文本比对判分，不传的话字母会被当成题库原序
+          display_options: questions.find((q) => q.id === r.questionId)?.options,
+        })),
+      });
+      setSaveState('saved');
+      refreshStats();
+    } catch (e) {
+      setSaveState('failed');
+      setSaveError(e instanceof Error ? e.message : '练习记录保存失败');
+    }
   };
 
   const handleAnswer = (option: string) => {
@@ -91,6 +159,7 @@ export default function PracticePage() {
       setQuestionStartTime(Date.now());
     } else {
       setPracticeState('finished');
+      void submitSession(results);
     }
   };
 
@@ -102,6 +171,8 @@ export default function PracticePage() {
     setShowAnswer(false);
     setResults([]);
     setTimeElapsed(0);
+    setSaveState('idle');
+    setSaveError(null);
   };
 
   const currentQuestion = questions[currentIndex];
@@ -133,6 +204,69 @@ export default function PracticePage() {
         {practiceState === 'ready' && (
           <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-[#e8e8ed] mb-6 text-center">配置练习</h2>
+
+            {!isAuthenticated && (
+              <div className="mb-6 flex items-center justify-between gap-4 bg-[#1a1a22] border border-[#2a2a38] rounded-xl px-4 py-3">
+                <span className="text-sm text-[#8b8b9a]">登录后可保存练习记录、统计正确率与错题本</span>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="shrink-0 text-sm text-primary-500 hover:text-primary-400 font-medium"
+                >
+                  去登录
+                </button>
+              </div>
+            )}
+
+            {stats && stats.answers > 0 && (
+              <div className="mb-6 bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#8b8b9a]">历史练习</span>
+                  <span className="text-[#e8e8ed] font-medium">
+                    {stats.sessions} 次 · {stats.answers} 题 · 正确率 {stats.accuracy}%
+                  </span>
+                </div>
+                {stats.by_category
+                  .filter((c) => c.category)
+                  .slice()
+                  .sort((a, b) => a.accuracy - b.accuracy)
+                  .slice(0, 3)
+                  .map((c) => (
+                    <div key={c.category as string} className="mt-3">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-[#8b8b9a]">薄弱：{c.category}</span>
+                        <span className="text-[#5a5a6e]">{c.correct}/{c.total} · {c.accuracy}%</span>
+                      </div>
+                      <div className="h-1.5 bg-[#22222a] rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-rose-500/80 to-amber-500/80" style={{ width: `${c.accuracy}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+
+            {wrong.length > 0 && (
+              <div className="mb-6 bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[#8b8b9a] font-medium text-sm">错题本</span>
+                  <span className="text-[#5a5a6e] text-xs">最近一次答错的 {wrong.length} 题</span>
+                </div>
+                <ul className="space-y-1.5">
+                  {wrong.slice(0, 6).map((w) => (
+                    <li key={w.question_id}>
+                      <button
+                        onClick={() => navigate(`/question/${w.question_id}`)}
+                        className="w-full text-left text-sm text-[#e8e8ed] hover:text-primary-500 transition-colors flex items-center justify-between gap-3"
+                      >
+                        <span className="line-clamp-1 flex-1">{w.title || w.question_id}</span>
+                        <span className="text-[#5a5a6e] text-xs shrink-0">
+                          {w.category ? `${w.category} · ` : ''}错 {w.wrong_count} 次
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="space-y-6">
               <div>
@@ -200,13 +334,31 @@ export default function PracticePage() {
                 </div>
               </div>
 
-              <button
-                onClick={startPractice}
-                className="w-full py-4 bg-gradient-to-r from-primary-500/90 to-accent-500/90 hover:from-primary-500 hover:to-accent-500 text-white font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg shadow-lg hover:shadow-xl btn-hover-scale"
-              >
-                <Play className="w-6 h-6" />
-                <span>开始练习</span>
-              </button>
+              {startError && (
+                <p className="text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5">
+                  {startError}
+                </p>
+              )}
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => startPractice('filters')}
+                  className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-accent-500/90 hover:from-primary-500 hover:to-accent-500 text-white font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg shadow-lg hover:shadow-xl btn-hover-scale"
+                >
+                  <Play className="w-6 h-6" />
+                  <span>开始练习</span>
+                </button>
+                {isAuthenticated && wrong.length > 0 && (
+                  <button
+                    onClick={() => startPractice('wrong')}
+                    title="只抽最近一次答错的题"
+                    className="flex-1 py-4 bg-[#1a1a22] border border-[#2a2a38] hover:border-rose-500/30 hover:text-rose-400 text-[#8b8b9a] font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg btn-hover-scale"
+                  >
+                    <Target className="w-6 h-6" />
+                    <span>只练错题 ({wrong.length})</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -349,6 +501,26 @@ export default function PracticePage() {
                 <span className="text-[#5a5a6e]">用时</span>
                 <span className="text-[#e8e8ed] font-mono font-bold">{formatTime(timeElapsed)}</span>
               </div>
+
+              {!isAuthenticated ? (
+                <p className="text-center text-sm text-[#5a5a6e] mb-6">
+                  未登录，本次成绩不会被保存。
+                  <button onClick={() => navigate('/login')} className="ml-1 text-primary-500 hover:text-primary-400">
+                    登录后练习
+                  </button>
+                </p>
+              ) : (
+                <p
+                  className={`text-center text-sm mb-6 ${
+                    saveState === 'saved' ? 'text-emerald-400' : saveState === 'failed' ? 'text-rose-400' : 'text-[#5a5a6e]'
+                  }`}
+                >
+                  {saveState === 'saving' && '正在保存练习记录…'}
+                  {saveState === 'saved' && `已保存到练习记录${stats ? `（累计 ${stats.answers} 题）` : ''}`}
+                  {saveState === 'failed' && `保存失败：${saveError}`}
+                  {saveState === 'idle' && '练习记录未上报'}
+                </p>
+              )}
 
               <div className="space-y-3 mb-8">
                 {questions.map((question, index) => {

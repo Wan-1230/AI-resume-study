@@ -1,9 +1,7 @@
-import { Question, Category, Collection, ImportData } from '@/types';
+import { Question, Category, ImportData } from '@/types';
 import { useStore } from '@/store';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001';
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // 获取认证请求头
 function getAuthHeaders(): Record<string, string> {
@@ -45,9 +43,20 @@ async function fetchQuestionsFromBackend(): Promise<Question[]> {
   return [];
 }
 
+// 后端 /api/questions 与静态兜底文件共用的原始题面格式
+interface RawQuestion {
+  id?: string;
+  title: string;
+  content: string;
+  options?: string[];
+  answer: string;
+  category?: string;
+  difficulty?: string;
+}
+
 // 将后端/静态 JSON 格式转换为前端 Question 格式
-function transformQuestions(data: any[]): Question[] {
-  return data.map((q: any, index: number) => ({
+function transformQuestions(data: RawQuestion[]): Question[] {
+  return data.map((q, index) => ({
     id: q.id || `q${index + 1}`,
     user_id: 'system',
     category_id: q.category || '未分类',
@@ -58,14 +67,14 @@ function transformQuestions(data: any[]): Question[] {
     explanation: q.content,
     difficulty: q.difficulty as 'easy' | 'medium' | 'hard',
     is_public: true,
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z',
+    created_at: null,
+    updated_at: null,
     category: {
       id: q.category || '未分类',
       name: q.category || '未分类',
       description: `${q.category}相关题目`,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
+      created_at: null,
+      updated_at: null,
     }
   }));
 }
@@ -81,36 +90,86 @@ function extractCategories(questions: Question[]): Category[] {
   return Array.from(categoryMap.values());
 }
 
+/** 单题作答统计：来自练习记录的真实聚合 */
+export interface QuestionStats {
+  question_id: string;
+  attempts: number;
+  correct: number;
+  accuracy: number | null;
+  median_duration_s: number | null;
+}
+
+/** 提交给用户题库的题目字段（后端会做同样的校验） */
+export interface MyQuestionInput {
+  title: string;
+  content: string;
+  options: string[];
+  answer: string;
+  explanation?: string;
+  difficulty: string;
+  category_id?: string;
+  category?: string;
+  source_id?: string;
+}
+
+interface MyQuestionRow {
+  id: string;
+  owner_user_id: string;
+  title: string;
+  content: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  source_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+function toMyQuestion(row: MyQuestionRow): Question {
+  return {
+    id: row.id,
+    user_id: row.owner_user_id,
+    category_id: row.category,
+    title: row.title,
+    content: row.content,
+    options: row.options,
+    answer: row.answer,
+    explanation: row.explanation || row.content,
+    difficulty: row.difficulty,
+    is_public: false,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    category: {
+      id: row.category,
+      name: row.category,
+      description: '我的题目',
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    },
+  };
+}
+
+async function myRequest<T>(path: string, { method = 'GET', body }: { method?: string; body?: unknown } = {}): Promise<T> {
+  const response = await fetch(`${API_BASE}/api/my/questions${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw new Error((detail as { error?: string }).error || `请求失败（${response.status}）`);
+  }
+  return response.json() as Promise<T>;
+}
+
 export const api = {
   categories: {
+    /** 系统题库的分类由题目派生，不支持自定义增删 */
     async getAll(): Promise<Category[]> {
       const questions = await fetchQuestionsFromBackend();
       return extractCategories(questions);
-    },
-    async getById(id: string): Promise<Category | null> {
-      const categories = await this.getAll();
-      return categories.find(c => c.id === id) || null;
-    },
-    async create(data: Omit<Category, 'id' | 'created_at' | 'updated_at'>): Promise<Category> {
-      await delay(500);
-      const newCategory: Category = {
-        ...data,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      return newCategory;
-    },
-    async update(id: string, data: Partial<Omit<Category, 'id' | 'created_at' | 'updated_at'>>): Promise<Category | null> {
-      await delay(300);
-      const categories = await this.getAll();
-      const category = categories.find(c => c.id === id);
-      if (!category) return null;
-      return { ...category, ...data, updated_at: new Date().toISOString() };
-    },
-    async delete(_id: string): Promise<boolean> {
-      await delay(300);
-      return true;
     },
   },
 
@@ -123,7 +182,7 @@ export const api = {
       limit?: number;
     }): Promise<{ data: Question[]; total: number }> {
       let questions = await fetchQuestionsFromBackend();
-      
+
       // 过滤
       if (params?.categoryId) {
         questions = questions.filter(q => q.category_id === params.categoryId);
@@ -133,7 +192,7 @@ export const api = {
       }
       if (params?.search) {
         const searchLower = params.search.toLowerCase();
-        questions = questions.filter(q => 
+        questions = questions.filter(q =>
           q.title.toLowerCase().includes(searchLower) ||
           q.content.toLowerCase().includes(searchLower)
         );
@@ -153,98 +212,49 @@ export const api = {
       return questions.find(q => q.id === id) || null;
     },
 
-    async create(data: Omit<Question, 'id' | 'created_at' | 'updated_at' | 'category'>): Promise<Question> {
-      await delay(500);
-      const newQuestion: Question = {
-        ...data,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        category: {
-          id: data.category_id,
-          name: data.category_id,
-          description: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      };
-      return newQuestion;
-    },
-
-    async update(id: string, data: Partial<Omit<Question, 'id' | 'created_at' | 'updated_at' | 'category'>>): Promise<Question | null> {
-      await delay(300);
-      const questions = await fetchQuestionsFromBackend();
-      const question = questions.find(q => q.id === id);
-      if (!question) return null;
-      return {
-        ...question,
-        ...data,
-        updated_at: new Date().toISOString(),
-      };
-    },
-
-    async delete(_id: string): Promise<boolean> {
-      await delay(300);
-      return true;
-    },
-
-    async importQuestions(data: ImportData[], _userId: string): Promise<Question[]> {
-      await delay(1000);
-      const createdQuestions: Question[] = [];
-      
-      for (const item of data) {
-        const question: Question = {
-          id: Date.now().toString() + Math.random(),
-          user_id: 'user-1',
-          category_id: item.category,
-          title: item.title,
-          content: item.content,
-          options: item.options,
-          answer: item.answer,
-          explanation: item.explanation,
-          difficulty: (item.difficulty as 'easy' | 'medium' | 'hard') || 'medium',
-          is_public: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          category: {
-            id: item.category,
-            name: item.category,
-            description: '',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        };
-        createdQuestions.push(question);
+    /**
+     * 单题的真实作答统计（聚合值，无需登录）。
+     * 拿不到就返回 null，让页面干脆不显示这行指标，而不是编一个"浏览 1.2k"。
+     */
+    async stats(id: string): Promise<QuestionStats | null> {
+      try {
+        const response = await fetch(`${API_BASE}/api/questions/${encodeURIComponent(id)}/stats`);
+        if (!response.ok) return null;
+        return (await response.json()) as QuestionStats;
+      } catch {
+        return null;
       }
-
-      return createdQuestions;
     },
   },
 
-  collections: {
-    async getAll(_userId: string): Promise<Collection[]> {
-      await delay(500);
-      return [];
+  /** 我的题库：用户自建题，服务端按 owner 隔离，系统题库只读 */
+  myQuestions: {
+    async list(): Promise<Question[]> {
+      const { items } = await myRequest<{ items: MyQuestionRow[] }>('');
+      return items.map(toMyQuestion);
     },
 
-    async create(userId: string, questionId: string): Promise<Collection> {
-      await delay(300);
-      return {
-        id: Date.now().toString(),
-        user_id: userId,
-        question_id: questionId,
-        created_at: new Date().toISOString(),
-      };
+    /** 新建题目；带 source_id 表示「复制系统题入库」，重复复制返回 already */
+    async create(input: MyQuestionInput): Promise<{ question: Question; already: boolean }> {
+      const res = await myRequest<{ item: MyQuestionRow; already?: boolean }>('', { method: 'POST', body: input });
+      return { question: toMyQuestion(res.item), already: !!res.already };
     },
 
-    async delete(_userId: string, _questionId: string): Promise<boolean> {
-      await delay(300);
-      return true;
+    async update(id: string, input: MyQuestionInput): Promise<Question> {
+      const { item } = await myRequest<{ item: MyQuestionRow }>(`/${encodeURIComponent(id)}`, { method: 'PUT', body: input });
+      return toMyQuestion(item);
     },
 
-    async isCollected(_userId: string, _questionId: string): Promise<boolean> {
-      await delay(200);
-      return false;
+    async remove(id: string): Promise<void> {
+      await myRequest<{ removed: boolean }>(`/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    },
+
+    async import(items: ImportData[]): Promise<{ created: number; failed: { index: number; title: string; error: string }[] }> {
+      const res = await myRequest<{
+        created_count: number;
+        failed: { index: number; title: string; error: string }[];
+      }>('/import', { method: 'POST', body: { items } });
+      return { created: res.created_count, failed: res.failed };
     },
   },
 };
