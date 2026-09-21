@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# ChromaDB 本地数据目录与 embedding 模型缓存
+backend/chroma_data/
+backend/.cache/
+# LangChain RAG memory 向量库的 JSON 持久化目录
+backend/vector_store_data/
+# 学习数据 SQLite 库（含 WAL/SHM 边车文件）
+backend/data/app.db*
+# 注册用户数据（邮箱 + bcrypt 哈希），只存在于运行环境
+backend/data/users.json
+# 题库/语料修复脚本自动生成的数据备份
+backend/data/*.bak-*
+
 # Environment files
 .env
 .env.local
@@ -33,3 +45,7 @@ backend/.env
 *.njsproj
 *.sln
 *.sw?
+# AI 工具的本地状态目录（计划文件、浏览器缓存、MCP 产物）
+.zcode/
+.reasonix/
+.playwright-mcp/

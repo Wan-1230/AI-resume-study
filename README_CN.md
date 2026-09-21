@@ -3,41 +3,50 @@
 [![English](https://img.shields.io/badge/🌐-English-blue)](./README.md)
 [![简体中文](https://img.shields.io/badge/🌐-简体中文-red)](./README_CN.md)
 
-基于 RAG（检索增强生成）的智能面试准备平台，专注于 AI 应用开发领域的面试题目练习、AI 智能答疑和简历优化。采用 TF-IDF 向量检索 + LLM 生成的混合架构。
+面向 **AI 应用开发岗** 的面试准备平台：RAG 智能答疑、题库练习与模考、简历与 JD 匹配。
+检索用本地中文向量嵌入（离线、零 API 成本），向量库支持内存与 ChromaDB 双后端，回答由任意 OpenAI 兼容的大模型生成。
+
+> 本文档只描述**已经能用**的功能；规划中的能力统一写在 [PRD.md](./PRD.md)，实现进度见其中的进度标注。
 
 ## ✨ 功能特性
 
 ### 🏠 全屏滚动首页
 - 五段式全屏滚动：Hero → AI 助手 → 简历优化 → 题库 → 关于
-- WebGL 动态线程背景动画
-- 打字机效果展示 AI 对话能力
+- WebGL 动态线程背景（OGL）+ GSAP 滚动渐显
+- 打字机效果演示 AI 对话
 
-### 🤖 AI 智能助手
-- 基于 **RAG 架构**：TF-IDF 语义检索 + MiMo LLM 生成
-- 支持流式（SSE）对话，实时逐字输出
-- 自动检索知识库，提供准确、有引用的回答
-- 预设推荐问题，快速上手
+### 🤖 AI 智能问答
+- **LangChain RAG 管线**：文档加载 → 分块 → 向量嵌入 → 向量存储 → 相似度检索 → LLM 生成
+  （架构与全部环境变量见 [LANGCHAIN_RAG.md](./LANGCHAIN_RAG.md)）
+- 嵌入模型 `Xenova/bge-small-zh-v1.5` 在 Node 进程内计算，**缓存命中后完全离线、不产生任何网络请求**
+- 检索质量是可复现的指标，不是形容词：60 条人工标注下 `hit-rate@5 73.3% / MRR 0.61`，
+  换模型前的旧默认值是 `46.7% / 0.24`（`node backend/scripts/eval-retrieval.js` 一条命令复现）
+- 向量后端 `memory`（默认，JSON 持久化，零外部依赖）/ `chroma`（本地 ChromaDB 服务端），
+  `auto` 模式探测不到 Chroma 时自动回退 memory，详见 [CHROMA_SETUP.md](./CHROMA_SETUP.md)
+- **SSE 流式输出**，逐段渲染 + 光标指示；回答下方展示带相似度分数的参考来源卡片
+- 回答按 Markdown 渲染（代码块可一键复制、行内代码、标题、列表）
+- LLM 端点即插即用：`LLM_API_BASE` / `LLM_MODEL` 换任意 OpenAI 兼容服务，代码零改动
+- 启动时探测一次 LLM 端点，`/api/health` 的 `llm_status` 会区分 `ready / unreachable / disabled`；
+  AI 不可用时前端**明确标注并给出原因**（不再静默把检索原文冒充 AI 回答）
 
-### 📝 简历优化
-- 上传简历（支持 PDF / Word / Markdown / TXT / 图片）+ 职位描述（JD）
-- AI 分析 JD 并优化简历措辞，突出匹配技能
-- 流式输出优化结果，实时预览
-- 一键导出为 Word 文档（.docx）
+### 📝 简历与 JD
+- 上传简历（PDF / Word(.docx) / Markdown / TXT，或粘贴文本）+ 职位描述
+- 流式输出优化后的简历与修改建议，可一键复制
+- 需要登录：整份简历会外送第三方推理服务，且额度比问答更紧
 
-### 📚 题库管理
-- **练习模式**：按分类 / 难度筛选，自动计时，交卷统计得分
-- **我的题库**：个人题目 CRUD + 搜索 + 筛选 + 分页
-- **数据导入**：支持 Excel / CSV 批量导入题目
-- 题目支持分类标签和难度分级（易/中/难）
+### 📚 题库与练习
+- **练习模式**：按分类 / 难度选题，逐题作答并计时，交卷后统计正确率
+- 选项**每次随机排序**（防"记住第几个是答案"），正确答案在题库中按 A/B/C/D 均匀分布
+- 服务端按**选项文本**判分，改前端刷不出虚假正确率
+- **收藏**、**练习记录**、**错题本**（最近一次答对即从错题毕业）、**分类掌握度统计**均持久化到 SQLite，跨刷新与重启保留
+- **我的题库**：登录后新建 / 编辑 / 删除自己的题目；系统题库只读，不能被人删改
+- **批量导入**：Excel / CSV 逐行校验，失败行带行号回报原因（不静默丢弃）
 
-### 🔐 用户认证
-- 邮箱注册 / 登录
-- GitHub OAuth 一键登录
-- JWT Token 认证 + 管理员角色
-
-### 🛡️ 管理后台
-- 用户管理（搜索、查看详情、删除）
-- 用户统计（邮箱注册 vs GitHub 登录）
+### 🔐 用户认证与管理后台
+- 邮箱注册 / 登录（bcrypt + JWT），GitHub OAuth（需自行配置，未配置时前端不显示该入口）
+- 登录后的 JWT 通过弹窗 `postMessage` 交回，**不经过 URL**（避免进浏览器历史与代理日志）
+- 管理后台：用户搜索、详情、删除与注册方式统计
+- `/api/chat*` 公开可试用但按 IP/用户限流，并限制同时进行的 LLM 请求数；超额返回 429 + `Retry-After`
 
 ## 🛠️ 技术栈
 
@@ -49,11 +58,14 @@
 | **路由** | React Router v7 |
 | **状态管理** | Zustand 5 |
 | **图标** | Lucide React |
-| **文件处理** | PDF.js / Mammoth / XLSX / docx |
 | **动画** | OGL (WebGL) / GSAP |
+| **文件解析** | PDF.js / Mammoth / XLSX |
 | **后端** | Node.js + Express |
-| **向量检索** | TF-IDF（内存模式） |
-| **LLM** | MiMo API |
+| **RAG 框架** | LangChain.js 1.x（`@langchain/core` / `classic` / `community` / `openai`） |
+| **向量嵌入** | transformers.js（本地 `bge-small-zh-v1.5`，512 维） |
+| **向量存储** | memory（JSON 持久化）/ ChromaDB |
+| **业务数据** | SQLite（Node 内置 `node:sqlite`，无需原生编译） |
+| **LLM** | 任意 OpenAI 兼容服务（`LLM_API_BASE` 切换） |
 | **认证** | JWT + bcrypt + GitHub OAuth |
 
 ## 📁 项目结构
@@ -61,169 +73,176 @@
 ```
 ├── src/                          # 前端源码
 │   ├── components/               # 通用组件
-│   │   ├── Header.tsx            # 顶部导航栏（含登录/用户信息）
-│   │   ├── Footer.tsx            # 页脚
-│   │   ├── Sidebar.tsx           # 侧边栏
-│   │   ├── PillNav.tsx           # 胶囊导航
+│   │   ├── Header.tsx            # 顶部导航（登录态 / 仓库链接）
+│   │   ├── ChatMessage.tsx       # 对话气泡（含复制、来源卡片）
+│   │   ├── MarkdownLite.tsx      # 回答的 Markdown 渲染（不使用 innerHTML）
+│   │   ├── SourceCard.tsx        # 参考来源卡片（类型 / 分类 / 相似度 / 外链）
+│   │   ├── QuestionCard.tsx      # 题目卡片（收藏开关）
+│   │   ├── TypewriterChat.tsx    # 首页打字机演示
 │   │   ├── Threads.tsx           # WebGL 线程背景
-│   │   ├── TypewriterChat.tsx    # 打字机效果组件
-│   │   ├── ChatMessage.tsx       # 聊天消息
-│   │   ├── QuestionCard.tsx      # 题目卡片
-│   │   ├── MagicBento.tsx        # Bento 布局卡片
-│   │   ├── ScrollReveal.tsx      # 滚动渐显动画
-│   │   ├── ClickSpark.tsx        # 点击粒子特效
-│   │   ├── ErrorBoundary.tsx     # 全局错误边界
-│   │   └── ...
+│   │   └── ...                   # ScrollReveal / ClickSpark / PillNav / ErrorBoundary 等
 │   ├── pages/                    # 页面
 │   │   ├── Home.tsx              # 首页（全屏滚动）
-│   │   ├── ChatPage.tsx          # AI 助手对话
-│   │   ├── ResumePage.tsx        # 简历优化
-│   │   ├── PracticePage.tsx      # 练习模式
-│   │   ├── MyQuestionsPage.tsx   # 我的题库
-│   │   ├── ImportPage.tsx        # 题目导入
-│   │   ├── QuestionDetail.tsx    # 题目详情
-│   │   ├── AuthPage.tsx          # 登录/注册
-│   │   ├── AuthCallback.tsx      # OAuth 回调
+│   │   ├── ChatPage.tsx          # AI 问答（流式）
+│   │   ├── PracticePage.tsx      # 练习与交卷统计
+│   │   ├── QuestionDetail.tsx    # 题目详情（真实作答统计、加入我的题库）
+│   │   ├── MyQuestionsPage.tsx   # 我的题库（登录可见，真实 CRUD）
+│   │   ├── ImportPage.tsx        # Excel/CSV 导入（逐行回报）
+│   │   ├── ResumePage.tsx        # 简历 + JD 优化（登录，流式）
+│   │   ├── AuthPage.tsx          # 登录 / 注册（含 OAuth 弹窗）
 │   │   ├── AdminLoginPage.tsx    # 管理员登录
 │   │   └── AdminDashboard.tsx    # 管理后台
 │   ├── lib/                      # API 客户端
-│   │   ├── api.ts                # 通用 API
-│   │   ├── authApi.ts            # 认证 API
-│   │   ├── chatApi.ts            # 聊天 API
-│   │   ├── resumeApi.ts          # 简历优化 API
-│   │   └── adminApi.ts           # 管理员 API
-│   ├── store/                    # Zustand 状态管理
-│   ├── hooks/                    # 自定义 Hooks
-│   ├── types/                    # TypeScript 类型定义
-│   └── constants/                # 配置常量
+│   │   ├── api.ts                # 系统题库读取 + 我的题库 CRUD
+│   │   ├── chatApi.ts            # 问答（流式 / 健康检查）
+│   │   ├── learningApi.ts        # 收藏 / 练习记录 / 统计 / 错题本
+│   │   ├── authApi.ts            # 认证与登录方式探测
+│   │   ├── resumeApi.ts          # 简历优化（流式）
+│   │   ├── adminApi.ts           # 管理后台
+│   │   └── shuffleOptions.ts     # 选项乱序（Fisher-Yates + 答案位置重算）
+│   ├── store/                    # Zustand 全局状态
+│   ├── hooks/ · types/ · constants/
 ├── backend/                      # 后端源码
-│   ├── server.js                 # Express 入口
-│   ├── auth/                     # 认证模块
-│   │   ├── index.js              # 认证路由
-│   │   ├── middleware.js         # JWT 中间件
-│   │   ├── users.js              # 用户数据管理
-│   │   └── admin.js              # 管理员验证
-│   ├── rag/                      # RAG 核心模块
-│   │   ├── vectorstore.js        # TF-IDF 向量存储
-│   │   ├── retriever.js          # 语义检索
-│   │   └── generator.js          # LLM 生成
-│   ├── scripts/                  # 数据导入脚本
-│   └── data/                     # 知识库数据
-├── public/                       # 静态资源
-└── dist/                         # 构建输出
+│   ├── server.js                 # Express 入口（路由挂载、限流、健康检查）
+│   ├── auth/                     # 认证：邮箱、GitHub OAuth、JWT 中间件、用户存储
+│   ├── guard/                    # AI 接口限流与并发闸门（零依赖内存实现）
+│   ├── db/                       # SQLite 连接与建表（收藏 / 练习 / 我的题库）
+│   ├── learning/                 # 收藏、练习会话、统计、错题本、题目统计接口
+│   ├── myquestions/              # 我的题库 CRUD 与批量导入
+│   ├── rag/langchain/            # RAG 管线：config / loaders / splitters / embeddings /
+│   │                             #   stores / retriever / chains / service
+│   ├── scripts/
+│   │   ├── ingest.js             # 知识库导入（加载→分块→嵌入→写向量库）+ 检索自测
+│   │   ├── audit-questions.js    # 题库质量审计（只读，量化答案分布 / 干扰项 / 难度）
+│   │   ├── repair-questions.js   # 题库修复（LLM 重生成干扰项 + 答案位置均衡，带备份）
+│   │   ├── clean-corpus-answers.js # 清洗语料中的"答案: X"残渣
+│   │   └── crawl.js              # 抓取题源生成知识库
+│   └── data/                     # questions.json 题库 / documents.json 知识库 / articles.json
+│                                 # 运行产物：app.db（学习数据）、users.json、*.bak-* 均已 gitignore
+├── public/ · dist/               # 静态资源 / 构建产物
+└── PRD.md · LANGCHAIN_RAG.md · CHROMA_SETUP.md · DEMO.md
 ```
 
 ## 🚀 快速开始
 
 ### 前置要求
-- **Node.js** >= 18
-- **npm** >= 9
+- **Node.js ≥ 22.5**（学习数据用 Node 内置 `node:sqlite`，见 `backend/package.json` engines）
+- **npm** ≥ 9
+- 一个 OpenAI 兼容的 LLM API Key（不配也能跑：问答会明确降级为"只返回知识库检索结果"）
 
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/Wan-1230/AI-resume-study.git
-cd AI-resume-study
-```
-
-### 2. 安装前端依赖
+### 1. 安装依赖
 
 ```bash
-npm install
+npm install                 # 前端
+cd backend && npm install   # 后端
 ```
 
-### 3. 安装后端依赖
-
-```bash
-cd backend
-npm install
-cd ..
-```
-
-### 4. 配置后端环境变量
+### 2. 配置后端环境变量
 
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-编辑 `backend/.env`，填入必要的配置：
+编辑 `backend/.env`：
 
 ```env
-# MiMo LLM API
-MIMO_API_KEY=your_mimo_api_key
-MIMO_API_BASE=https://api.mimo.com/v1
+# LLM（任意 OpenAI 兼容服务）
+LLM_API_KEY=your_api_key
+LLM_API_BASE=https://api.agnes-ai.cn/v1
+LLM_MODEL=agnes-3.0-flash
 
-# 向量存储数据目录
-CHROMA_DB_PATH=./chroma_db
+# 向量后端：auto（默认，探测 Chroma，失败回退 memory）/ chroma / memory
+VECTOR_BACKEND=auto
 
-# 服务端口
+# 嵌入模型首次下载走 HuggingFace，国内网络建议启用镜像（已缓存则完全离线）
+# HF_ENDPOINT=https://hf-mirror.com
+
+# AI 接口护栏（不设则用默认值；滑动窗口，登录用户按账号、匿名按 IP 计）
+# GUARD_WINDOW_MS=60000         窗口长度（毫秒）
+# CHAT_RATE_MAX=20              问答：每窗口次数
+# RESUME_RATE_MAX=5             简历优化：每窗口次数（且必须登录）
+# LLM_MAX_CONCURRENT=2          同时进行的 LLM 请求数，超出的进队列
+# LLM_MAX_QUEUE=10              队列已满 → 503
+# LLM_QUEUE_WAIT_MS=15000       排队超时 → 503
+
 PORT=3001
-
-# GitHub OAuth（在 GitHub Developer Settings 创建 OAuth App）
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
-
-# JWT
-JWT_SECRET=your_jwt_secret_key_for_token_signing
-JWT_EXPIRES_IN=7d
-
-# 前端地址（CORS + OAuth 回调使用）
+JWT_SECRET=change_me
 FRONTEND_URL=http://localhost:5173
 
-# 管理员账号
+# GitHub OAuth（可选；不配置则前端不显示该登录入口）
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_CALLBACK_URL=http://localhost:3001/api/auth/github/callback
+
+# 管理员账号（单一账号，由环境变量提供）
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your_admin_password
 ```
 
-### 5. 准备知识库数据
+完整变量说明见 [LANGCHAIN_RAG.md](./LANGCHAIN_RAG.md)。
+
+### 3. 导入知识库
 
 ```bash
 cd backend
-node scripts/ingest.js    # 导入知识库文档到向量存储
-cd ..
+npm run ingest
 ```
 
-### 6. 启动开发服务器
+307 条知识条目 → 661 个分块；嵌入在本地 CPU 上跑，约 2~4 分钟。
+启动后端时若向量为空也会自动导入。
+
+### 4. 启动
 
 ```bash
-# 终端 1：启动后端
-cd backend
-npm run dev
+# 终端 1
+cd backend && npm start
 
-# 终端 2：启动前端
+# 终端 2（项目根目录）
 npm run dev
 ```
 
-访问 **http://localhost:5173** 即可使用。
+前端 **http://localhost:5173**，健康检查 **http://localhost:3001/api/health**：
 
-## 📦 构建与部署
-
-### 前端构建
-
-```bash
-npm run build       # 构建到 dist/
-npm run preview     # 预览构建结果
+```json
+{"status":"ok","documents_count":661,"vector_backend":"chromadb",
+ "embedding":"local:xenova/bge-small-zh-v1.5","llm_model":"agnes-3.0-flash",
+ "has_llm":true,"llm_status":"ready","top_k":5,"rag_engine":"langchain"}
 ```
 
-### 部署方案
-
-| 组件 | 推荐平台 | 费用 |
-|------|----------|------|
-| 前端 | Vercel / Cloudflare Pages | 免费 |
-| 后端 | Render | 免费档（750 实例小时/月，15 分钟无流量休眠） |
-
-详细部署步骤见 [DEPLOY.md](./DEPLOY.md)（Render + Vercel）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（Cloudflare Pages + Render，国内优化）。也可参考 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)。
+> 想用 ChromaDB 而不是内存向量库：`uvx --from chromadb chroma run --path ./chroma_data --port 8000`，
+> 步骤见 [CHROMA_SETUP.md](./CHROMA_SETUP.md)。
 
 ## 🔧 可用命令
 
-| 命令 | 说明 |
-|------|------|
-| `npm run dev` | 启动前端开发服务器 |
-| `npm run build` | TypeScript 检查 + 生产构建 |
-| `npm run check` | TypeScript 类型检查 |
-| `npm run lint` | ESLint 代码检查 |
-| `npm run preview` | 预览生产构建 |
+| 命令 | 位置 | 说明 |
+|------|------|------|
+| `npm run dev` | 根目录 | 前端开发服务器 |
+| `npm run build` / `preview` | 根目录 | 生产构建 / 预览 |
+| `npm run check` / `lint` | 根目录 | TypeScript 类型检查 / ESLint |
+| `npm start` / `npm run dev` | backend | 启动后端 / `--watch` 模式 |
+| `npm run ingest` | backend | 全量重建向量库（幂等，先清空再写入） |
+| `npm run crawl` | backend | 抓取题源，生成知识库数据 |
+| `node scripts/audit-questions.js` | backend | 题库质量审计（只读） |
+| `node scripts/repair-questions.js --dry-run` | backend | 题库修复预演（不写盘） |
+| `node scripts/clean-corpus-answers.js` | backend | 清洗语料答案残渣（预演；加 `--write` 生效） |
+
+## 📦 构建与部署
+
+| 组件 | 推荐平台 | 说明 |
+|------|----------|------|
+| 前端 | Vercel / Cloudflare Pages | 静态托管；题库读取有静态 JSON 兜底，后端休眠时页面仍可浏览 |
+| 后端 | Render 免费档 | 单进程，向量库自动使用 memory 后端；750 实例小时/月、15 分钟无流量休眠 |
+
+步骤见 [DEPLOY.md](./DEPLOY.md)（Render + Vercel）或 [DEPLOY_CN.md](./DEPLOY_CN.md)（Cloudflare Pages + Render，国内优化），
+容器方式见根目录 `Dockerfile`（基镜 `node:24-alpine`）。演示与验收脚本见 [DEMO.md](./DEMO.md)。
+
+## ⚠️ 已知限制
+
+- **上游 LLM 配额**：当前使用的服务为免费档速率限制，批量生成脚本会挤占线上问答（429 时明确降级为纯检索）
+- **GitHub OAuth 未验证成功回路**：需要自行创建 OAuth App 后才能实测
+- **难度分布尚未重标定**：约 95% 题目标为 medium，等有真实作答正确率后回填（理由见 PRD P0-4）
+- **题型只有四选一**：开放简答题与 LLM 评分在规划中（PRD P0-4 / P1-3）
+- **限流是单进程内存实现**：多实例部署需换成共享存储（改 `backend/guard.js` 里的计数 Map 即可，中间件签名不变）
 
 ## 📄 许可
 
