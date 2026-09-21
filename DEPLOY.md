@@ -32,13 +32,16 @@ git push origin main
    - Root Directory：`backend`
    - Region：Singapore
    - Instance Type：Free
-   - Build Command：`npm install`
+   - Build Command：`npm ci && LLM_ENABLED=false VECTOR_BACKEND=memory npm run ingest`
    - Start Command：`node server.js`
    - Health Check Path：`/api/health`
-4. 添加环境变量：
+4. 添加环境变量（完整清单见 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)）：
    ```
-   MIMO_API_KEY=your_mimo_api_key_here
-   MIMO_API_BASE=https://api.xiaomimimo.com/v1
+   DATABASE_URL=postgresql://...（Neon 免费档连接串，必填）
+   LLM_API_KEY=your_llm_api_key_here
+   LLM_API_BASE=https://api.agnes-ai.cn/v1
+   LLM_MODEL=agnes-3.0-flash
+   VECTOR_BACKEND=memory
    JWT_SECRET=一段随机字符串
    ```
    （不要设置 `PORT`，Render 会自动注入）
@@ -81,7 +84,8 @@ FRONTEND_URL=https://你的Vercel域名
 A: 确保后端 `data/questions.json` 文件已正确部署
 
 ### Q: AI 助手不工作？
-A: 检查 `MIMO_API_KEY` 是否正确配置
+A: 先看 `/api/health`：`db_ok: false` 是 `DATABASE_URL` 问题，`rag_state: empty` 是构建期没生成索引，
+`llm_status: unreachable` 是 `LLM_API_KEY` / `LLM_API_BASE` 不对或上游额度用尽
 
 ### Q: 后端第一次访问很慢？
 A: Render 免费档 15 分钟无流量会休眠，唤醒需要 30~60 秒，属正常现象

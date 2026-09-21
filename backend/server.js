@@ -18,6 +18,7 @@ const myQuestionsRoutes = require('./myquestions');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
 const usersManager = require('./auth/users');
+const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -84,35 +85,13 @@ app.use('/api/my/questions', myQuestionsRoutes);
 // ==================== 管理员 API ====================
 
 // 获取用户列表（支持搜索和分页）
-app.get('/api/admin/users', requireAdmin, (req, res) => {
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
   try {
     const { search, page = 1, limit = 20 } = req.query;
-    let allUsers = usersManager.readUsers().map(usersManager.sanitizeUser);
+    const { users, total, page: p, limit: l } = await usersManager.listUsers({ search, page, limit });
+    const stats = await usersManager.userStats();
 
-    if (search) {
-      const q = String(search).toLowerCase();
-      allUsers = allUsers.filter(
-        u =>
-          (u.username && u.username.toLowerCase().includes(q)) ||
-          (u.email && u.email.toLowerCase().includes(q))
-      );
-    }
-
-    const total = allUsers.length;
-    const p = Math.max(1, parseInt(page));
-    const l = Math.min(100, Math.max(1, parseInt(limit)));
-    const start = (p - 1) * l;
-    const items = allUsers.slice(start, start + l);
-
-    // 统计
-    const all = usersManager.readUsers();
-    const stats = {
-      total: all.length,
-      emailUsers: all.filter(u => u.auth_provider === 'email').length,
-      githubUsers: all.filter(u => u.auth_provider === 'github').length,
-    };
-
-    res.json({ users: items, total, page: p, limit: l, stats });
+    res.json({ users, total, page: p, limit: l, stats });
   } catch (error) {
     console.error('Admin list users error:', error);
     res.status(500).json({ error: '获取用户列表失败' });
@@ -120,9 +99,9 @@ app.get('/api/admin/users', requireAdmin, (req, res) => {
 });
 
 // 获取用户详情
-app.get('/api/admin/users/:id', requireAdmin, (req, res) => {
+app.get('/api/admin/users/:id', requireAdmin, async (req, res) => {
   try {
-    const user = usersManager.findById(req.params.id);
+    const user = await usersManager.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ error: '用户不存在' });
     }
@@ -134,15 +113,12 @@ app.get('/api/admin/users/:id', requireAdmin, (req, res) => {
 });
 
 // 删除用户
-app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
   try {
-    const allUsers = usersManager.readUsers();
-    const index = allUsers.findIndex(u => u.id === req.params.id);
-    if (index === -1) {
+    const removed = await usersManager.deleteUser(req.params.id);
+    if (!removed) {
       return res.status(404).json({ error: '用户不存在' });
     }
-    allUsers.splice(index, 1);
-    usersManager.writeUsers(allUsers);
     res.json({ success: true });
   } catch (error) {
     console.error('Admin delete user error:', error);
@@ -152,27 +128,66 @@ app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
 
 // RAG 组件（LangChain 管线：加载 → 分块 → 嵌入 → 存储 → 检索 → 生成，见 LANGCHAIN_RAG.md）
 let ragService = null;
+/** initializing | ready | empty | failed —— 决定 /api/health 的对外表述与接口是否可用 */
+let ragState = 'initializing';
+let ragError = null;
 
-// 初始化 RAG 系统
+/**
+ * 加载向量索引（不生成）。索引由 `npm run ingest` 产出：本地开发跑一次，
+ * Render 上由 buildCommand 在构建阶段跑（见 render.yaml）。
+ * 运行时绝不做嵌入：实测批量嵌入 64 个分块峰值 RSS 2.2GB，免费实例 512MB 必被 OOM 杀掉。
+ */
 async function initializeRAG() {
   console.log('🚀 初始化 AI 面试助手 RAG 系统\n');
 
   ragService = await createRagService();
-
-  // 检查是否需要导入数据
   const docCount = await ragService.count();
+
   if (docCount === 0) {
-    console.log('\n📥 数据库为空，开始导入数据...');
-    await ragService.ingest();
+    ragState = 'empty';
+    console.error('❌ 向量索引为空。请先执行 `npm run ingest` 生成 vector_store_data/memory_vectors.json');
+    return;
   }
 
-  console.log('\n✅ RAG 系统初始化完成\n');
+  ragState = 'ready';
+  console.log(`\n✅ RAG 系统就绪（${docCount} 条向量）\n`);
+}
+
+// 索引没起来之前不要放行业务请求：否则用户拿到的是"没有知识库依据"的回答
+function requireRag(req, res, next) {
+  if (ragState === 'ready') return next();
+  res.status(503).json({
+    error: 'AI 索引尚未就绪，请稍后重试',
+    rag_state: ragState,
+    rag_error: ragError,
+  });
+}
+
+/**
+ * SSE 心跳。反向代理对静默连接会掐线（Render 未公布具体秒数，Cloudflare 约 100s），
+ * 而 LLM 首个 token 之前还有检索与并发排队两段静默期。注释行不是 data: 事件，
+ * 前端 chatApi.ts 的解析器会直接跳过，因此无需改前端。
+ */
+function startSseHeartbeat(res, intervalMs = 15_000) {
+  const timer = setInterval(() => {
+    if (res.writableEnded) {
+      clearInterval(timer);
+      return;
+    }
+    res.write(': ping\n\n');
+  }, intervalMs);
+  timer.unref();
+  res.on('close', () => clearInterval(timer));
+}
+
+function sendSse(res, payload) {
+  res.write(`data: ${JSON.stringify(payload)}\n\n`);
 }
 
 // API 路由
 
 // 问答接口（公开可试用，但按 IP 限流 + 并发闸门，防止 API Key 被路人刷爆）
-app.post('/api/chat', optionalAuth, limitChat, gateLlm, async (req, res) => {
+app.post('/api/chat', optionalAuth, requireRag, limitChat, gateLlm, async (req, res) => {
   try {
     const { message, history = [] } = req.body;
 
@@ -191,7 +206,7 @@ app.post('/api/chat', optionalAuth, limitChat, gateLlm, async (req, res) => {
 });
 
 // 流式问答接口
-app.post('/api/chat/stream', optionalAuth, limitChat, gateLlm, async (req, res) => {
+app.post('/api/chat/stream', optionalAuth, requireRag, limitChat, gateLlm, async (req, res) => {
   try {
     const { message, history = [] } = req.body;
 
@@ -203,23 +218,25 @@ app.post('/api/chat/stream', optionalAuth, limitChat, gateLlm, async (req, res) 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    startSseHeartbeat(res);
 
     // 检索 → 发送来源 → 流式生成（service 内部处理 LLM 不可用的降级）
     await ragService.chatStream(message, history, {
       onSources: (sources) => {
-        res.write(`data: ${JSON.stringify({ type: 'sources', sources })}\n\n`);
+        sendSse(res, { type: 'sources', sources });
       },
       onChunk: (chunk) => {
-        res.write(`data: ${JSON.stringify({ type: 'chunk', content: chunk })}\n\n`);
+        sendSse(res, { type: 'chunk', content: chunk });
       }
     });
 
     // 发送完成信号
-    res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+    sendSse(res, { type: 'done' });
     res.end();
   } catch (error) {
     console.error('Stream error:', error);
-    res.write(`data: ${JSON.stringify({ type: 'error', error: '处理请求时出错' })}\n\n`);
+    sendSse(res, { type: 'error', error: '处理请求时出错' });
     res.end();
   }
 });
@@ -250,7 +267,7 @@ app.get('/api/questions', (req, res) => {
 
 // 简历优化接口（流式）
 // 要求登录：整份简历要外送第三方推理服务，额度也比问答紧
-app.post('/api/resume/optimize', authenticateToken, limitResume, gateLlm, async (req, res) => {
+app.post('/api/resume/optimize', authenticateToken, requireRag, limitResume, gateLlm, async (req, res) => {
   try {
     const { jd, resume } = req.body;
     
@@ -262,10 +279,12 @@ app.post('/api/resume/optimize', authenticateToken, limitResume, gateLlm, async 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    
-    if (!ragService || ragService.llmStatus !== 'ready') {
-      const reason = ragService ? `（${ragService.llmStatus}: ${ragService.llmError || '未配置'}）` : '';
-      res.write(`data: ${JSON.stringify({ type: 'error', error: `LLM 服务当前不可用${reason}` })}\n\n`);
+    res.setHeader('X-Accel-Buffering', 'no');
+    startSseHeartbeat(res);
+
+    if (ragService.llmStatus !== 'ready') {
+      const reason = `（${ragService.llmStatus}: ${ragService.llmError || '未配置'}）`;
+      sendSse(res, { type: 'error', error: `LLM 服务当前不可用${reason}` });
       res.end();
       return;
     }
@@ -307,26 +326,35 @@ ${resume}
     for await (const chunk of stream) {
       const content = typeof chunk.content === 'string' ? chunk.content : '';
       if (content) {
-        res.write(`data: ${JSON.stringify({ type: 'chunk', content })}\n\n`);
+        sendSse(res, { type: 'chunk', content });
       }
     }
     
-    res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+    sendSse(res, { type: 'done' });
     res.end();
   } catch (error) {
     console.error('Resume optimize error:', error);
-    res.write(`data: ${JSON.stringify({ type: 'error', error: '优化过程中出错' })}\n\n`);
+    sendSse(res, { type: 'error', error: '优化过程中出错' });
     res.end();
   }
 });
 
-// 健康检查
+// 健康检查。永远返回 200：Render 用这个路径判定部署是否存活，
+// 返回 4xx/5xx 会把「索引还在加载」误判成「服务坏了」并反复重启，真实状态放在响应体里。
 app.get('/api/health', async (req, res) => {
+  let db_ok = true;
+  try {
+    await db.queryOne('SELECT 1 AS ok');
+  } catch (error) {
+    db_ok = false;
+    console.error('[health] 数据库不可用:', error.message);
+  }
+
   const docCount = ragService ? await ragService.count() : 0;
   const health = ragService
     ? ragService.health()
     : { vector_backend: null, has_llm: false, rag_engine: 'langchain' };
-  res.json({ status: 'ok', documents_count: docCount, ...health });
+  res.json({ status: 'ok', documents_count: docCount, rag_state: ragState, rag_error: ragError, db_ok, ...health });
 });
 
 // 统一 JSON 错误响应：路由内抛出的异常默认会被 Express 以 HTML 堆栈返回，前端 JSON 解析直接崩
@@ -339,16 +367,28 @@ app.use((error, req, res, next) => {
 
 // 启动服务
 async function start() {
+  // 建表必须先成功：DATABASE_URL 配错时要立刻退出并留在日志里，
+  // 而不是起来一个"能连上但什么都查不到"的实例
+  try {
+    await db.initSchema();
+  } catch (error) {
+    console.error('❌ 数据库初始化失败（检查 DATABASE_URL）:', error.message);
+    process.exit(1);
+  }
+
+  // 先监听、再后台加载索引：索引加载要几秒到几十秒，放在 listen 之前会让
+  // 健康检查在启动窗口内一直连不上，Render 会判部署失败并循环重启
+  app.listen(PORT, () => {
+    console.log(`🌐 服务运行在 http://localhost:${PORT}`);
+    console.log(`📊 健康检查: http://localhost:${PORT}/api/health`);
+  });
+
   try {
     await initializeRAG();
-    
-    app.listen(PORT, () => {
-      console.log(`🌐 服务运行在 http://localhost:${PORT}`);
-      console.log(`📊 健康检查: http://localhost:${PORT}/api/health`);
-    });
   } catch (error) {
-    console.error('❌ 启动失败:', error);
-    process.exit(1);
+    ragState = 'failed';
+    ragError = String(error.message || error).slice(0, 200);
+    console.error('❌ RAG 初始化失败，AI 接口将返回 503:', error);
   }
 }
 

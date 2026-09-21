@@ -56,8 +56,9 @@ wrangler pages deploy dist --project-name=ai-interview
 2. 选择 "设置" → "环境变量"
 3. 添加：
    ```
-   VITE_API_BASE=https://你的Railway域名/api
+   VITE_API_BASE=https://你的服务域名.onrender.com
    ```
+   只填域名，**不要加 `/api`** —— 前端代码自己会拼 `/api/chat/stream`，多写一层会变成 `/api/api/...`
 
 ---
 
@@ -71,13 +72,16 @@ wrangler pages deploy dist --project-name=ai-interview
    - Root Directory：`backend`
    - Region：Singapore
    - Instance Type：Free
-   - Build Command：`npm install`
+   - Build Command：`npm ci && LLM_ENABLED=false VECTOR_BACKEND=memory npm run ingest`
    - Start Command：`node server.js`
    - Health Check Path：`/api/health`
-4. 添加环境变量：
+4. 添加环境变量（完整清单见 [MIGRATION_RENDER.md](./MIGRATION_RENDER.md)）：
    ```
-   MIMO_API_KEY=your_mimo_api_key_here
-   MIMO_API_BASE=https://api.xiaomimimo.com/v1
+   DATABASE_URL=postgresql://...（Neon 免费档连接串，必填）
+   LLM_API_KEY=your_llm_api_key_here
+   LLM_API_BASE=https://api.agnes-ai.cn/v1
+   LLM_MODEL=agnes-3.0-flash
+   VECTOR_BACKEND=memory
    JWT_SECRET=一段随机字符串
    GITHUB_CALLBACK_URL=https://你的服务域名.onrender.com/api/auth/github/callback
    ```
@@ -85,6 +89,9 @@ wrangler pages deploy dist --project-name=ai-interview
 5. 部署后复制域名：`https://xxxx.onrender.com`
 
 > 也可以用根目录的 `render.yaml` 蓝图一键部署：**New + → Blueprint** → 选择本仓库。
+>
+> Build Command 里的 `npm run ingest` 不是可选的：向量索引必须在构建期生成，
+> 免费运行时（0.1 核 / 512MB）跑不动批量嵌入。
 
 ---
 

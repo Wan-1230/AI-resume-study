@@ -2,12 +2,12 @@
  * 我的题库接口（用户自建题目）
  *
  * 与系统题库的边界：backend/data/questions.json 是只读语料（RAG 与练习的数据来源），
- * 用户新增/导入的题进 SQLite 的 custom_questions，只有本人可见可改。
+ * 用户新增/导入的题进 Postgres 的 custom_questions，只有本人可见可改。
  * 因此这里不提供对系统题的修改入口 —— 之前的"假 CRUD"正是把两者混为一谈才写不下去的。
  */
 
 const express = require('express');
-const { getDb, nowIso, newId } = require('../db');
+const { query, queryOne, execute, withTransaction, nowIso, newId } = require('../db');
 const { authenticateToken } = require('../auth/middleware');
 
 const LIMITS = {
@@ -91,66 +91,69 @@ function toRow(row) {
   return { ...row, options_json: undefined, options, category_id: row.category };
 }
 
-router.get('/', (req, res) => {
-  const items = getDb()
-    .prepare('SELECT * FROM custom_questions WHERE owner_user_id = ? ORDER BY created_at DESC')
-    .all(req.user.id)
-    .map(toRow);
+const INSERT_SQL = `INSERT INTO custom_questions (id, owner_user_id, title, content, options_json, answer, explanation, category, difficulty, source_id, created_at, updated_at)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`;
+
+router.get('/', async (req, res) => {
+  const items = (
+    await query('SELECT * FROM custom_questions WHERE owner_user_id = $1 ORDER BY created_at DESC', [req.user.id])
+  ).map(toRow);
   res.json({ items, total: items.length });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { error, fields } = validateQuestion(req.body);
   if (error) return res.status(400).json({ error });
 
   const sourceId = typeof req.body?.source_id === 'string' ? req.body.source_id : null;
-  const db = getDb();
 
   // 「加入我的题库」是复制系统题，重复点击不应产生副本
   if (sourceId) {
-    const existing = db
-      .prepare('SELECT * FROM custom_questions WHERE owner_user_id = ? AND source_id = ?')
-      .get(req.user.id, sourceId);
+    const existing = await queryOne(
+      'SELECT * FROM custom_questions WHERE owner_user_id = $1 AND source_id = $2',
+      [req.user.id, sourceId]
+    );
     if (existing) return res.json({ item: toRow(existing), already: true });
   }
 
   const now = nowIso();
   const id = newId('uq');
-  db.prepare(
-    `INSERT INTO custom_questions (id, owner_user_id, title, content, options_json, answer, explanation, category, difficulty, source_id, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(id, req.user.id, fields.title, fields.content, JSON.stringify(fields.options), fields.answer,
-    fields.explanation, fields.category, fields.difficulty, sourceId, now, now);
+  await execute(INSERT_SQL, [
+    id, req.user.id, fields.title, fields.content, JSON.stringify(fields.options), fields.answer,
+    fields.explanation, fields.category, fields.difficulty, sourceId, now, now,
+  ]);
 
-  const item = db.prepare('SELECT * FROM custom_questions WHERE id = ?').get(id);
+  const item = await queryOne('SELECT * FROM custom_questions WHERE id = $1', [id]);
   res.status(201).json({ item: toRow(item) });
 });
 
-router.put('/:id', (req, res) => {
-  const existing = getDb()
-    .prepare('SELECT id, owner_user_id FROM custom_questions WHERE id = ?')
-    .get(req.params.id);
+router.put('/:id', async (req, res) => {
+  const existing = await queryOne(
+    'SELECT id, owner_user_id FROM custom_questions WHERE id = $1',
+    [req.params.id]
+  );
   if (!existing) return res.status(404).json({ error: '题目不存在' });
   if (existing.owner_user_id !== req.user.id) return res.status(403).json({ error: '只能修改自己的题目' });
 
   const { error, fields } = validateQuestion(req.body);
   if (error) return res.status(400).json({ error });
 
-  getDb()
-    .prepare(
-      `UPDATE custom_questions SET title=?, content=?, options_json=?, answer=?, explanation=?, category=?, difficulty=?, updated_at=? WHERE id=?`
-    )
-    .run(fields.title, fields.content, JSON.stringify(fields.options), fields.answer, fields.explanation,
-      fields.category, fields.difficulty, nowIso(), req.params.id);
+  await execute(
+    `UPDATE custom_questions SET title=$1, content=$2, options_json=$3, answer=$4, explanation=$5,
+       category=$6, difficulty=$7, updated_at=$8 WHERE id=$9`,
+    [fields.title, fields.content, JSON.stringify(fields.options), fields.answer, fields.explanation,
+      fields.category, fields.difficulty, nowIso(), req.params.id]
+  );
 
-  const item = getDb().prepare('SELECT * FROM custom_questions WHERE id = ?').get(req.params.id);
+  const item = await queryOne('SELECT * FROM custom_questions WHERE id = $1', [req.params.id]);
   res.json({ item: toRow(item) });
 });
 
-router.delete('/:id', (req, res) => {
-  const { changes } = getDb()
-    .prepare('DELETE FROM custom_questions WHERE id = ? AND owner_user_id = ?')
-    .run(req.params.id, req.user.id);
+router.delete('/:id', async (req, res) => {
+  const changes = await execute(
+    'DELETE FROM custom_questions WHERE id = $1 AND owner_user_id = $2',
+    [req.params.id, req.user.id]
+  );
   if (!changes) return res.status(404).json({ error: '题目不存在或无权限删除' });
   res.json({ removed: true });
 });
@@ -158,7 +161,7 @@ router.delete('/:id', (req, res) => {
 /**
  * 批量导入：逐条校验，失败的带行号回报，成功的入库 —— 不再"假装全部成功"。
  */
-router.post('/import', (req, res) => {
+router.post('/import', async (req, res) => {
   const rows = Array.isArray(req.body?.items) ? req.body.items : null;
   if (!rows) return res.status(400).json({ error: 'items 必须是数组' });
   if (!rows.length) return res.status(400).json({ error: '没有可导入的题目' });
@@ -166,16 +169,11 @@ router.post('/import', (req, res) => {
     return res.status(400).json({ error: `单次最多导入 ${LIMITS.importMax} 题` });
   }
 
-  const db = getDb();
-  const insert = db.prepare(
-    `INSERT INTO custom_questions (id, owner_user_id, title, content, options_json, answer, explanation, category, difficulty, source_id, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)`
-  );
   const created = [];
   const failed = [];
 
-  db.exec('BEGIN');
-  try {
+  // 整批一个事务：校验失败的条目只记账、不入库，成功的条目不能半途而废
+  await withTransaction(async (tx) => {
     for (let index = 0; index < rows.length; index += 1) {
       const { error, fields } = validateQuestion(rows[index]);
       if (error) {
@@ -184,15 +182,13 @@ router.post('/import', (req, res) => {
       }
       const now = nowIso();
       const id = newId('uq');
-      insert.run(id, req.user.id, fields.title, fields.content, JSON.stringify(fields.options), fields.answer,
-        fields.explanation, fields.category, fields.difficulty, now, now);
+      await tx.execute(INSERT_SQL, [
+        id, req.user.id, fields.title, fields.content, JSON.stringify(fields.options), fields.answer,
+        fields.explanation, fields.category, fields.difficulty, null, now, now,
+      ]);
       created.push({ id, title: fields.title, category: fields.category });
     }
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+  });
 
   res.status(created.length ? 201 : 400).json({ created, created_count: created.length, failed, failed_count: failed.length });
 });

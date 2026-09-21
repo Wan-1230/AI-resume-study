@@ -36,6 +36,9 @@ function createLLM(llmConfig) {
     temperature: llmConfig.temperature,
     maxTokens: llmConfig.maxTokens,
     streaming: true,
+    timeout: llmConfig.timeoutMs,
+    // 默认会重试一次：429 时等于一次提问烧两份额度，而免费档的额度正是最先撞上的
+    maxRetries: llmConfig.maxRetries,
     configuration: { baseURL: llmConfig.apiBase },
   });
 }

@@ -4,7 +4,7 @@
   "description": "RAG backend for AI Interview Question Bank",
   "main": "server.js",
   "engines": {
-    "node": ">=22.5"
+    "node": ">=20"
   },
   "scripts": {
     "start": "node server.js",
@@ -28,6 +28,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
-    "langchain": "^1.5.10"
+    "langchain": "^1.5.10",
+    "pg": "^8.23.0"
   }
 }

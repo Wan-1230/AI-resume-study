@@ -36,6 +36,10 @@ function loadConfig(env = process.env) {
     model: env.LLM_MODEL || LLM_MODEL_DEFAULT,
     temperature: toNumber(env.LLM_TEMPERATURE, 0.85),
     maxTokens: toNumber(env.LLM_MAX_TOKENS, 1500),
+    // 单次请求的硬上限。不设的话 LangChain 会一直等上游挂死的连接，
+    // 免费实例上这条连接同时占着一个并发名额和一个 SSE 心跳定时器
+    timeoutMs: toNumber(env.LLM_TIMEOUT_MS, 90_000),
+    maxRetries: toNumber(env.LLM_MAX_RETRIES, 0),
   };
 
   const embeddingsProvider = (env.EMBEDDINGS_PROVIDER || 'local').toLowerCase();

@@ -116,7 +116,7 @@ router.get('/github/callback', async (req, res) => {
     }
 
     // 查找或创建用户
-    const user = users.findOrCreateGitHubUser({
+    const user = await users.findOrCreateGitHubUser({
       id: String(githubProfile.id),
       login: githubProfile.login,
       email,
@@ -178,7 +178,7 @@ router.post('/register', async (req, res) => {
     }
 
     // 检查邮箱是否已注册
-    const existingUser = users.findByEmail(email);
+    const existingUser = await users.findByEmail(email);
     if (existingUser) {
       return res.status(409).json({ error: '该邮箱已被注册' });
     }
@@ -187,12 +187,21 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
-    const user = users.createUser({
-      email,
-      username: username || email.split('@')[0],
-      password_hash,
-      auth_provider: 'email',
-    });
+    let user;
+    try {
+      user = await users.createUser({
+        email,
+        username: username || email.split('@')[0],
+        password_hash,
+        auth_provider: 'email',
+      });
+    } catch (createErr) {
+      // 上面的「先查再插」在并发下有两个请求同时通过检查的窗口，唯一约束才是最终防线
+      if (createErr.code === '23505') {
+        return res.status(409).json({ error: '该邮箱已被注册' });
+      }
+      throw createErr;
+    }
 
     // 签发 JWT
     const token = generateToken(user);
@@ -217,7 +226,7 @@ router.post('/login', async (req, res) => {
     }
 
     // 查找用户
-    const user = users.findByEmail(email);
+    const user = await users.findByEmail(email);
     if (!user) {
       return res.status(401).json({ error: '邮箱或密码错误' });
     }
@@ -249,9 +258,9 @@ router.post('/login', async (req, res) => {
 // ==================== 获取当前用户 ====================
 
 // 获取当前登录用户信息
-router.get('/me', authenticateToken, (req, res) => {
+router.get('/me', authenticateToken, async (req, res) => {
   // 从数据库获取最新用户信息
-  const user = users.findById(req.user.id);
+  const user = await users.findById(req.user.id);
   if (!user) {
     return res.status(404).json({ error: '用户不存在' });
   }

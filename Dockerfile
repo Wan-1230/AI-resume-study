@@ -1,5 +1,10 @@
 # Back4App Containers 部署用 Dockerfile（构建上下文 = 仓库根目录）
-# node:24 —— 学习数据层依赖 Node 内置 node:sqlite（需 ≥ 22.5），见 backend/db/index.js
+# node:24 —— 与 backend/package.json engines(>=20) 一致
+#
+# ⚠️ 本文件走的是容器路线，与 render.yaml（Node 运行时 + 构建期 ingest）是两条路。
+# 容器里没有那一步 `npm run ingest`，启动后 /api/health 会是 rag_state=empty、
+# AI 接口返回 503。要真用容器部署，需要在 COPY backend/ 之后补一次
+# LLM_ENABLED=false VECTOR_BACKEND=memory npm run ingest 把索引烘进镜像（未实测）。
 FROM node:24-alpine
 
 WORKDIR /app

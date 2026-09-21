@@ -38,7 +38,7 @@
 - **练习模式**：按分类 / 难度选题，逐题作答并计时，交卷后统计正确率
 - 选项**每次随机排序**（防"记住第几个是答案"），正确答案在题库中按 A/B/C/D 均匀分布
 - 服务端按**选项文本**判分，改前端刷不出虚假正确率
-- **收藏**、**练习记录**、**错题本**（最近一次答对即从错题毕业）、**分类掌握度统计**均持久化到 SQLite，跨刷新与重启保留
+- **收藏**、**练习记录**、**错题本**（最近一次答对即从错题毕业）、**分类掌握度统计**均持久化到 Postgres，跨刷新、重启与重新部署保留
 - **我的题库**：登录后新建 / 编辑 / 删除自己的题目；系统题库只读，不能被人删改
 - **批量导入**：Excel / CSV 逐行校验，失败行带行号回报原因（不静默丢弃）
 
@@ -64,7 +64,7 @@
 | **RAG 框架** | LangChain.js 1.x（`@langchain/core` / `classic` / `community` / `openai`） |
 | **向量嵌入** | transformers.js（本地 `bge-small-zh-v1.5`，512 维） |
 | **向量存储** | memory（JSON 持久化）/ ChromaDB |
-| **业务数据** | SQLite（Node 内置 `node:sqlite`，无需原生编译） |
+| **业务数据** | Postgres（`node-postgres` 直连，无 ORM；免费档用 Neon） |
 | **LLM** | 任意 OpenAI 兼容服务（`LLM_API_BASE` 切换） |
 | **认证** | JWT + bcrypt + GitHub OAuth |
 
@@ -106,7 +106,7 @@
 │   ├── server.js                 # Express 入口（路由挂载、限流、健康检查）
 │   ├── auth/                     # 认证：邮箱、GitHub OAuth、JWT 中间件、用户存储
 │   ├── guard/                    # AI 接口限流与并发闸门（零依赖内存实现）
-│   ├── db/                       # SQLite 连接与建表（收藏 / 练习 / 我的题库）
+│   ├── db/                       # Postgres 连接池与建表（账号 / 收藏 / 练习 / 我的题库）
 │   ├── learning/                 # 收藏、练习会话、统计、错题本、题目统计接口
 │   ├── myquestions/              # 我的题库 CRUD 与批量导入
 │   ├── rag/langchain/            # RAG 管线：config / loaders / splitters / embeddings /
@@ -118,7 +118,7 @@
 │   │   ├── clean-corpus-answers.js # 清洗语料中的"答案: X"残渣
 │   │   └── crawl.js              # 抓取题源生成知识库
 │   └── data/                     # questions.json 题库 / documents.json 知识库 / articles.json
-│                                 # 运行产物：app.db（学习数据）、users.json、*.bak-* 均已 gitignore
+│                                 # 运行产物：*.bak-* 与向量索引 memory_vectors.json 均已 gitignore；业务数据在 Postgres
 ├── public/ · dist/               # 静态资源 / 构建产物
 └── PRD.md · LANGCHAIN_RAG.md · CHROMA_SETUP.md · DEMO.md
 ```
@@ -126,7 +126,7 @@
 ## 🚀 快速开始
 
 ### 前置要求
-- **Node.js ≥ 22.5**（学习数据用 Node 内置 `node:sqlite`，见 `backend/package.json` engines）
+- **Node.js ≥ 20**（业务数据存 Postgres，见 `backend/package.json` engines）
 - **npm** ≥ 9
 - 一个 OpenAI 兼容的 LLM API Key（不配也能跑：问答会明确降级为"只返回知识库检索结果"）
 

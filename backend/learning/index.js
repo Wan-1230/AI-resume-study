@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
-const { getDb, nowIso, newId } = require('../db');
+const { query, queryOne, execute, withTransaction, nowIso, newId } = require('../db');
 const { authenticateToken } = require('../auth/middleware');
 
 const MAX_ANSWERS_PER_SESSION = 200;
@@ -99,16 +99,18 @@ const router = express.Router();
  * 单题作答统计。故意不要求登录：它是纯聚合数（作答次数/正确率/中位用时），
  * 用于替换题目详情页里写死的"浏览 1.2k / 建议用时 5分钟"，未登录访客也应看到真实值。
  */
-router.get('/questions/:questionId/stats', (req, res) => {
+router.get('/questions/:questionId/stats', async (req, res) => {
   const questionId = req.params.questionId;
-  const db = getDb();
-  const totals = db
-    .prepare('SELECT COUNT(*) AS attempts, COALESCE(SUM(is_correct), 0) AS correct FROM practice_answers WHERE question_id = ?')
-    .get(questionId);
-  const durations = db
-    .prepare('SELECT duration_s FROM practice_answers WHERE question_id = ? AND duration_s > 0 ORDER BY duration_s')
-    .all(questionId)
-    .map((row) => row.duration_s);
+  const totals = await queryOne(
+    'SELECT COUNT(*)::int AS attempts, COALESCE(SUM(is_correct), 0)::int AS correct FROM practice_answers WHERE question_id = $1',
+    [questionId]
+  );
+  const durations = (
+    await query(
+      'SELECT duration_s FROM practice_answers WHERE question_id = $1 AND duration_s > 0 ORDER BY duration_s',
+      [questionId]
+    )
+  ).map((row) => row.duration_s);
 
   res.json({
     question_id: questionId,
@@ -126,36 +128,40 @@ function median(sorted) {
 
 // ==================== 收藏 ====================
 
-router.get('/favorites', authenticateToken, (req, res) => {
-  const items = getDb()
-    .prepare('SELECT question_id, created_at FROM favorites WHERE user_id = ? ORDER BY created_at DESC')
-    .all(req.user.id);
+router.get('/favorites', authenticateToken, async (req, res) => {
+  const items = await query(
+    'SELECT question_id, created_at FROM favorites WHERE user_id = $1 ORDER BY created_at DESC',
+    [req.user.id]
+  );
   res.json({ items });
 });
 
-router.post('/favorites', authenticateToken, (req, res) => {
+router.post('/favorites', authenticateToken, async (req, res) => {
   const questionId = typeof req.body?.question_id === 'string' ? req.body.question_id.trim() : '';
   if (!questionId) return res.status(400).json({ error: '缺少 question_id' });
 
-  const db = getDb();
-  db.prepare('INSERT INTO favorites (user_id, question_id, created_at) VALUES (?, ?, ?) ON CONFLICT DO NOTHING')
-    .run(req.user.id, questionId, nowIso());
-  const item = db
-    .prepare('SELECT question_id, created_at FROM favorites WHERE user_id = ? AND question_id = ?')
-    .get(req.user.id, questionId);
+  await execute(
+    'INSERT INTO favorites (user_id, question_id, created_at) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+    [req.user.id, questionId, nowIso()]
+  );
+  const item = await queryOne(
+    'SELECT question_id, created_at FROM favorites WHERE user_id = $1 AND question_id = $2',
+    [req.user.id, questionId]
+  );
   res.status(201).json({ item });
 });
 
-router.delete('/favorites/:questionId', authenticateToken, (req, res) => {
-  const { changes } = getDb()
-    .prepare('DELETE FROM favorites WHERE user_id = ? AND question_id = ?')
-    .run(req.user.id, req.params.questionId);
+router.delete('/favorites/:questionId', authenticateToken, async (req, res) => {
+  const changes = await execute(
+    'DELETE FROM favorites WHERE user_id = $1 AND question_id = $2',
+    [req.user.id, req.params.questionId]
+  );
   res.json({ removed: changes > 0 });
 });
 
 // ==================== 练习会话 ====================
 
-router.post('/practice/sessions', authenticateToken, (req, res) => {
+router.post('/practice/sessions', authenticateToken, async (req, res) => {
   const { mode, config, started_at: startedAt, finished_at: finishedAt, answers } = req.body || {};
 
   if (!Array.isArray(answers) || answers.length === 0) {
@@ -191,43 +197,39 @@ router.post('/practice/sessions', authenticateToken, (req, res) => {
 
   if (!graded.length) return res.status(400).json({ error: '没有可记录的作答', skipped });
 
-  const db = getDb();
   const sessionId = newId('ps');
   const createdAt = nowIso();
   const answeredAt = typeof finishedAt === 'string' ? finishedAt : createdAt;
   const correctCount = graded.reduce((sum, a) => sum + a.is_correct, 0);
   const durationTotal = graded.reduce((sum, a) => sum + a.duration_s, 0);
 
-  db.exec('BEGIN');
-  try {
-    db.prepare(
+  // 会话与逐题作答必须同生同死：只写进一半会让统计页出现「有会话、零作答」的空记录
+  await withTransaction(async (tx) => {
+    await tx.execute(
       `INSERT INTO practice_sessions (id, user_id, mode, config_json, total, correct_count, duration_s, started_at, finished_at, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      sessionId,
-      req.user.id,
-      typeof mode === 'string' ? mode : 'drill',
-      JSON.stringify(config && typeof config === 'object' ? config : {}),
-      graded.length,
-      correctCount,
-      durationTotal,
-      typeof startedAt === 'string' ? startedAt : null,
-      typeof finishedAt === 'string' ? finishedAt : null,
-      createdAt
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        sessionId,
+        req.user.id,
+        typeof mode === 'string' ? mode : 'drill',
+        JSON.stringify(config && typeof config === 'object' ? config : {}),
+        graded.length,
+        correctCount,
+        durationTotal,
+        typeof startedAt === 'string' ? startedAt : null,
+        typeof finishedAt === 'string' ? finishedAt : null,
+        createdAt,
+      ]
     );
 
-    const insertAnswer = db.prepare(
-      `INSERT INTO practice_answers (session_id, user_id, question_id, category, chosen, correct_answer, is_correct, duration_s, answered_at, display_options_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    );
     for (const a of graded) {
-      insertAnswer.run(sessionId, req.user.id, a.question_id, a.category, a.chosen, a.correct_answer, a.is_correct, a.duration_s, answeredAt, a.display_options_json);
+      await tx.execute(
+        `INSERT INTO practice_answers (session_id, user_id, question_id, category, chosen, correct_answer, is_correct, duration_s, answered_at, display_options_json)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [sessionId, req.user.id, a.question_id, a.category, a.chosen, a.correct_answer, a.is_correct, a.duration_s, answeredAt, a.display_options_json]
+      );
     }
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+  });
 
   res.status(201).json({
     session: {
@@ -241,39 +243,37 @@ router.post('/practice/sessions', authenticateToken, (req, res) => {
   });
 });
 
-router.get('/practice/sessions', authenticateToken, (req, res) => {
+router.get('/practice/sessions', authenticateToken, async (req, res) => {
   const limit = clampInt(req.query.limit, 10, 1, 50);
-  const items = getDb()
-    .prepare(
+  const items = (
+    await query(
       `SELECT id, mode, config_json, total, correct_count, duration_s, started_at, finished_at, created_at
-       FROM practice_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT ?`
+       FROM practice_sessions WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2`,
+      [req.user.id, limit]
     )
-    .all(req.user.id, limit)
-    .map((row) => ({ ...row, config: safeParse(row.config_json) }));
+  ).map((row) => ({ ...row, config: safeParse(row.config_json) }));
   res.json({ items });
 });
 
 // ==================== 统计与错题本 ====================
 
-router.get('/practice/stats', authenticateToken, (req, res) => {
-  const db = getDb();
-  const overall = db
-    .prepare(
-      `SELECT COUNT(*) AS answers, COALESCE(SUM(is_correct), 0) AS correct
-       FROM practice_answers WHERE user_id = ?`
+router.get('/practice/stats', authenticateToken, async (req, res) => {
+  const overall = await queryOne(
+    `SELECT COUNT(*)::int AS answers, COALESCE(SUM(is_correct), 0)::int AS correct
+     FROM practice_answers WHERE user_id = $1`,
+    [req.user.id]
+  );
+  const sessions = await queryOne('SELECT COUNT(*)::int AS n FROM practice_sessions WHERE user_id = $1', [req.user.id]);
+  const byCategory = (
+    await query(
+      `SELECT category, COUNT(*)::int AS total, COALESCE(SUM(is_correct), 0)::int AS correct
+       FROM practice_answers WHERE user_id = $1 GROUP BY category ORDER BY total DESC`,
+      [req.user.id]
     )
-    .get(req.user.id);
-  const sessions = db.prepare('SELECT COUNT(*) AS n FROM practice_sessions WHERE user_id = ?').get(req.user.id);
-  const byCategory = db
-    .prepare(
-      `SELECT category, COUNT(*) AS total, COALESCE(SUM(is_correct), 0) AS correct
-       FROM practice_answers WHERE user_id = ? GROUP BY category ORDER BY total DESC`
-    )
-    .all(req.user.id)
-    .map((row) => ({
-      ...row,
-      accuracy: row.total ? Math.round((row.correct / row.total) * 100) : 0,
-    }));
+  ).map((row) => ({
+    ...row,
+    accuracy: row.total ? Math.round((row.correct / row.total) * 100) : 0,
+  }));
 
   res.json({
     sessions: sessions.n,
@@ -288,22 +288,23 @@ router.get('/practice/stats', authenticateToken, (req, res) => {
  * 错题本：每题只看最近一次作答，最近一次答错才计为错题（答过即毕业），
  * 并给出该题历史错误次数，便于排优先级。
  */
-router.get('/practice/wrong', authenticateToken, (req, res) => {
+router.get('/practice/wrong', authenticateToken, async (req, res) => {
   const limit = clampInt(req.query.limit, 50, 1, 200);
-  const items = getDb()
-    .prepare(
+  // 用自增 id 而不是 answered_at 定位「最近一次」：客户端上报的时间可能回填成过去时刻
+  const items = (
+    await query(
       `WITH latest AS (
-         SELECT question_id, MAX(rowid) AS rid FROM practice_answers WHERE user_id = ? GROUP BY question_id
+         SELECT question_id, MAX(id) AS rid FROM practice_answers WHERE user_id = $1 GROUP BY question_id
        )
        SELECT l.question_id, pa.category, pa.chosen, pa.correct_answer, pa.answered_at,
               (SELECT COUNT(*) FROM practice_answers x
-                WHERE x.user_id = ? AND x.question_id = l.question_id AND x.is_correct = 0) AS wrong_count
-       FROM latest l JOIN practice_answers pa ON pa.rowid = l.rid
+                WHERE x.user_id = $2 AND x.question_id = l.question_id AND x.is_correct = 0)::int AS wrong_count
+       FROM latest l JOIN practice_answers pa ON pa.id = l.rid
        WHERE pa.is_correct = 0
-       ORDER BY pa.answered_at DESC LIMIT ?`
+       ORDER BY pa.answered_at DESC LIMIT $3`,
+      [req.user.id, req.user.id, limit]
     )
-    .all(req.user.id, req.user.id, limit)
-    .map((row) => ({ ...row, title: questionIndex.get(row.question_id)?.title || null }));
+  ).map((row) => ({ ...row, title: questionIndex.get(row.question_id)?.title || null }));
   res.json({ items });
 });
 

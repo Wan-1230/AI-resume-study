@@ -28,7 +28,7 @@ curl -s http://localhost:3001/api/health | grep -o '"llm_status":"[^"]*"'
 | 普通用户（有收藏/练习记录/自建题，数据非空） | `demo@example.com` | `Demo123456` |
 | 管理员 | 取 `backend/.env` 的 `ADMIN_EMAIL` / `ADMIN_PASSWORD` | 同左 |
 
-> 数据都落在 `backend/data/app.db`（SQLite，已 gitignore）。想从干净状态演示：删掉该文件并重启后端即可。
+> 业务数据落在 Postgres（由 `DATABASE_URL` 指定，本地可指向 docker 起的实例，免费部署用 Neon）。想从干净状态演示：对该库执行 `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`，重启后端会自动重建全部表。
 
 ## 1. 12 步演示脚本
 

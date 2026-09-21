@@ -63,7 +63,7 @@ cd backend
 npm install          # 安装依赖（LangChain 相关包已写入 package.json）
 
 npm run ingest       # 导入知识库：加载 → 分块 → 嵌入 → 写入向量库（幂等，可重复执行）
-npm start            # 启动后端（向量库为空时也会自动导入）
+npm start            # 启动后端（只读索引；索引为空时 AI 接口返回 503 并写明 rag_state=empty）
 
 curl http://localhost:3001/api/health
 # {"status":"ok","documents_count":661,"vector_backend":"memory","embedding":"local:xenova/bge-small-zh-v1.5","has_llm":true,"rag_engine":"langchain",...}

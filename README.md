@@ -42,7 +42,7 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
   evenly distributed across A/B/C/D in the bank
 - Grading happens **server-side by option text**, so tampering with the client cannot fake a score
 - **Favorites**, **practice history**, **wrong-answer book** (answered correctly once = graduated) and
-  **per-category mastery stats** persist in SQLite and survive refresh and restart
+  **per-category mastery stats** persist in Postgres and survive refresh, restart and redeploy
 - **My questions**: create / edit / delete your own questions after login; the system bank is read-only and cannot be edited away
 - **Bulk import**: Excel / CSV validated row by row, failures reported with line numbers and reasons (nothing is silently dropped)
 
@@ -69,7 +69,7 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 | **RAG framework** | LangChain.js 1.x (`@langchain/core` / `classic` / `community` / `openai`) |
 | **Embeddings** | transformers.js (local `bge-small-zh-v1.5`, 512-dim) |
 | **Vector store** | memory (JSON persistence) / ChromaDB |
-| **App data** | SQLite via Node's built-in `node:sqlite` (no native build) |
+| **App data** | PostgreSQL via `node-postgres` (no ORM; free tier: Neon) |
 | **LLM** | Any OpenAI-compatible service (switch via `LLM_API_BASE`) |
 | **Auth** | JWT + bcrypt + GitHub OAuth |
 
@@ -88,14 +88,14 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 │   ├── server.js       Express entry (route mounting, rate limits, health check)
 │   ├── auth/           Email auth, GitHub OAuth, JWT middleware, user store
 │   ├── guard/          Rate limiting + LLM concurrency gate (in-memory, dependency-free)
-│   ├── db/             SQLite connection and schema
+│   ├── db/             Postgres pool + schema (users / favorites / practice / my questions)
 │   ├── learning/       Favorites, practice sessions, stats, wrong-answer book, question stats
 │   ├── myquestions/    User question CRUD + bulk import
 │   ├── rag/langchain/  config / loaders / splitters / embeddings / stores / retriever / chains / service
 │   ├── scripts/        ingest.js, audit-questions.js, repair-questions.js,
 │   │                   clean-corpus-answers.js, crawl.js
 │   └── data/           questions.json, documents.json, articles.json
-│                       (runtime files app.db / users.json / *.bak-* are gitignored)
+│                       (runtime artifacts *.bak-* and the generated vector index are gitignored)
 ├── public/ dist/
 └── PRD.md · LANGCHAIN_RAG.md · CHROMA_SETUP.md · DEMO.md
 ```
@@ -103,7 +103,7 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 ## 🚀 Getting started
 
 ### Requirements
-- **Node.js ≥ 22.5** (app data uses the built-in `node:sqlite`; see `engines` in `backend/package.json`)
+- **Node.js ≥ 20** (app data lives in Postgres; see `engines` in `backend/package.json`)
 - **npm** ≥ 9
 - An OpenAI-compatible LLM key (optional — without it the product still runs and clearly labels
   answers as retrieval-only)

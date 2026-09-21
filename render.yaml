@@ -1,6 +1,12 @@
 # Render 部署蓝图 — AI 面试助手后端
 # 文档: https://render.com/docs/blueprint-spec
 # 使用: Render Dashboard → New + → Blueprint → 选择本仓库，自动读取本文件
+#
+# 为什么 buildCommand 里要跑 ingest：向量索引必须在构建期生成。
+# 实测批量嵌入 32 个分块峰值 RSS 约 1GB、全量 661 块在单核要一分多钟，
+# 而免费运行时只有 0.1 核 / 512MB —— 放到启动阶段跑必然被 OOM 杀掉。
+# 构建产物（vector_store_data/memory_vectors.json 与 .cache/ 里的 embedding 模型）
+# 随服务一起进入运行时，启动只读文件：实测常驻 RSS 约 285MB，热查询 9ms。
 services:
   - type: web
     name: ai-interview-backend
@@ -9,12 +15,17 @@ services:
     plan: free
     region: singapore
     branch: main
-    buildCommand: npm install
+    buildCommand: >-
+      npm ci &&
+      LLM_ENABLED=false VECTOR_BACKEND=memory npm run ingest
     startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
       # === 必须在 Render 控制台填入真实值的变量（sync: false）===
-      - key: MIMO_API_KEY
+      # Postgres 连接串（Neon 免费档即可：账号/收藏/练习记录/自建题全部存这里）
+      - key: DATABASE_URL
+        sync: false
+      - key: LLM_API_KEY
         sync: false
       - key: GITHUB_CLIENT_ID
         sync: false
@@ -33,7 +44,20 @@ services:
         generateValue: true
 
       # === 固定值 ===
-      - key: MIMO_API_BASE
-        value: https://api.xiaomimimo.com/v1
+      - key: NODE_VERSION
+        value: 24
+      - key: LLM_API_BASE
+        value: https://api.agnes-ai.cn/v1
+      - key: LLM_MODEL
+        value: agnes-3.0-flash
       - key: JWT_EXPIRES_IN
         value: 7d
+      # 运行时绝不重新嵌入，只读构建期产出的索引
+      - key: VECTOR_BACKEND
+        value: memory
+      # 构建期批量嵌入的内存上限，32 时实测峰值约 1GB
+      - key: EMBEDDINGS_BATCH_SIZE
+        value: 16
+      # 首次提问前的检索/生成静默期靠 SSE 心跳维持，这里给单次请求兜底
+      - key: LLM_TIMEOUT_MS
+        value: 90000

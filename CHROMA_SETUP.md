@@ -82,7 +82,7 @@ HF_ENDPOINT=https://hf-mirror.com
 ```bash
 cd backend
 npm run ingest     # 显式导入并跑测试查询（全量重建：先清空集合再写入，可重复执行）
-npm start          # 启动后端，向量库为空时也会自动导入
+npm start          # 启动后端：只读取已生成的索引，不再自动导入（免费实例跑不动运行时嵌入）
 ```
 
 验证：
