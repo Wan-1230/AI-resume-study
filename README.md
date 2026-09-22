@@ -38,6 +38,12 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 ### 📝 Resume and JD
 - Upload a resume (PDF / Word(.docx) / Markdown / TXT, or paste text) plus a job description
 - Streaming rewrite with suggestions, one-click copy
+- **Match report**: the JD is broken into individually checkable requirements, every "hit" has to quote the
+  resume line behind it, and the score is **aggregated from those verdicts** rather than a number the model
+  invents. One resume measured 77% against a RAG JD and 14% against a Java JD
+- Gap rows can carry "read this next" pointers from the local knowledge base, behind a relevance gate —
+  an AI-only corpus will not bolt a RAG article onto a MySQL sharding gap
+- One-click `.docx` export (resume + rewrite + report), assembled in the browser so the server never stores it
 - Requires login: the whole resume is sent to a third-party inference service and it is the most expensive call
 
 ### 📚 Question bank and practice

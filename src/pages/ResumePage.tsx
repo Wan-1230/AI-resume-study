@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, FileText, Briefcase, Sparkles, Loader2, Copy, Check, RotateCcw, Upload, X, File } from 'lucide-react';
+import { ArrowLeft, FileText, Briefcase, Sparkles, Loader2, Copy, Check, RotateCcw, Upload, X, File, Download, Gauge, CircleCheck, CircleDashed, CircleX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { optimizeResume } from '@/lib/resumeApi';
+import { optimizeResume, matchResume, type MatchReport, type MatchItem } from '@/lib/resumeApi';
+import { downloadResumeDocx } from '@/lib/exportDocx';
 
 // 文件解析函数
 async function parseFile(file: File): Promise<string> {
@@ -62,7 +63,40 @@ export default function ResumePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [parsingFile, setParsingFile] = useState(false);
+  const [report, setReport] = useState<MatchReport | null>(null);
+  const [matching, setMatching] = useState(false);
+  const [matchError, setMatchError] = useState<string | null>(null);
+  const [exported, setExported] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleMatch = async () => {
+    if (!jd.trim() || !resume.trim() || matching) return;
+    setMatching(true);
+    setMatchError(null);
+    setReport(null);
+    try {
+      setReport(await matchResume(jd.trim(), resume.trim()));
+    } catch (error) {
+      setMatchError(error instanceof Error ? error.message : '匹配分析失败');
+    } finally {
+      setMatching(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const bytes = await downloadResumeDocx('简历-JD匹配报告.docx', {
+        jd: jd.trim(),
+        resume: resume.trim(),
+        optimized: result.trim(),
+        report,
+      });
+      setExported(`已导出 ${(bytes / 1024).toFixed(0)} KB`);
+      setTimeout(() => setExported(null), 4000);
+    } catch (error) {
+      setExported(error instanceof Error ? `导出失败：${error.message}` : '导出失败');
+    }
+  };
 
   const handleOptimize = async () => {
     if (!jd.trim() || !resume.trim() || isLoading) return;
@@ -97,6 +131,9 @@ export default function ResumePage() {
     setResume('');
     setResult('');
     setUploadedFile(null);
+    setReport(null);
+    setMatchError(null);
+    setExported(null);
   };
 
   const processFile = async (file: File) => {
@@ -331,6 +368,19 @@ export default function ResumePage() {
                   </>
                 )}
               </button>
+
+              {/* 匹配报告：不改写，只逐条核对 JD 要求与简历证据 */}
+              <button
+                type="button"
+                onClick={handleMatch}
+                disabled={!jd.trim() || !resume.trim() || matching}
+                className="w-full py-3 border border-[#2a2a38] hover:border-primary-500/50 disabled:opacity-50 text-[#e8e8ed] rounded-2xl transition-colors flex items-center justify-center space-x-2"
+              >
+                {matching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Gauge className="w-4 h-4" />}
+                <span>{matching ? '逐条核对中（约 20~40 秒）…' : '生成匹配报告'}</span>
+              </button>
+              {matchError && <p className="text-sm text-rose-400">{matchError}</p>}
+              {exported && <p className="text-sm text-[#8b8b9a]">{exported}</p>}
             </div>
 
             {/* 右侧：结果区 */}
@@ -391,8 +441,89 @@ export default function ResumePage() {
               </div>
             </div>
           </div>
+
+          {report && (
+            <div className="mt-6 bg-[#141419] border border-[#1e1e28] rounded-2xl p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div className="flex items-center space-x-3">
+                  <Gauge className="w-5 h-5 text-primary-500" />
+                  <h3 className="text-lg font-semibold text-[#e8e8ed]">匹配报告</h3>
+                  <span className="text-2xl font-bold text-primary-500">{report.scores.overall}%</span>
+                  <span className="text-xs text-[#5a5a6e]">总体</span>
+                </div>
+                <div className="flex items-center space-x-2 text-xs text-[#8b8b9a]">
+                  <span>技能 {fmtScore(report.scores.groups.skill)}</span>
+                  <span>·</span>
+                  <span>经验 {fmtScore(report.scores.groups.experience)}</span>
+                  <span>·</span>
+                  <span>项目 {fmtScore(report.scores.groups.project)}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-[#5a5a6e] mb-4">
+                JD 拆出 {report.items.length} 条要求，命中 {report.scores.counts.hit} · 部分 {report.scores.counts.partial} · 未命中 {report.scores.counts.missing}。
+                分数是按逐条判定汇总算的（命中 1 / 部分 0.5 / 未命中 0），不是模型直接报的数；证据一栏是简历原句，可直接回去核对。
+              </p>
+
+              <div className="space-y-2">
+                {report.items.map((item) => <MatchRow key={item.id} item={item} />)}
+              </div>
+
+              {report.strengths.length > 0 && (
+                <div className="mt-5 pt-5 border-t border-[#1e1e28]">
+                  <p className="text-sm font-medium text-[#e8e8ed] mb-2">已经站得住的部分</p>
+                  <ul className="space-y-1">
+                    {report.strengths.map((text) => (
+                      <li key={text} className="text-sm text-[#8b8b9a] flex items-start space-x-2">
+                        <CircleCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /><span>{text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <button
+                onClick={handleExport}
+                className="mt-6 w-full py-3 rounded-2xl bg-[#1a1a22] border border-[#2a2a38] hover:border-primary-500/40 text-[#e8e8ed] font-medium flex items-center justify-center space-x-2 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span>导出 .docx（简历 + 优化稿 + 这份报告）</span>
+              </button>
+            </div>
+          )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function fmtScore(value: number | null) {
+  return value === null ? 'JD 未涉及' : `${value}%`;
+}
+
+const VERDICT_STYLE: Record<MatchItem['verdict'], { icon: typeof CircleCheck; label: string; className: string }> = {
+  hit: { icon: CircleCheck, label: '命中', className: 'text-emerald-400' },
+  partial: { icon: CircleDashed, label: '部分命中', className: 'text-amber-400' },
+  missing: { icon: CircleX, label: '未命中', className: 'text-rose-400' },
+};
+
+function MatchRow({ item }: { item: MatchItem }) {
+  const style = VERDICT_STYLE[item.verdict];
+  const Icon = style.icon;
+  return (
+    <div className="px-4 py-3 bg-[#0f0f14] border border-[#1e1e28] rounded-xl">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm text-[#e8e8ed]">{item.text}</p>
+        <span className={`flex items-center space-x-1 text-xs shrink-0 ${style.className}`}>
+          <Icon className="w-4 h-4" /><span>{style.label}</span>
+        </span>
+      </div>
+      <p className="mt-1.5 text-xs text-[#8b8b9a]">
+        证据：{item.evidence ? <span className="text-[#e8e8ed]">“{item.evidence}”</span> : '简历里没找到支撑的原句'}
+        {item.demoted && <span className="text-amber-400">（判定被下调：说命中但给不出原文）</span>}
+      </p>
+      {item.note && <p className="mt-1 text-xs text-[#5a5a6e]">说明：{item.note}</p>}
+      {item.study?.length ? <p className="mt-1 text-xs text-primary-400">可补：{item.study.join('、')}</p> : null}
     </div>
   );
 }

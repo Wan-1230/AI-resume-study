@@ -16,6 +16,7 @@ const authRoutes = require('./auth');
 const learningRoutes = require('./learning');
 const myQuestionsRoutes = require('./myquestions');
 const interviewRoutes = require('./interview');
+const { analyzeMatch } = require('./resume/match');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
 const usersManager = require('./auth/users');
@@ -340,6 +341,19 @@ ${resume}
     console.error('Resume optimize error:', error);
     sendSse(res, { type: 'error', error: '优化过程中出错' });
     res.end();
+  }
+});
+
+// 简历-JD 匹配报告：不是改写，而是逐条核对（分数由命中情况算，不让模型随口报）
+app.post('/api/resume/match', authenticateToken, requireRag, limitResume, gateLlm, async (req, res) => {
+  try {
+    const { jd, resume } = req.body || {};
+    const result = await analyzeMatch({ jd, resume, retrieve: (query) => ragService.retrieve(query) });
+    if (!result.ok) return res.status(422).json({ error: result.error });
+    res.json(result);
+  } catch (error) {
+    console.error('Resume match error:', error);
+    res.status(500).json({ error: '匹配分析失败，请稍后再试' });
   }
 });
 

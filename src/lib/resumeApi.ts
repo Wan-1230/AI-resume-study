@@ -19,11 +19,6 @@ export interface ResumeOptimizeRequest {
   resume: string;
 }
 
-export interface ResumeOptimizeResult {
-  optimizedResume: string;
-  suggestions: string[];
-}
-
 export async function optimizeResume(
   jd: string,
   resume: string,
@@ -85,4 +80,53 @@ export async function optimizeResume(
       }
     }
   }
+}
+
+export type MatchVerdict = 'hit' | 'partial' | 'missing';
+
+export interface MatchItem {
+  id: string;
+  text: string;
+  kind: 'skill' | 'experience' | 'project';
+  verdict: MatchVerdict;
+  /** 简历里的原句片段；null 表示没找到支撑 */
+  evidence: string | null;
+  note: string | null;
+  /** 模型说有命中但给不出原文，服务端降级成 partial 时会带上这个标记 */
+  demoted?: boolean;
+  /** 站内知识库里相关的条目，用来指"这条想补该看什么" */
+  study?: string[];
+}
+
+export interface MatchReport {
+  scores: {
+    overall: number;
+    groups: { skill: number | null; experience: number | null; project: number | null };
+    counts: { hit: number; partial: number; missing: number };
+  };
+  items: MatchItem[];
+  gaps: string[];
+  strengths: string[];
+  sections: number;
+}
+
+/** POST 匹配分析。两次生成调用，正常要 15~40 秒，调用方需要 loading 态 */
+export async function matchResume(jd: string, resume: string): Promise<MatchReport> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/resume/match`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ jd, resume }),
+    });
+  } catch {
+    throw new Error('无法连接后端服务，请确认后端已启动');
+  }
+
+  if (!response.ok) {
+    const detail = await response.json().catch(() => null);
+    if (response.status === 401) throw new Error('请先登录后再做匹配分析');
+    throw new Error((detail as { error?: string })?.error || `请求失败（${response.status}）`);
+  }
+  return response.json() as Promise<MatchReport>;
 }
