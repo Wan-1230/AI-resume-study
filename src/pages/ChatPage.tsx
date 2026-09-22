@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, Send, Sparkles, Loader2, Trash2, Plus, MessageSquare, PanelLeftClose, PanelLeftOpen, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ChatMessage from '@/components/ChatMessage';
+import Empty from '@/components/Empty';
 import { useStore } from '@/store';
 import {
   ChatMessage as ChatMessageType, sendMessageStream, checkHealth, type HealthStatus,
@@ -272,7 +273,12 @@ export default function ChatPage() {
                 </button>
               )}
               {isAuthenticated && !threads.length && (
-                <p className="px-2 py-3 text-xs text-[#5a5a6e]">还没有存下来的会话。</p>
+                <Empty
+                  title="还没有存下来的会话"
+                  description="登录后提第一个问题就会自动存成一条会话。"
+                  className="mx-1 mt-1 px-3 py-6 text-left items-start"
+                  icon={<MessageSquare className="w-5 h-5" />}
+                />
               )}
               {threads.map(t => (
                 <div key={t.id} className={`group flex items-center gap-1 rounded-xl ${t.id === activeId ? 'bg-[#1a1a22]' : 'hover:bg-[#141419]'}`}>

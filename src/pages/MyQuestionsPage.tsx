@@ -88,8 +88,17 @@ export default function MyQuestionsPage() {
     }
   };
 
+  // 两段式删除：第一下只把按钮变成"确认删除"，5 秒内再点才真删。
+  // 不用 window.confirm —— 它阻塞主线程、样式不受控，移动端还容易被当成系统弹窗划掉。
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+
   const handleDelete = async (id: string) => {
-    if (!confirm('确定要删除这道题目吗？')) return;
+    if (pendingDelete !== id) {
+      setPendingDelete(id);
+      setTimeout(() => setPendingDelete((current) => (current === id ? null : current)), 5000);
+      return;
+    }
+    setPendingDelete(null);
     setPageError(null);
     try {
       await api.myQuestions.remove(id);
@@ -358,9 +367,15 @@ export default function MyQuestionsPage() {
                           </button>
                           <button
                             onClick={() => handleDelete(question.id)}
-                            className="p-2 text-[#5a5a6e] hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors"
+                            title={pendingDelete === question.id ? '再点一次就删除这道题' : '删除这道题'}
+                            className={`flex items-center space-x-1.5 rounded-xl transition-colors ${
+                              pendingDelete === question.id
+                                ? 'px-3 py-2 bg-rose-500/15 text-rose-400 border border-rose-500/40 text-xs font-medium'
+                                : 'p-2 text-[#5a5a6e] hover:text-rose-500 hover:bg-rose-500/10'
+                            }`}
                           >
                             <Trash2 className="w-5 h-5" />
+                            {pendingDelete === question.id && <span>确认删除？</span>}
                           </button>
                         </div>
                       </div>

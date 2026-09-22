@@ -16,6 +16,9 @@ import {
   Calendar,
   User as UserIcon,
 } from 'lucide-react';
+import { notify } from '@/lib/toast';
+import Empty from '@/components/Empty';
+import Skeleton from '@/components/Skeleton';
 import { getUsers, deleteUser, clearAdminToken, getRetrievalStats, type RetrievalStats } from '@/lib/adminApi';
 
 interface AdminUser {
@@ -105,7 +108,7 @@ export default function AdminDashboard() {
       setDeleteTarget(null);
       fetchUsers();
     } catch {
-      alert('删除失败');
+      notify('删除失败', 'error');
     } finally {
       setDeleting(false);
     }
@@ -297,23 +300,36 @@ export default function AdminDashboard() {
                 <tr className="border-b border-white/[0.06]">
                   <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">用户</th>
                   <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">邮箱</th>
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">登录方式</th>
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">注册时间</th>
+                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium hidden sm:table-cell">登录方式</th>
+                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium hidden sm:table-cell">注册时间</th>
                   <th className="text-right px-5 py-3.5 text-[#5a5a6e] font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-12 text-center text-[#5a5a6e]">
-                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                      加载中...
+                    <td colSpan={5} className="px-5 py-8">
+                      {/* 骨架占位而不是转圈：表格高度不变，数据到了不跳版 */}
+                      <div className="space-y-3">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <div key={i} className="flex items-center space-x-4">
+                            <Skeleton className="h-9 w-9 rounded-full" />
+                            <Skeleton className="h-4 w-40" />
+                            <Skeleton className="h-4 w-56" />
+                            <Skeleton className="h-4 w-20 ml-auto" />
+                          </div>
+                        ))}
+                      </div>
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-12 text-center text-[#5a5a6e]">
-                      暂无用户数据
+                    <td colSpan={5} className="px-5 py-6">
+                      <Empty
+                        title={searchTerm ? "没有匹配的用户" : "还没有注册用户"}
+                        description={searchTerm ? `「${searchTerm}」在用户名和邮箱里都没命中，换个关键词试试。` : '注册第一个账号后，用户会出现在这里。'}
+                        className="border-white/[0.06] bg-transparent"
+                      />
                     </td>
                   </tr>
                 ) : (
@@ -339,7 +355,7 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-[#8a8a9e]">{u.email || '-'}</td>
-                      <td className="px-5 py-3.5">
+                      <td className="px-5 py-3.5 hidden sm:table-cell">
                         {u.auth_provider === 'github' ? (
                           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs">
                             <Github className="w-3.5 h-3.5" />
@@ -352,7 +368,7 @@ export default function AdminDashboard() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-[#5a5a6e]">
+                      <td className="px-5 py-3.5 text-[#5a5a6e] hidden sm:table-cell">
                         {formatDate(u.created_at)}
                       </td>
                       <td className="px-5 py-3.5 text-right">

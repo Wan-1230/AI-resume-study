@@ -463,8 +463,33 @@
 >   现在 0 error / 1 warning（TypewriterChat 的 exhaustive-deps，改它要动打字机动画的依赖数组，
 >   没有视觉回归手段时不碰）。
 >
-> **未做**：字面 hex 收敛为 Tailwind token、alert/confirm → toast、
-> Empty/Skeleton、路由级 errorElement、移动端表格、主题开关与 i18n。
+> **顺带挖出一个真 bug（未修）**：`dist` 产物里 `.md\:` 与 `.lg\:` 变体都在，
+> 但 **`.sm\:` 一条都没有**（按字面量数过：0 条），而源码里有 70+ 处 `sm:` 用法
+> （`sm:px-6`、`sm:grid-cols-3`、`sm:hidden`、我刚加的 `sm:table-cell`…）。
+> 640px 的媒体查询块存在，但里面只有 container 规则，没有任何工具类 ——
+> 也就是说这些 `sm:` 类目前**全部是空写的**，手机/窄屏下的排版全靠 md 以上的断点在撑。
+> 这正好解释了 PRD 原来那句"演示若用手机打开会露馅"。
+> 排查到这一步还没定位到根因（config 里没有 screens/blocklist/corePlugins 覆写，plugins 为空），
+> 所以移动端那一行**不算完成**：我加的 `hidden sm:table-cell` 目前是无效类，
+> 等这个断点问题修好后才会生效 —— 记在这里而不是假装它起作用了。
+>
+> **仍未做**：字面 hex 收敛为 Tailwind token、主题开关与 i18n、`sm:` 断点失效的根因。
+>
+> **进度补记（2026-09-23，交互行）**：4 处 `alert/confirm` 全部去掉。
+> - 新增 `src/lib/toast.ts` + `ToastViewport`（挂在 App 顶层一次），带 `role="status" aria-live="polite"` ——
+>   原来的 `alert()` 至少还能强制打断，换成 toast 如果不补可访问性，等于把提示从"必然看到"降级成"可能看到"。
+> - 删除确认改成**行内两段式**：第一下只把图标按钮变成"确认删除？"（5 秒自动复位），再点才真删，
+>   不再用阻塞主线程、样式不可控的 `window.confirm`。
+> - `Empty.tsx` 原来只会渲染一个字面 "Empty" 且没有任何页面引用它（PRD 之前写"组件已写好"是错的），
+>   现在是有 title/描述/动作的真空态，接进管理端用户表与聊天侧栏；
+>   `Skeleton.tsx` 新增，管理端加载时给行骨架（表格高度不跳版）。
+> - 路由级 `errorElement` **没做也做不了**：它只在 data router（`createBrowserRouter`）下生效，
+>   本项目用的是 `<Routes>` 组件式路由。改为加 `path="*"` 兜底页，并在注释里写明原因，不假装有 errorElement。
+>
+> 浏览器实测（这台机器的内嵌浏览器截不了图，全部走 DOM 断言）：
+> 访问 `/no-such-page` 渲染兜底页与回首页链接；`notify('…','success')` 出现 `[role=status]` 且带成功配色；
+> 删除按钮三段状态实测为 `删除这道题` →（点）`确认删除？` + 高亮 → （再点）列表归零（题目数 0）。
+> tsc / eslint(0 error) / vite build 全过。
 >
 > **进度补记（2026-09-23，难度色冲突）**：三处冲突已清零，改为 `src/constants/config.ts` 单一定义。
 > 实际情况是：`config.ts` 用 green/yellow/red，而 QuestionCard、QuestionDetail、MyQuestionsPage

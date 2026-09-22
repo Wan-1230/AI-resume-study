@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { ArrowLeft, FileText, Briefcase, Sparkles, Loader2, Copy, Check, RotateCcw, Upload, X, File, Download, Gauge, CircleCheck, CircleDashed, CircleX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { notify } from '@/lib/toast';
 import { optimizeResume, matchResume, type MatchReport, type MatchItem } from '@/lib/resumeApi';
 import { downloadResumeDocx } from '@/lib/exportDocx';
 
@@ -141,7 +142,7 @@ export default function ResumePage() {
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     
     if (!validExtensions.includes(ext)) {
-      alert('支持的文件格式：PDF、DOCX、MD、TXT');
+      notify('支持的文件格式：PDF、DOCX、MD、TXT', 'error');
       return;
     }
 
@@ -156,7 +157,7 @@ export default function ResumePage() {
         type: ext.toUpperCase()
       });
     } catch (error) {
-      alert('文件解析失败，请尝试其他格式');
+      notify('文件解析失败，请尝试其他格式', 'error');
       console.error('Parse error:', error);
     } finally {
       setParsingFile(false);
