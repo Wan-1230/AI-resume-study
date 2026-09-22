@@ -83,3 +83,18 @@ test('端到端：真实问答带来源与相似度分数', async (t) => {
   const marks = [...new Set((json.answer.match(/\[(\d{1,2})\]/g) || []).map((m) => Number(m.slice(1, -1))))];
   marks.forEach((n) => assert.ok(json.sources[n - 1], `角标 [${n}] 越界，来源只有 ${json.sources.length} 条`));
 });
+
+test('端到端：/api/stats 的计数与真实语料一致（首页文案的唯一来源）', async (t) => {
+  if (!(await skipIfDown(t))) return;
+
+  const stats = await (await fetch(`${BASE}/api/stats`)).json();
+  const articles = await (await fetch(`${BASE}/api/articles`)).json();
+  const questions = await (await fetch(`${BASE}/api/questions`)).json();
+
+  const articleCount = (Array.isArray(articles) ? articles : articles.data || []).length;
+  const questionCount = (Array.isArray(questions) ? questions : questions.data || []).length;
+
+  assert.ok(stats.questions > 0 && stats.articles > 0, '计数不该是 0');
+  assert.equal(stats.articles, articleCount, '文章数与 /api/articles 不一致');
+  assert.equal(stats.questions, questionCount, '题目数与 /api/questions 不一致');
+});

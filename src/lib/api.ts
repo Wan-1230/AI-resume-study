@@ -165,6 +165,13 @@ async function myRequest<T>(path: string, { method = 'GET', body }: { method?: s
 }
 
 export const api = {
+  /** 落地页的收录计数：拿不到就宁可不显示，也不写死一个会过期的数字 */
+  async stats(): Promise<{ articles: number; questions: number }> {
+    const response = await fetch(`${API_BASE}/api/stats`);
+    if (!response.ok) throw new Error(`统计请求失败（${response.status}）`);
+    return response.json();
+  },
+
   categories: {
     /** 系统题库的分类由题目派生，不支持自定义增删 */
     async getAll(): Promise<Category[]> {

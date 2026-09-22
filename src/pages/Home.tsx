@@ -25,6 +25,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<{ articles: number; questions: number } | null>(null);
 
   const { currentPage, goToPage, goToFirst, transformStyle } = useFullPageScroll({
     totalPages: PAGE_COUNT,
@@ -54,6 +55,13 @@ export default function Home() {
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
+
+  // 计数拿不到就把数字整段藏掉：写死的"27 篇 + 255 题"在语料更新后会变成假宣传
+  useEffect(() => {
+    let alive = true;
+    api.stats().then((s) => { if (alive) setStats(s); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
 
   const pageLabels = ['首页', 'AI 助手', '简历优化', '题库', '关于'];
 
@@ -85,7 +93,9 @@ export default function Home() {
           <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6">
             <div className="inline-flex items-center space-x-2 px-3 sm:px-4 py-1.5 bg-raised/80 backdrop-blur-sm border border-edge mb-6 sm:mb-8">
               <span className="px-2 py-0.5 bg-bright text-ink text-xs font-bold">NEW</span>
-              <span className="text-muted text-xs sm:text-sm">AI 面试准备平台，已收录 27 篇文章 + 255 道题目</span>
+              <span className="text-muted text-xs sm:text-sm">
+                AI 面试准备平台{stats ? `，已收录 ${stats.articles} 篇文章 + ${stats.questions} 道题目` : ''}
+              </span>
             </div>
 
             <ScrollReveal
@@ -167,7 +177,7 @@ export default function Home() {
                 <span className="text-primary-500">精准解答</span>面试难题
               </h2>
               <p className="text-muted text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-                基于 27 篇 AI 应用开发文章构建的知识库，覆盖 LLM、RAG、Agent、MCP 等核心领域。输入任何面试相关问题，AI 助手为你提供专业、准确的解答。
+                基于{stats ? ` ${stats.articles} 篇` : '站内'} AI 应用开发文章构建的知识库，覆盖 LLM、RAG、Agent、MCP 等核心领域。输入任何面试相关问题，AI 助手为你提供专业、准确的解答。
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 <button

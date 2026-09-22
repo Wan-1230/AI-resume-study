@@ -243,13 +243,14 @@ export default function MyQuestionsPage() {
                 className="w-full bg-raised border border-edge rounded-xl pl-10 pr-4 py-2.5 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
               />
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
+            {/* 窄屏下两个下拉会顶出视口（390px 实测溢出 4px），所以允许换行 + 可收缩 */}
+            <div className="flex flex-wrap items-center gap-3 min-w-0">
+              <div className="relative flex-1 min-w-[9rem]">
                 <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                 <select
                   value={selectedCategory || ''}
                   onChange={(e) => setSelectedCategory(e.target.value || null)}
-                  className="bg-raised border border-edge rounded-xl pl-10 pr-8 py-2.5 text-bright focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 appearance-none"
+                  className="w-full bg-raised border border-edge rounded-xl pl-10 pr-8 py-2.5 text-bright focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 appearance-none"
                 >
                   <option value="">全部分类</option>
                   {categories.map(cat => (
@@ -260,7 +261,7 @@ export default function MyQuestionsPage() {
               <select
                 value={selectedDifficulty || ''}
                 onChange={(e) => setSelectedDifficulty(e.target.value || null)}
-                className="bg-raised border border-edge rounded-xl px-4 py-2.5 text-bright focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
+                className="flex-1 min-w-[7.5rem] bg-raised border border-edge rounded-xl px-4 py-2.5 text-bright focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
               >
                 <option value="">全部难度</option>
                 <option value="easy">简单</option>

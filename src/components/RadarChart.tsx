@@ -27,8 +27,10 @@ export default function RadarChart({ dimensions }: { dimensions: DimensionScore[
     })
     .join(' ');
 
+  // viewBox 左右各留 28：标签在 1.32 倍半径处、向外展开，六维里最宽的"实操经验关联"
+  // 按 0..260 算会伸出画布被裁掉（390px 与 1280px 截图上都只看得见前四个字）。
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full max-w-[300px] mx-auto" role="img" aria-label="六维能力雷达图">
+    <svg viewBox="-28 0 316 260" className="w-full max-w-[320px] mx-auto" role="img" aria-label="六维能力雷达图">
       {[1, 2, 3, 4, 5].map((ring) => (
         <polygon
           key={ring}

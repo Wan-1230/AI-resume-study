@@ -5,6 +5,7 @@ import {
   Send, Share2, Sparkles, Target, XCircle, CheckCircle, MinusCircle,
 } from 'lucide-react';
 import { useStore } from '@/store';
+import { getStoredToken } from '@/lib/authApi';
 import RadarChart from '@/components/RadarChart';
 import {
   interviewApi, InterviewApiError, type AnswerResult, type InterviewDirectionOption,
@@ -39,6 +40,7 @@ export default function InterviewPage() {
   const [report, setReport] = useState<InterviewReport | null>(null);
   const [sessionView, setSessionView] = useState<InterviewSessionView | null>(null);
   const [shared, setShared] = useState<InterviewSessionView | null>(null);
+  const [sharedByLink, setSharedByLink] = useState(false);
   const [visibility, setVisibility] = useState('private');
 
   const item = items[index];
@@ -49,15 +51,24 @@ export default function InterviewPage() {
 
   // /interview/:id：自己的会话走带鉴权的接口（没分享也能看），别人的走公开接口。
   // 先按"自己的"试一次，404 再退回公开接口 —— 顺序反过来会让登录用户看不了任何分享链接。
+  // 用 getStoredToken() 而不是 store.isAuthenticated：store 是挂载后才水合的，
+  // 跟着它异步判断会让"刷新自己的报告"先发一次注定 404 的公开请求（截图时实测到了）。
   useEffect(() => {
     if (!sharedId) return;
     const load = async () => {
       let view: InterviewSessionView | null = null;
-      if (isAuthenticated) {
+      if (getStoredToken()) {
         view = await interviewApi.get(sharedId).catch(() => null);
       }
+      if (view) {
+        setShared(view);
+        setSharedByLink(false);
+        setPhase('shared');
+        return;
+      }
       try {
-        setShared(view ?? await interviewApi.shared(sharedId));
+        setShared(await interviewApi.shared(sharedId));
+        setSharedByLink(true);
         setPhase('shared');
       } catch (error) {
         setNotice(error instanceof InterviewApiError ? error.message : '报告读不到了');
@@ -65,7 +76,7 @@ export default function InterviewPage() {
       }
     };
     void load();
-  }, [sharedId, isAuthenticated]);
+  }, [sharedId]);
 
   const loadSetup = useCallback(async () => {
     try {
@@ -157,13 +168,15 @@ export default function InterviewPage() {
 
   if (phase === 'shared' && shared) {
     return (
-      <Shell onBack={() => navigate('/')} title="面试复盘报告（分享）">
+      <Shell onBack={() => navigate('/')} title={sharedByLink ? '面试复盘报告（分享）' : '面试复盘报告'}>
         <div className="bg-surface border border-line rounded-2xl p-5 mb-6 flex items-center justify-between">
           <div>
-            <p className="text-faint text-xs mb-1">分享的报告 · {new Date(shared.created_at).toLocaleString('zh-CN')}</p>
+            <p className="text-faint text-xs mb-1">
+              {sharedByLink ? '分享的报告' : '我的报告'} · {new Date(shared.created_at).toLocaleString('zh-CN')}
+            </p>
             <h2 className="text-lg font-semibold text-bright">{shared.direction}</h2>
           </div>
-          <span className="text-xs text-faint">只读</span>
+          {sharedByLink && <span className="text-xs text-faint">只读</span>}
         </div>
         <ReportView report={shared.report} objective={shared.objective} transcript={shared.transcript} items={shared.items} />
       </Shell>

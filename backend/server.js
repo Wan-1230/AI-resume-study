@@ -311,6 +311,14 @@ app.get('/api/questions', (req, res) => {
   sendWithCache(req, res, { data, etag });
 });
 
+// 首页那句"已收录 N 篇文章 + M 道题目"之前是写死的。语料一改它就会悄悄说谎，
+// 所以单独出一个计数接口，让落地页的数字跟着真实语料走。
+app.get('/api/stats', (req, res) => {
+  const { data: questions } = getQuestions();
+  const { data: articles } = getArticles();
+  res.json({ articles: articles.length, questions: questions.length });
+});
+
 // 简历优化接口（流式）
 // 要求登录：整份简历要外送第三方推理服务，额度也比问答紧
 app.post('/api/resume/optimize', authenticateToken, requireRag, limitResume, gateLlm, async (req, res) => {
