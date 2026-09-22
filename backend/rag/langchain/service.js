@@ -36,6 +36,15 @@ function fallbackAnswer(documents, contextMaxChars) {
 }
 
 /**
+ * 检索一条都没过阈值时的回答。这一步必须发生在调用 LLM 之前：
+ * 把空上下文塞给模型，它会用自己的记忆编一段看着很像样的答案，
+ * 而这恰恰是 RAG 要避免的失败模式；顺便也省掉一次推理费用。
+ */
+const ABSTAIN_ANSWER = `知识库里没找到能回答这个问题的内容，我不瞎猜。
+
+你可以换个说法再问一次（比如换成题目里常见的叫法），或者到「练习」页按分类刷一遍相关的题。`;
+
+/**
  * 降级提示必须带上原因。只写"LLM 暂时不可用"，用户会以为是本站故障，
  * 而真实原因往往是上游配额（429）或端点不可达 —— 完全不同的处置方式。
  */
@@ -156,6 +165,10 @@ class RagService {
     const documents = await this.retrieve(message);
     const sources = documents.map((d) => toSource(d, { truncateContent: 200 }));
 
+    if (!documents.length) {
+      return { answer: ABSTAIN_ANSWER, sources: [], abstained: true };
+    }
+
     if (!this.chain) {
       return { answer: fallbackAnswer(documents, this.config.retriever.contextMaxChars), sources };
     }
@@ -179,6 +192,11 @@ class RagService {
   async chatStream(message, history = [], { onChunk, onSources } = {}) {
     const documents = await this.retrieve(message);
     if (onSources) onSources(documents.map((d) => toSource(d)));
+
+    if (!documents.length) {
+      if (onChunk) onChunk(ABSTAIN_ANSWER);
+      return ABSTAIN_ANSWER;
+    }
 
     if (!this.chain) {
       const fallback = fallbackAnswer(documents, this.config.retriever.contextMaxChars);

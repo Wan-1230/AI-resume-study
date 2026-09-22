@@ -79,8 +79,12 @@ function parseBlocks(content: string): Block[] {
   return blocks;
 }
 
-function renderInline(text: string, keyBase: string) {
-  const pattern = /(\*\*[^*\n]+\*\*|`[^`\n]+`)/g;
+/** 引用角标：只认纯数字 [1] [12]，且后面不能紧跟 ( —— 否则那是 Markdown 链接的标题 */
+const INLINE_PATTERN = /(\*\*[^*\n]+\*\*|`[^`\n]+`|\[\d{1,2}\](?!\())/g;
+
+function renderInline(text: string, keyBase: string, onCite?: (n: number) => void) {
+  // 带 g 的复用正则会记住 lastIndex，每次调用新建一个，避免串行渲染时漏匹配
+  const pattern = new RegExp(INLINE_PATTERN.source, 'g');
   const nodes: React.ReactNode[] = [];
   let last = 0;
   let match: RegExpExecArray | null;
@@ -94,6 +98,19 @@ function renderInline(text: string, keyBase: string) {
         <strong key={`${keyBase}-b${n++}`} className="font-semibold text-[#e8e8ed]">
           {token.slice(2, -2)}
         </strong>
+      );
+    } else if (token.startsWith('[')) {
+      const index = Number(token.slice(1, -1));
+      nodes.push(
+        <button
+          key={`${keyBase}-cite${n++}`}
+          type="button"
+          onClick={() => onCite?.(index)}
+          title="跳到对应来源"
+          className="align-super mx-0.5 px-1 rounded bg-primary-500/15 text-primary-400 text-[10px] leading-4 hover:bg-primary-500/30 transition-colors"
+        >
+          {index}
+        </button>
       );
     } else {
       nodes.push(
@@ -144,7 +161,7 @@ function CodeBlock({ code, lang }: { code: string; lang?: string }) {
   );
 }
 
-export default function MarkdownLite({ content }: { content: string }) {
+export default function MarkdownLite({ content, onCite }: { content: string; onCite?: (n: number) => void }) {
   const blocks = parseBlocks(content);
 
   return (
@@ -156,7 +173,7 @@ export default function MarkdownLite({ content }: { content: string }) {
           case 'heading':
             return (
               <p key={index} className="mt-3 mb-1.5 font-semibold text-[#e8e8ed]">
-                {renderInline(block.text || '', `h${index}`)}
+                {renderInline(block.text || '', `h${index}`, onCite)}
               </p>
             );
           case 'list': {
@@ -166,7 +183,7 @@ export default function MarkdownLite({ content }: { content: string }) {
                 {items.map((item, i) => (
                   <li key={i} className="flex space-x-2">
                     <span className="text-primary-500/80 font-mono shrink-0">{i + 1}.</span>
-                    <span className="flex-1">{renderInline(item, `li${index}-${i}`)}</span>
+                    <span className="flex-1">{renderInline(item, `li${index}-${i}`, onCite)}</span>
                   </li>
                 ))}
               </ol>
@@ -175,7 +192,7 @@ export default function MarkdownLite({ content }: { content: string }) {
                 {items.map((item, i) => (
                   <li key={i} className="flex space-x-2">
                     <span className="text-[#5a5a6e] shrink-0">•</span>
-                    <span className="flex-1">{renderInline(item, `ul${index}-${i}`)}</span>
+                    <span className="flex-1">{renderInline(item, `ul${index}-${i}`, onCite)}</span>
                   </li>
                 ))}
               </ul>
@@ -184,7 +201,7 @@ export default function MarkdownLite({ content }: { content: string }) {
           default:
             return (
               <p key={index} className="my-1.5 whitespace-pre-wrap">
-                {renderInline(block.text || '', `p${index}`)}
+                {renderInline(block.text || '', `p${index}`, onCite)}
               </p>
             );
         }

@@ -12,6 +12,14 @@ interface ChatMessageProps {
 export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
+  const [cited, setCited] = useState<number | null>(null);
+
+  // 点角标 → 滚到对应来源并高亮一下，让人能核对这句话到底从哪儿来的
+  const jumpToSource = (index: number) => {
+    setCited(index);
+    document.getElementById(`source-card-${index}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setTimeout(() => setCited((cur) => (cur === index ? null : cur)), 2400);
+  };
 
   const copyAnswer = async () => {
     try {
@@ -46,7 +54,7 @@ export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
             <div className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</div>
           ) : (
             <>
-              <MarkdownLite content={message.content} />
+              <MarkdownLite content={message.content} onCite={jumpToSource} />
               {message.streaming && message.content && (
                 <span className="inline-block w-1.5 h-4 bg-primary-500/70 align-middle animate-pulse" />
               )}
@@ -64,13 +72,18 @@ export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
           </button>
         )}
 
-        {/* 来源卡片 */}
+        {/* 来源卡片：数量与答案里的 [n] 编号一一对应，不做截断 */}
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="mt-3 space-y-2">
-            <p className="text-xs text-[#5a5a6e] font-medium">参考来源：</p>
+            <p className="text-xs text-[#5a5a6e] font-medium">参考来源（{message.sources.length} 条）：</p>
             <div className="grid grid-cols-1 gap-2">
-              {message.sources.slice(0, 3).map((source, index) => (
-                <SourceCard key={index} source={source} index={index} />
+              {message.sources.map((source, index) => (
+                <SourceCard
+                  key={`${source.id || 'src'}-${index}`}
+                  source={source}
+                  index={index}
+                  highlighted={cited === index + 1}
+                />
               ))}
             </div>
           </div>

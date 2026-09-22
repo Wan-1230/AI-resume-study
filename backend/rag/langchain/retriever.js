@@ -39,19 +39,24 @@ class ScoredRetriever extends BaseRetriever {
 
 /**
  * 检索结果 → 提示词上下文（按字符预算截断，防止超出模型上下文窗口）
+ *
+ * 每块前的 [n] 与前端 sources[n-1] 一一对应：sources 就是同一批文档按同一顺序映射出来的，
+ * 而截断只会砍掉尾部，所以答案里出现的任何编号都能在来源列表里找到。
  */
 function buildContext(documents, maxChars = 2000) {
   if (!documents.length) return '没有找到相关的知识库内容。';
 
-  let context = '以下是与问题相关的知识库内容：\n\n';
+  let context = '以下是与问题相关的知识库内容，每条以 [编号] 开头；引用某条时请在句末写上对应编号：\n\n';
   let used = context.length;
+  let taken = 0;
 
   for (const doc of documents) {
     const meta = doc.metadata || {};
-    const block = `【${meta.title || meta.doc_id || '未知来源'}】(${meta.category || '未分类'})\n${doc.pageContent}\n\n`;
+    const block = `[${taken + 1}]【${meta.title || meta.doc_id || '未知来源'}】(${meta.category || '未分类'})\n${doc.pageContent}\n\n`;
     if (used + block.length > maxChars) break;
     context += block;
     used += block.length;
+    taken += 1;
   }
 
   return context;

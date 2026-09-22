@@ -119,7 +119,7 @@ curl http://localhost:3001/api/health
 | `RAG_CHUNK_SIZE` | `800` | 分块目标字符数 |
 | `RAG_CHUNK_OVERLAP` | `120` | 相邻分块重叠字符数 |
 | `RAG_TOP_K` | `5` | 检索返回条数 |
-| `RAG_MIN_SCORE` | `0` | 相似度阈值（0~1），低于阈值的结果被过滤。默认 `0` 不过滤；按实测 bge 模型建议设 `0.5`（见「检索质量基线」） |
+| `RAG_MIN_SCORE` | `0.5` | 相似度阈值（0~1），低于阈值的结果被过滤；`0` 表示不过滤。取值按默认模型实测标定，换模型需重测（见「检索质量基线」） |
 | `RAG_CONTEXT_MAX_CHARS` | `2000` | 送入提示词的上下文字符预算 |
 | `RAG_SOURCES` | `data/documents.json` | 导入数据源，逗号分隔多个 |
 | `RAG_INGEST_LIMIT` | `0` | 调试：只导入前 N 个文档，0 为全量 |
@@ -140,8 +140,13 @@ curl http://localhost:3001/api/health
    （`local:xenova/bge-small-zh-v1.5` 等）——**换模型后自动删除重建**，避免新旧向量混用。
 5. **检索**：`ScoredRetriever` 走向量库的 `similaritySearchWithScore`，统一换算为 cosine
    相似度（0~1，越大越相关），按 `RAG_MIN_SCORE` 过滤后把分数写入 `metadata.score`。
+   全部结果都被过滤时 `chat` / `chatStream` 直接返回「知识库里没找到」并带 `abstained: true`，
+   **不会**把空上下文塞给模型——那样它会用参数记忆编一段像样但没依据的答案，还白烧一次推理。
 6. **生成**：`chains.js` 用 LCEL 组装 `检索 → 上下文打包 → ChatPromptTemplate → ChatOpenAI →
    StringOutputParser`。输入 `{ question, history }`，支持 `chain.stream()` 流式输出。
+   `buildContext` 给每块资料打上 `[1] [2] …` 编号，提示词要求模型在句末引用对应编号；
+   前端 `MarkdownLite` 把 `[n]` 渲染成可点角标，点击滚到第 n 张来源卡片并高亮 ——
+   编号与 `sources[n-1]` 严格对应（同一批文档、同一顺序，截断只砍尾部）。
 
 ### 数据与持久化
 
@@ -170,8 +175,9 @@ node scripts/eval-retrieval.js --compare=a.json,b.json  # 出差异表
 英文 MiniLM 在中文语料上是主要瓶颈，换模型即可拿到 +26.7pt 的 hit@5；memory 与 chromadb 两个后端逐项一致。
 
 阈值不能当"拒答开关"用：负样本 top1 分数落在 0.426~0.728，正样本落在 0.532~0.762，两者大面积重叠。
-`RAG_MIN_SCORE=0.5` 是免费的（拒掉 20% 无关查询、真命中零损失），再往上就要拿真命中换拒答率
-（0.55 → 保留 71.1%，0.6 → 保留 57.8%）。要可靠拒答得换信号，而不是继续调这个数。
+`RAG_MIN_SCORE=0.5`（已是代码默认值）是免费的：拒掉 20% 无关查询、真命中零损失；再往上就要拿真命中换拒答率
+（0.55 → 保留 71.1%，0.6 → 保留 57.8%）。所以它只当噪声闸门用——想「可靠拒答」得靠更聪明的信号
+（比如让模型判断资料是否支撑回答），而不是继续调这个数；过滤到空结果时的拒答分支已经内置在 `service.js`。
 
 ## 六、扩展指南
 

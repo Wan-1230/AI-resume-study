@@ -35,16 +35,22 @@ export interface ChatMessage {
 }
 
 export interface Source {
+  /** 语料里的文档 id（题目 q123 / 文章 a45），来源同一文档的分块会共享它 */
+  id?: string | null;
   title: string;
   category: string;
   url?: string;
   source: 'article' | 'question';
   content: string;
+  /** cosine 相似度，0~1 */
+  score?: number | null;
 }
 
 export interface ChatResponse {
   answer: string;
   sources: Source[];
+  /** true = 知识库检索一条没过阈值，答案模型压根没调用 */
+  abstained?: boolean;
 }
 
 /** POST 到对话接口；fetch 抛异常代表请求没发出去（后端没起），与 401/429 是不同排查方向 */

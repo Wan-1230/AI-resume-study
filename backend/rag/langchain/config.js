@@ -79,7 +79,10 @@ function loadConfig(env = process.env) {
 
   const retriever = {
     topK: toNumber(env.RAG_TOP_K, 5),
-    minScore: toNumber(env.RAG_MIN_SCORE, 0),
+    // 0.5 是按默认嵌入模型实测出来的：能滤掉 20% 的无关查询且不伤任何真命中，
+    // 到 0.55 就开始误伤（详见 scripts/eval-retrieval.js 的阈值扫描与 data/eval-reports/）。
+    // 换 embedding 模型后这个数要重测 —— 不同模型的分数尺度不可比。
+    minScore: toNumber(env.RAG_MIN_SCORE, 0.5),
     contextMaxChars: toNumber(env.RAG_CONTEXT_MAX_CHARS, 2000),
   };
 

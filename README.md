@@ -23,6 +23,10 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 - `Xenova/bge-small-zh-v1.5` runs inside the Node process; **once cached, the embedding stage makes no network calls at all**
 - Retrieval is measured, not assumed: 60 hand-labelled cases, `hit-rate@5 73.3% / MRR 0.61` with the current model
   versus `46.7% / 0.24` with the previous default (`node backend/scripts/eval-retrieval.js`)
+- Answers cite their evidence: `[1] [2]` markers map 1:1 to the source cards below the reply, click one to scroll
+  and highlight it, and an audit script catches any out-of-range marker
+- When nothing clears the similarity threshold the assistant says "the knowledge base has nothing on that"
+  and **skips the LLM call entirely**, instead of letting the model hallucinate a confident answer
 - Vector backends: `memory` (default, JSON persistence, zero external deps) and `chroma` (local ChromaDB server);
   `auto` falls back to memory when Chroma is unreachable — see [CHROMA_SETUP.md](./CHROMA_SETUP.md)
 - **SSE streaming** with progressive rendering and a caret; source cards below each answer carry the similarity score

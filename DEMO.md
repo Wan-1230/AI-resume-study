@@ -70,10 +70,12 @@ curl -s localhost:3001/api/health        # 向量后端、embedding 版本、LLM
 
 ```bash
 npm run check && npm run lint            # 类型 + 静态检查
-cd backend && node --check server.js     # 后端语法
 npm run build                            # 前端能构建产物
+cd backend && node --check server.js     # 后端语法
+cd backend && node scripts/eval-retrieval.js   # 检索质量没退化（hit@5 / MRR，约 1 分钟）
 ```
-再手工过演示脚本的 2、7、8、11 四步（流式、入库、跨刷新、失败回报）。
+再手工过演示脚本的 2、7、8、11 四步（流式、入库、跨刷新、失败回报），
+以及问一句库里没有的话（如"推荐杭州的川菜馆"）—— 应该 0 来源 + 「知识库里没找到」，而不是一段编出来的推荐。
 
 ## 4. 部署后待补
 

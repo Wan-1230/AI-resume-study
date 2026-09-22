@@ -195,10 +195,10 @@ app.post('/api/chat', optionalAuth, requireRag, limitChat, gateLlm, async (req, 
       return res.status(400).json({ error: '请输入问题' });
     }
 
-    // 检索 + 生成（service 内部处理 LLM 不可用的降级）
-    const { answer, sources } = await ragService.chat(message, history);
+    // 检索 + 生成（service 内部处理 LLM 不可用的降级、以及检索为空时的拒答）
+    const { answer, sources, abstained } = await ragService.chat(message, history);
 
-    res.json({ answer, sources });
+    res.json({ answer, sources, abstained: !!abstained });
   } catch (error) {
     console.error('Chat error:', error);
     res.status(500).json({ error: '处理请求时出错' });
