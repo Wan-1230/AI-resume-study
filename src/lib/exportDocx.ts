@@ -10,6 +10,9 @@ import type { MatchItem, MatchReport } from '@/lib/resumeApi';
  * 让服务端落盘反而多留一份副本（免费 PaaS 的临时盘还不清理）。
  */
 
+/** 版式分隔用的全角空格，写成转义而不是字面字符：字面 U+3000 会触发 no-irregular-whitespace */
+const SEP = '　';
+
 const KIND_LABEL: Record<MatchItem['kind'], string> = {
   skill: '技能',
   experience: '经验',
@@ -62,7 +65,8 @@ export function buildResumeDocx(input: {
       new Paragraph({ text: '匹配度', heading: HeadingLevel.HEADING_2 }),
       new Paragraph({ children: [new TextRun({ text: `总体匹配度：${scores.overall}%`, bold: true, size: 28 })] }),
       new Paragraph({
-        text: `技能 ${fmt(scores.groups.skill)}　经验 ${fmt(scores.groups.experience)}　项目 ${fmt(scores.groups.project)}`,
+        // 全角空格用转义写：源码里放字面 U+3000 会被 no-irregular-whitespace 判错
+        text: `技能 ${fmt(scores.groups.skill)}${SEP}经验 ${fmt(scores.groups.experience)}${SEP}项目 ${fmt(scores.groups.project)}`,
       }),
       new Paragraph({ text: `命中 ${scores.counts.hit} 条 · 部分 ${scores.counts.partial} 条 · 未命中 ${scores.counts.missing} 条` }),
       new Paragraph({
@@ -94,7 +98,7 @@ export function buildResumeDocx(input: {
           new Paragraph({
             children: [
               new TextRun({ text: `${VERDICT_LABEL[item.verdict]}：${item.text}`, bold: true }),
-              new TextRun({ text: item.note ? `　${item.note}` : '' }),
+              new TextRun({ text: item.note ? `${SEP}${item.note}` : '' }),
             ],
           })
         ),

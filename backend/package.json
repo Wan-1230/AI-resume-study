@@ -10,7 +10,8 @@
     "start": "node server.js",
     "ingest": "node scripts/ingest.js",
     "crawl": "node scripts/crawl.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "test": "node --test \"test/*.test.js\""
   },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check": "tsc -b --noEmit"
+    "check": "tsc -b --noEmit",
+    "test": "node --test \"backend/test/*.test.js\"", "test:watch": "node --test --watch \"backend/test/*.test.js\""
   },
   "dependencies": {
     "clsx": "^2.1.1",

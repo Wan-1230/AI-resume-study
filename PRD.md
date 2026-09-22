@@ -442,6 +442,30 @@
 
 ### P2 · 工程与体验（有余力再做，但两项会被面试官直接看到）
 
+> **进度（2026-09-23）**：「测试」与「依赖清理」两行已完成，「设计一致性」的 lint 部分完成。
+>
+> - **测试**：`backend/test/` 26 个用例（`node:test`，零新依赖），25 通过 / 1 显式跳过。
+>   覆盖 guard 限流与并发闸门（含名额重复释放）、ScoredRetriever 阈值过滤、
+>   `buildContext` 的 `[n]` 编号必须是 1..k 连续前缀（这是角标能点的前提）、
+>   分块 id 幂等、元数据标量化、匹配分加权、站内条目相干闸门。
+>   另有 2 条端到端：探到后端就跑 `/api/health` 与"无关问题必须拒答"，探不到就跳过 —— 不在 CI 里塞假绿灯。
+>   `npm test`（根）与 `cd backend && npm test` 都已接好。
+>   写测试的过程中修正了两处我自己的错误预期：匹配总分是逐条加权（70%）而不是分组平均（75%）；
+>   `sanitizeMetadata` 对嵌套值是**序列化成字符串**而不是丢弃。
+> - **CI**：`.github/workflows/ci.yml` 跑 `tsc → eslint → 前端构建 → 后端逐文件 node --check → node --test`，
+>   每一步都在本地预先跑过。Node 22，`npm ci`。
+> - **依赖清理**：删掉 `pptxgenjs`（代码零引用）与 `@tailwindcss/vite`。
+>   后者不是"混用"而是**僵尸依赖**：vite.config 从没挂过它，实际生效的一直是 v3 的 postcss 插件链，
+>   所以这里只删不迁 —— 迁到 v4 会动全站样式，而我这台机器上的内嵌浏览器 viewport 是 0×0，无法做视觉回归，
+>   看不到结果的迁移不做。
+> - **lint**：8 个历史 error 清零（PillNav 的 `@ts-ignore`/`any` 换成 `CSSProperties` 转型与全局类型声明，
+>   Home 的 `window as any` 换成 `declare global`，两处未使用变量）。
+>   现在 0 error / 1 warning（TypewriterChat 的 exhaustive-deps，改它要动打字机动画的依赖数组，
+>   没有视觉回归手段时不碰）。
+>
+> **未做**：题库接口索引化 + ETag、设计令牌收敛（含难度色三处冲突）、alert/confirm → toast、
+> Empty/Skeleton、路由级 errorElement、移动端表格、主题开关与 i18n。
+
 | 项 | 内容 | 备注 |
 |---|---|---|
 | 测试 | RAG 管线的单测（loaders/splitters/retriever 用固定向量替换）+ 1 条 e2e（`/api/health`→`/api/chat`）；CI 跑 `tsc + eslint + test` | 现状 **0 测试**，`package.json` 无 `test` 脚本；作品集里这是最常见的追问 |

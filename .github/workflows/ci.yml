@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feat/**]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # 这套 CI 只跑不依赖外部服务的部分：前端类型/构建、后端语法与单元测试。
+    # 端到端测试（真实 LLM、Postgres、Chroma）在本地 npm test 时会自动接入，
+    # CI 里探不到后端就跳过 —— 与其在 CI 塞一个假的绿灯，不如明确不跑。
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 安装前端依赖
+        run: npm ci
+
+      - name: 类型检查
+        run: npm run check
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: 前端构建
+        run: npm run build
+
+      - name: 安装后端依赖
+        working-directory: backend
+        run: npm ci
+
+      - name: 后端语法检查
+        working-directory: backend
+        run: |
+          set -e
+          for f in server.js guard.js db/index.js auth/*.js learning/*.js myquestions/*.js \
+                   interview/*.js resume/*.js chat/*.js rag/langchain/*.js scripts/*.js; do
+            node --check "$f"
+          done
+
+      - name: 后端单元测试
+        working-directory: backend
+        run: npm test
