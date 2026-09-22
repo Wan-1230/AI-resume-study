@@ -22,13 +22,13 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <span className="w-6 h-6 bg-primary-500/10 text-primary-500 rounded-lg flex items-center justify-center text-xs font-medium">
+          <span className="w-6 h-6 bg-primary-500/10 text-brand rounded-lg flex items-center justify-center text-xs font-medium">
             {index + 1}
           </span>
           <span className={`px-2 py-0.5 rounded-lg text-xs font-medium ${
             isArticle 
-              ? 'bg-purple-500/10 text-purple-400' 
-              : 'bg-emerald-500/10 text-emerald-400'
+              ? 'bg-purple-500/10 text-accent-fg' 
+              : 'bg-emerald-500/10 text-success'
           }`}>
             {isArticle ? '文章' : '题目'}
           </span>
@@ -41,7 +41,7 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1 text-faint hover:text-primary-500 transition-colors"
+            className="p-1 text-faint hover:text-brand transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
           </a>

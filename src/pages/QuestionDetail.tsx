@@ -100,7 +100,7 @@ export default function QuestionDetail() {
           <p className="text-muted text-lg mb-6">题目不存在</p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/10 btn-hover-scale btn-ripple"
+            className="px-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/10 btn-hover-scale btn-ripple"
           >
             返回首页
           </button>
@@ -123,7 +123,7 @@ export default function QuestionDetail() {
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-brand transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="text-sm">返回列表</span>
@@ -135,7 +135,7 @@ export default function QuestionDetail() {
               <button
                 onClick={shareLink}
                 title="复制本题链接"
-                className="p-2.5 text-faint hover:text-primary-500 hover:bg-primary-500/10 rounded-xl transition-all btn-hover-scale"
+                className="p-2.5 text-faint hover:text-brand hover:bg-primary-500/10 rounded-xl transition-all btn-hover-scale"
               >
                 <Share2 className="w-5 h-5" />
               </button>
@@ -172,8 +172,8 @@ export default function QuestionDetail() {
                 title={isAuthenticated ? '收藏本题' : '登录后可收藏'}
                 className={`p-2.5 rounded-xl transition-all duration-200 btn-hover-scale ${
                   isFavorited
-                    ? 'text-amber-400 bg-amber-500/10'
-                    : 'text-faint hover:text-amber-400 hover:bg-amber-500/10'
+                    ? 'text-warning bg-amber-500/10'
+                    : 'text-faint hover:text-warning hover:bg-amber-500/10'
                 }`}
               >
                 <Star className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
@@ -181,7 +181,7 @@ export default function QuestionDetail() {
             </div>
 
             {favoritesError && (
-              <p className="-mt-4 mb-6 text-sm text-rose-400">{favoritesError}</p>
+              <p className="-mt-4 mb-6 text-sm text-danger">{favoritesError}</p>
             )}
 
             <h2 className="text-2xl md:text-3xl font-bold text-bright mb-6 leading-relaxed">{question.title}</h2>
@@ -217,7 +217,7 @@ export default function QuestionDetail() {
             <div className="mb-8">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="bg-primary-500/10 p-1.5 rounded-lg">
-                  <Sparkles className="w-4 h-4 text-primary-500" />
+                  <Sparkles className="w-4 h-4 text-brand" />
                 </div>
                 <h3 className="text-lg font-semibold text-bright">题目描述</h3>
               </div>
@@ -244,11 +244,11 @@ export default function QuestionDetail() {
                       disabled={showAnswer}
                       className={`w-full text-left p-5 rounded-xl border transition-all duration-200 btn-hover-scale ${
                         showCorrect
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-success'
                           : showWrong
-                          ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                          ? 'bg-rose-500/10 border-rose-500/30 text-danger'
                           : isSelected
-                          ? 'bg-primary-500/10 border-primary-500/30 text-primary-400'
+                          ? 'bg-primary-500/10 border-primary-500/30 text-brand'
                           : 'bg-raised border-edge text-muted hover:border-primary-500/20 hover:bg-lift'
                       }`}
                     >
@@ -266,13 +266,13 @@ export default function QuestionDetail() {
                         </span>
                         <span className="flex-1 text-sm leading-relaxed">{option.replace(`${optionLetter}. `, '')}</span>
                         {showCorrect && (
-                          <span className="flex items-center space-x-1.5 text-emerald-400 font-medium text-sm">
+                          <span className="flex items-center space-x-1.5 text-success font-medium text-sm">
                             <CheckCircle className="w-5 h-5" />
                             <span>正确答案</span>
                           </span>
                         )}
                         {showWrong && (
-                          <span className="flex items-center space-x-1.5 text-rose-400 font-medium text-sm">
+                          <span className="flex items-center space-x-1.5 text-danger font-medium text-sm">
                             <XCircle className="w-5 h-5" />
                             <span>错误</span>
                           </span>
@@ -292,7 +292,7 @@ export default function QuestionDetail() {
               >
                 <div className="flex items-center space-x-3">
                   <div className="bg-primary-500/10 p-2 rounded-lg">
-                    <Sparkles className="w-4 h-4 text-primary-500" />
+                    <Sparkles className="w-4 h-4 text-brand" />
                   </div>
                   <span className="font-semibold text-bright">答案与解析</span>
                 </div>
@@ -306,7 +306,7 @@ export default function QuestionDetail() {
               {showAnswer && (
                 <div className="mt-4 space-y-4 animate-slide-up">
                   <div className="bg-gradient-to-br from-primary-500/10 to-purple-500/10 border border-primary-500/20 rounded-xl p-6">
-                    <h4 className="font-semibold text-primary-400 mb-3 text-sm">正确答案</h4>
+                    <h4 className="font-semibold text-brand mb-3 text-sm">正确答案</h4>
                     <p className="text-bright text-2xl font-bold font-mono">{question.answer}</p>
                   </div>
 
@@ -326,13 +326,13 @@ export default function QuestionDetail() {
         <div className="mt-8 flex space-x-4">
           <button
             onClick={() => navigate('/practice')}
-            className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink font-medium rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-hover-scale btn-ripple"
+            className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-on-brand font-medium rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-hover-scale btn-ripple"
           >
             开始练习
           </button>
           <button
             onClick={addToLibrary}
-            className="flex-1 py-4 bg-surface border border-line hover:border-primary-500/20 hover:bg-raised text-muted hover:text-primary-500 font-medium rounded-xl transition-all duration-200 btn-hover-scale"
+            className="flex-1 py-4 bg-surface border border-line hover:border-primary-500/20 hover:bg-raised text-muted hover:text-brand font-medium rounded-xl transition-all duration-200 btn-hover-scale"
           >
             {inLibrary ? '已在我的题库' : '加入我的题库'}
           </button>

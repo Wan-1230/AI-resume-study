@@ -1,8 +1,9 @@
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Sun, Moon } from 'lucide-react';
 import { uiColors } from '@/constants/config';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PillNav from './PillNav';
 import { useStore } from '@/store';
+import { useTheme } from '@/hooks/useTheme';
 
 // GitHub 官方图标组件
 function GitHubIcon({ className = 'w-5 h-5' }: { className?: string }) {
@@ -18,6 +19,7 @@ export default function Header() {
   const location = useLocation();
 
   const { isAuthenticated, user, logout } = useStore();
+  const { isDark, toggleTheme } = useTheme();
   const displayName = user?.username || user?.email?.split('@')[0] || '用户';
 
   const handleLogout = () => {
@@ -54,7 +56,7 @@ export default function Header() {
           activeHref={location.pathname}
           baseColor={uiColors.inkSoft}
           pillColor={uiColors.raised}
-          hoveredPillTextColor={uiColors.primary}
+          hoveredPillTextColor={uiColors.brand}
           pillTextColor={uiColors.muted}
           initialLoadAnimation={false}
           onItemClick={handleNavClick}
@@ -63,6 +65,16 @@ export default function Header() {
         />
 
         <div className="flex items-center space-x-2 sm:space-x-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 sm:p-2.5 text-muted hover:text-bright hover:bg-raised rounded-lg transition-all duration-200"
+            title={isDark ? '切换到亮色' : '切换到暗色'}
+            aria-label={isDark ? '切换到亮色主题' : '切换到暗色主题'}
+            aria-pressed={!isDark}
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+
           <a
             href="https://github.com/Wan-1230/AI-resume-study"
             target="_blank"
@@ -84,7 +96,7 @@ export default function Header() {
                 />
               ) : (
                 <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary-500" />
+                  <User className="w-4 h-4 text-brand" />
                 </div>
               )}
               <span className="text-muted text-sm font-medium hidden sm:inline">
@@ -92,7 +104,7 @@ export default function Header() {
               </span>
               <button
                 onClick={handleLogout}
-                className="p-2 text-faint hover:text-rose-400 hover:bg-raised rounded-lg transition-all duration-200"
+                className="p-2 text-faint hover:text-danger hover:bg-raised rounded-lg transition-all duration-200"
                 title="退出登录"
               >
                 <LogOut className="w-4 h-4" />

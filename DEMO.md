@@ -30,7 +30,7 @@ curl -s http://localhost:3001/api/health | grep -o '"llm_status":"[^"]*"'
 
 > 业务数据落在 Postgres（由 `DATABASE_URL` 指定，本地可指向 docker 起的实例，免费部署用 Neon）。想从干净状态演示：对该库执行 `DROP SCHEMA public CASCADE; CREATE SCHEMA public;`，重启后端会自动重建全部表。
 
-## 1. 16 步演示脚本（另有 5b/5c 两个附加步）
+## 1. 17 步演示脚本（另有 5b/5c 两个附加步）
 
 | # | 操作 | 期望看到 | 想说明什么 |
 |---|---|---|---|
@@ -52,6 +52,7 @@ curl -s http://localhost:3001/api/health | grep -o '"llm_status":"[^"]*"'
 | 14 | `/resume`（登录后）粘贴 JD + 简历，开始优化 | 流式输出优化稿；未登录时提示"请先登录"而不是"后端没启动" | 最贵的调用要求登录；错误提示指向正确原因 |
 | 15 | 同一页点「生成匹配报告」 | 逐条要求 + 判定 + **简历原句证据**，总分由判定算出；换一个不相关 JD 分数明显掉 | 匹配度不是模型随口报的数字，可核对 |
 | 16 | 报告下方点「导出 .docx」 | 浏览器下载一份 docx，Word 里含 JD/简历/优化稿/判定表 | `docx` 依赖真正用上了，且服务端不存简历 |
+| 17 | 顶栏右侧的 ☀/🌙 切到亮色，再刷新 | 全站配色翻过去（含雷达图、导航 pill、管理端表格），刷新后记住选择、不闪回 | 颜色只有一处定义：12 个语义色 + 6 个角色色走 CSS 变量，换主题=换 18 个值 |
 
 可选加演（若被问到工程性）：
 ```bash
@@ -76,7 +77,7 @@ curl -s localhost:3001/api/health        # 向量后端、embedding 版本、LLM
 
 ```bash
 npm run check && npm run lint            # 类型 + 静态检查（lint 现为 0 error / 1 warning）
-npm test                                 # 后端 26 个用例；后端在跑时会顺带做端到端，没跑就跳过
+npm test                                 # 后端 32 个用例；后端在跑时会顺带做端到端，没跑就跳过
 npm run build                            # 前端能构建产物
 cd backend && node --check server.js     # 后端语法
 cd backend && node scripts/eval-retrieval.js   # 检索质量没退化（hit@5 / MRR，约 1 分钟）
@@ -84,8 +85,8 @@ cd backend && node scripts/eval-retrieval.js   # 检索质量没退化（hit@5 /
 再手工过演示脚本的 2、5、5b、7、8、11、12 七步（流式、拒答、会话持久化、入库、跨刷新、失败回报、面试闭环），
 以及问一句库里没有的话（如"推荐杭州的川菜馆"）—— 应该 0 来源 + 「知识库里没找到」，而不是一段编出来的推荐。
 
-> `npm test` 覆盖 guard 限流、检索阈值与角标编号契约、分块幂等、匹配分加权等 26 个用例；
-> CI（`.github/workflows/ci.yml`）跑的是同一套命令。
+> `npm test` 覆盖 guard 限流、检索阈值与角标编号契约、分块幂等、匹配分加权、语料计数一致性等 32 个用例；
+> CI（`.github/workflows/ci.yml`）跑的是同一套命令。其中 1 条端到端用例要 `E2E_LLM=1` 才跑（会真花上游额度），默认显式跳过。
 
 ## 4. 部署后待补
 

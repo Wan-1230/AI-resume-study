@@ -39,14 +39,14 @@ export default function RadarChart({ dimensions }: { dimensions: DimensionScore[
             return `${x.toFixed(1)},${y.toFixed(1)}`;
           }).join(' ')}
           fill="none"
-          stroke={uiColors.edge}
+          style={{ stroke: uiColors.edge }}
           strokeWidth={ring === MAX ? 1.2 : 0.7}
         />
       ))}
 
       {dimensions.map((dim, i) => {
         const { x, y } = point(i, 1);
-        return <line key={dim.key} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke={uiColors.edge} strokeWidth={0.7} />;
+        return <line key={dim.key} x1={CENTER} y1={CENTER} x2={x} y2={y} style={{ stroke: uiColors.edge }} strokeWidth={0.7} />;
       })}
 
       <polygon points={shape} fill={uiColors.primary} fillOpacity={0.18} stroke={uiColors.primary} strokeWidth={1.8} strokeLinejoin="round" />

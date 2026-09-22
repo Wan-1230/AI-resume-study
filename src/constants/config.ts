@@ -8,9 +8,9 @@ export type Difficulty = 'easy' | 'medium' | 'hard';
  * 而且没有编译错误，只能靠人眼发现。所有难度色一律从这里取，不要再在组件里抄一份。
  */
 const palette: Record<Difficulty, { dot: string; text: string; soft: string; border: string }> = {
-  easy: { dot: 'bg-emerald-500', text: 'text-emerald-400', soft: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  medium: { dot: 'bg-amber-500', text: 'text-amber-400', soft: 'bg-amber-500/10', border: 'border-amber-500/20' },
-  hard: { dot: 'bg-rose-500', text: 'text-rose-400', soft: 'bg-rose-500/10', border: 'border-rose-500/20' },
+  easy: { dot: 'bg-emerald-500', text: 'text-success', soft: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  medium: { dot: 'bg-amber-500', text: 'text-warning', soft: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  hard: { dot: 'bg-rose-500', text: 'text-danger', soft: 'bg-rose-500/10', border: 'border-rose-500/20' },
 };
 
 export const difficultyConfig = {
@@ -49,16 +49,20 @@ export const difficulties = (['easy', 'medium', 'hard'] as const).map((value) =>
 export const statsBar = 'bg-gradient-to-r from-primary-500/80 to-purple-600/80';
 
 /**
- * 需要"颜色字符串"而非 Tailwind 类名时的唯一来源：SVG 的 fill/stroke 属性、
- * 动画组件的 color props、内联 style。className 场景不要用这里，写语义 token 类。
- * 值与 tailwind.config.js 的 theme.extend.colors 保持一致。
+ * 需要"颜色字符串"而非 Tailwind 类名时的唯一来源：SVG、动画组件的 color props、内联 style。
+ * className 场景不要用这里，写语义 token 类（bg-raised / text-muted）。
+ *
+ * 会随主题翻的走 CSS 变量（值在 index.css 的 :root / html.light 里）；
+ * 品牌色两套主题共用，保持字面量 —— 画布（ctx.strokeStyle）认不了 var()，
+ * 所以凡是要喂给 canvas 的颜色都必须是能在 CSS 之外求值的字面量。
  */
-export const uiColors = {
-  ink: '#0a0a0f',
-  inkSoft: '#0f0f14',
-  surface: '#141419',
-  raised: '#1a1a22',
-  edge: '#2a2a38',
-  muted: '#8b8b9a',
+export const uiColors: Record<string, string> = {
+  ink: 'rgb(var(--c-ink))',
+  inkSoft: 'rgb(var(--c-ink-soft))',
+  surface: 'rgb(var(--c-surface))',
+  raised: 'rgb(var(--c-raised))',
+  edge: 'rgb(var(--c-edge))',
+  muted: 'rgb(var(--c-muted))',
+  brand: 'rgb(var(--c-brand))',
   primary: '#06d6a0',
-} as const;
+};

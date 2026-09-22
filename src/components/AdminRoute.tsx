@@ -29,7 +29,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-ink flex items-center justify-center">
-        <div className="text-white/60 text-sm">验证管理员身份...</div>
+        <div className="text-bright/60 text-sm">验证管理员身份...</div>
       </div>
     );
   }

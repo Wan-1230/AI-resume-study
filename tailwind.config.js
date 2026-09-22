@@ -58,19 +58,32 @@ export default {
           900: '#0f172a',
         },
         // 语义底色与文字色：组件里只写这些名字，不要再写字面 hex。
-        // 与 src/index.css 的 :root 变量、src/constants/config.ts 的 uiColors 一一对应。
-        ink: '#0a0a0f',        // 页面底色
-        'ink-soft': '#0f0f14', // 顶栏与输入区底色
-        panel: '#12121a',      // 管理后台面板
-        surface: '#141419',    // 卡片
-        raised: '#1a1a22',     // hover 与输入框
-        lift: '#222228',       // raised 再亮一档：可点卡片的 hover
-        line: '#1e1e28',       // 分隔线与进度轨道
-        edge: '#2a2a38',       // 更强的描边
-        ghost: '#3a3a4a',      // 只用于描边与装饰，压在任何底色上都不到 2:1，别当文字色
-        faint: '#7d7d92',      // 次要图标与提示（旧值 #5a5a6e 在卡片上只有 2.6~2.9:1）
-        muted: '#8b8b9a',      // 次要正文
-        bright: '#e8e8ed',     // 主要正文
+        // 取值来自 src/index.css 的 --c-* 三元组（换主题就是换这组变量，类名一个都不用动）；
+        // 需要"颜色字符串"的 SVG / 动画组件从 src/constants/config.ts 的 uiColors 取。
+        // <alpha-value> 是必须的：没有它 bg-ink/90 这类带透明度的写法会失效。
+        ink: 'rgb(var(--c-ink) / <alpha-value>)',        // 页面底色
+        'ink-soft': 'rgb(var(--c-ink-soft) / <alpha-value>)', // 顶栏与输入区底色
+        panel: 'rgb(var(--c-panel) / <alpha-value>)',    // 管理后台面板
+        surface: 'rgb(var(--c-surface) / <alpha-value>)',  // 卡片
+        raised: 'rgb(var(--c-raised) / <alpha-value>)',    // hover 与输入框
+        lift: 'rgb(var(--c-lift) / <alpha-value>)',        // raised 再亮一档：可点卡片的 hover
+        line: 'rgb(var(--c-line) / <alpha-value>)',        // 分隔线与进度轨道
+        edge: 'rgb(var(--c-edge) / <alpha-value>)',        // 更强的描边
+        ghost: 'rgb(var(--c-ghost) / <alpha-value>)',      // 只用于描边与装饰，压在任何底色上都不到 2:1，别当文字色
+        faint: 'rgb(var(--c-faint) / <alpha-value>)',      // 次要图标与提示
+        muted: 'rgb(var(--c-muted) / <alpha-value>)',      // 次要正文
+        bright: 'rgb(var(--c-bright) / <alpha-value>)',    // 主要正文
+
+        // 语义"角色色"：同一类信息在不同主题下要换明暗，所以也走变量。
+        // 之前这些位置直接写 text-primary-500 / text-rose-400，暗色没问题，
+        // 亮色下薄荷压白底只有 1.7:1 —— 角色名换掉，值在 index.css 里成对翻。
+        brand: 'rgb(var(--c-brand) / <alpha-value>)',        // 品牌色文字（链接、强调、选中态）
+        'on-brand': '#0a0a0f',                                // 压在薄荷/品红实色上的文字，两个主题都必须是深色
+        danger: 'rgb(var(--c-danger) / <alpha-value>)',       // 错误、危险操作
+        success: 'rgb(var(--c-success) / <alpha-value>)',     // 成功、答对
+        warning: 'rgb(var(--c-warning) / <alpha-value>)',     // 提醒、待处理
+        'accent-fg': 'rgb(var(--c-accent-fg) / <alpha-value>)', // 紫色系强调文字
+        info: 'rgb(var(--c-info) / <alpha-value>)',           // 中性提示（如"邮箱注册"标签）
       },
       fontFamily: {
         sans: ['Space Grotesk', 'system-ui', 'sans-serif'],

@@ -69,7 +69,7 @@ export default function App() {
                   description="可能是链接抄断了，或者那一页还没做。从首页开始走一遍最稳。"
                   className="max-w-md bg-surface"
                   action={
-                    <a href="/" className="px-4 py-2 bg-primary-500/15 text-primary-500 rounded-xl text-sm">
+                    <a href="/" className="px-4 py-2 bg-primary-500/15 text-brand rounded-xl text-sm">
                       回首页
                     </a>
                   }

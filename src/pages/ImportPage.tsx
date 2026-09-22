@@ -10,7 +10,7 @@ import { difficultyBadge, difficultyConfig } from '@/constants/config';
 // 导入预览里的难度标签与其余页面共用同一份配色与文案，不再各自写一遍
 const diffClass = (value?: string) => {
   const badge = difficultyBadge[value as keyof typeof difficultyBadge];
-  return badge ? `${badge.bg} ${badge.text}` : 'bg-primary-500/10 text-primary-500';
+  return badge ? `${badge.bg} ${badge.text}` : 'bg-primary-500/10 text-brand';
 };
 
 const difficultyLabel = (value?: string) =>
@@ -136,7 +136,7 @@ export default function ImportPage() {
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-brand transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -151,7 +151,7 @@ export default function ImportPage() {
         {!isAuthenticated && (
           <div className="bg-raised border border-edge rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
             <span className="text-sm text-muted">导入的题目会保存到你登录后的账号，请先登录。</span>
-            <button onClick={() => navigate('/login')} className="shrink-0 text-sm text-primary-500 hover:text-primary-400 font-medium">
+            <button onClick={() => navigate('/login')} className="shrink-0 text-sm text-brand hover:text-brand font-medium">
               去登录
             </button>
           </div>
@@ -170,7 +170,7 @@ export default function ImportPage() {
                 <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0" />
               )}
               <div>
-                <p className={result.failed.length ? 'text-amber-400 font-medium' : 'text-emerald-400 font-medium'}>
+                <p className={result.failed.length ? 'text-warning font-medium' : 'text-success font-medium'}>
                   成功导入 {result.created} 道
                   {result.failed.length ? `，${result.failed.length} 道被跳过` : ''}
                 </p>
@@ -180,7 +180,7 @@ export default function ImportPage() {
               </div>
             </div>
             {result.failed.length > 0 && (
-              <ul className="mt-3 space-y-1 text-sm text-amber-400/80">
+              <ul className="mt-3 space-y-1 text-sm text-warning/80">
                 {result.failed.slice(0, 5).map((f) => (
                   <li key={f.index}>
                     第 {f.index + 1} 行「{f.title || '无标题'}」：{f.error}
@@ -195,7 +195,7 @@ export default function ImportPage() {
         {error && (
           <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 flex items-center space-x-3">
             <AlertCircle className="w-6 h-6 text-rose-500" />
-            <p className="text-rose-400">{error}</p>
+            <p className="text-danger">{error}</p>
           </div>
         )}
 
@@ -221,7 +221,7 @@ export default function ImportPage() {
               />
               <label
                 htmlFor="file-input"
-                className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink rounded-xl cursor-pointer transition-all btn-hover-scale"
+                className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-on-brand rounded-xl cursor-pointer transition-all btn-hover-scale"
               >
                 选择文件
               </label>
@@ -259,7 +259,7 @@ export default function ImportPage() {
               </ul>
               <button
                 onClick={downloadTemplate}
-                className="mt-3 flex items-center space-x-2 text-primary-500 hover:text-primary-400 text-sm"
+                className="mt-3 flex items-center space-x-2 text-brand hover:text-brand text-sm"
               >
                 <Download className="w-4 h-4" />
                 <span>下载导入模板</span>
@@ -275,7 +275,7 @@ export default function ImportPage() {
 
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-brand animate-spin" />
               </div>
             ) : importData.length === 0 ? (
               <div className="text-center py-12">
@@ -297,7 +297,7 @@ export default function ImportPage() {
                     </div>
                     <h4 className="font-medium text-bright text-sm mb-2">{item.title}</h4>
                     <div className="flex items-center space-x-2 text-xs">
-                      <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 rounded">{item.category}</span>
+                      <span className="px-2 py-0.5 bg-primary-500/10 text-brand rounded">{item.category}</span>
                       <span className={`px-2 py-0.5 rounded ${diffClass(item.difficulty)}`}>{difficultyLabel(item.difficulty)}</span>
                       <span className="text-faint">答案: {item.answer}</span>
                     </div>
@@ -310,7 +310,7 @@ export default function ImportPage() {
               <button
                 onClick={handleImport}
                 disabled={importing || !isAuthenticated}
-                className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-ink font-medium rounded-xl transition-all flex items-center justify-center space-x-2 btn-hover-scale btn-ripple"
+                className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-on-brand font-medium rounded-xl transition-all flex items-center justify-center space-x-2 btn-hover-scale btn-ripple"
               >
                 {importing ? (
                   <>

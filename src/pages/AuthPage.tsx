@@ -121,7 +121,7 @@ export default function AuthPage() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-faint hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
+          className="flex items-center space-x-2 text-faint hover:text-brand mb-6 transition-colors btn-hover-scale"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>返回首页</span>
@@ -131,12 +131,12 @@ export default function AuthPage() {
           {/* 顶部渐变区域 */}
           <div className="bg-gradient-to-r from-primary-500/90 to-purple-600/90 p-8 text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-ink" />
+              <User className="w-8 h-8 text-on-brand" />
             </div>
-            <h1 className="text-2xl font-bold text-ink">
+            <h1 className="text-2xl font-bold text-on-brand">
               {mode === 'login' ? '欢迎回来' : '创建账户'}
             </h1>
-            <p className="text-ink/80 text-sm mt-2">
+            <p className="text-on-brand/80 text-sm mt-2">
               {mode === 'login' ? '登录您的账户开始学习' : '注册新账户开启学习之旅'}
             </p>
           </div>
@@ -149,14 +149,14 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={openGitHubLogin}
-                  className="w-full py-3 bg-[#24292e] hover:bg-[#2f363d] text-white font-medium rounded-xl transition-all flex items-center justify-center space-x-3 mb-3 btn-hover-scale"
+                  className="w-full py-3 bg-[#24292e] hover:bg-[#2f363d] text-bright font-medium rounded-xl transition-all flex items-center justify-center space-x-3 mb-3 btn-hover-scale"
                 >
                   <GitHubIcon className="w-5 h-5" />
                   <span>{mode === 'login' ? '使用 GitHub 登录' : '使用 GitHub 注册'}</span>
                 </button>
 
                 {githubHint && (
-                  <p className="text-xs text-amber-400 mb-3 text-center">{githubHint}</p>
+                  <p className="text-xs text-warning mb-3 text-center">{githubHint}</p>
                 )}
 
                 {/* 分隔线 */}
@@ -173,7 +173,7 @@ export default function AuthPage() {
 
             {/* 错误提示 */}
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-4 text-rose-400 text-sm">
+              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-4 text-danger text-sm">
                 {error}
               </div>
             )}
@@ -253,7 +253,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-ink font-medium rounded-xl transition-all btn-hover-scale flex items-center justify-center space-x-2"
+                className="w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-on-brand font-medium rounded-xl transition-all btn-hover-scale flex items-center justify-center space-x-2"
               >
                 {loading ? (
                   <>
@@ -272,7 +272,7 @@ export default function AuthPage() {
                 {mode === 'login' ? '还没有账户？' : '已有账户？'}
                 <button
                   onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(null); }}
-                  className="ml-1 text-primary-500 hover:text-primary-400 font-medium"
+                  className="ml-1 text-brand hover:text-brand font-medium"
                 >
                   {mode === 'login' ? '立即注册' : '立即登录'}
                 </button>

@@ -39,26 +39,26 @@ export default function AdminLoginPage() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-faint hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
+          className="flex items-center space-x-2 text-faint hover:text-brand mb-6 transition-colors btn-hover-scale"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>返回首页</span>
         </button>
 
         {/* 登录卡片 */}
-        <div className="bg-panel rounded-2xl p-8 border border-white/[0.06]">
+        <div className="bg-panel rounded-2xl p-8 border border-line">
           {/* 标题 */}
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-primary-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-7 h-7 text-primary-500" />
+              <Shield className="w-7 h-7 text-brand" />
             </div>
-            <h1 className="text-2xl font-bold text-white">管理员登录</h1>
+            <h1 className="text-2xl font-bold text-bright">管理员登录</h1>
             <p className="text-muted mt-2 text-sm">此页面仅限管理员访问</p>
           </div>
 
           {/* 错误提示 */}
           {error && (
-            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-danger text-sm">
               {error}
             </div>
           )}
@@ -77,7 +77,7 @@ export default function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@example.com"
-                  className="w-full pl-11 pr-4 py-3 bg-ink border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
+                  className="w-full pl-11 pr-4 py-3 bg-ink border border-line rounded-xl text-bright placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
                 />
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="输入密码"
-                  className="w-full pl-11 pr-12 py-3 bg-ink border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
+                  className="w-full pl-11 pr-12 py-3 bg-ink border border-line rounded-xl text-bright placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
                 />
                 <button
                   type="button"
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500/50 text-ink font-medium rounded-xl transition-colors flex items-center justify-center space-x-2 btn-hover-scale"
+              className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500/50 text-on-brand font-medium rounded-xl transition-colors flex items-center justify-center space-x-2 btn-hover-scale"
             >
               {loading ? (
                 <>

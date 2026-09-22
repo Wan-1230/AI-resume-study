@@ -25,7 +25,7 @@ export default function Sidebar({
         <div className="bg-surface border border-line rounded-2xl p-5">
           <div className="flex items-center space-x-2 mb-5">
             <div className="bg-primary-500/10 p-2 rounded-lg">
-              <FolderOpen className="w-4 h-4 text-primary-500" />
+              <FolderOpen className="w-4 h-4 text-brand" />
             </div>
             <h3 className="font-semibold text-bright text-sm">题目分类</h3>
           </div>
@@ -34,8 +34,8 @@ export default function Sidebar({
               onClick={() => onCategoryChange(null)}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                 selectedCategory === null
-                  ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink shadow-lg shadow-primary-500/10'
-                  : 'text-muted hover:text-primary-500 hover:bg-raised'
+                  ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand shadow-lg shadow-primary-500/10'
+                  : 'text-muted hover:text-brand hover:bg-raised'
               }`}
             >
               <span>全部分类</span>
@@ -47,8 +47,8 @@ export default function Sidebar({
                 onClick={() => onCategoryChange(category.id)}
                 className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                   selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink shadow-lg shadow-primary-500/10'
-                    : 'text-muted hover:text-primary-500 hover:bg-raised'
+                    ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand shadow-lg shadow-primary-500/10'
+                    : 'text-muted hover:text-brand hover:bg-raised'
                 }`}
               >
                 <span className="truncate">{category.name}</span>
@@ -72,7 +72,7 @@ export default function Sidebar({
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                 selectedDifficulty === null
                   ? 'bg-gradient-to-r from-purple-500/90 to-purple-600/90 text-white shadow-lg shadow-purple-500/10'
-                  : 'text-muted hover:text-purple-400 hover:bg-raised'
+                  : 'text-muted hover:text-accent-fg hover:bg-raised'
               }`}
             >
               <span>全部难度</span>
@@ -85,7 +85,7 @@ export default function Sidebar({
                 className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                   selectedDifficulty === diff.value
                     ? 'bg-gradient-to-r from-purple-500/90 to-purple-600/90 text-white shadow-lg shadow-purple-500/10'
-                    : 'text-muted hover:text-purple-400 hover:bg-raised'
+                    : 'text-muted hover:text-accent-fg hover:bg-raised'
                 }`}
               >
                 <div className="flex items-center space-x-2">
@@ -105,7 +105,7 @@ export default function Sidebar({
           <div className="relative">
             <div className="flex items-center space-x-2 mb-3">
               <div className="bg-primary-500/10 p-2 rounded-lg">
-                <Sparkles className="w-4 h-4 text-primary-500" />
+                <Sparkles className="w-4 h-4 text-brand" />
               </div>
               <h3 className="font-semibold text-bright text-sm">学习提示</h3>
             </div>

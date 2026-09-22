@@ -30,22 +30,22 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-bright mb-4 uppercase tracking-wider">快速链接</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/practice" className="text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/practice" className="text-muted hover:text-brand text-sm transition-colors">
                   练习模式
                 </a>
               </li>
               <li>
-                <a href="/chat" className="text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/chat" className="text-muted hover:text-brand text-sm transition-colors">
                   AI 助手
                 </a>
               </li>
               <li>
-                <a href="/my-questions" className="text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/my-questions" className="text-muted hover:text-brand text-sm transition-colors">
                   我的题库
                 </a>
               </li>
               <li>
-                <a href="/import" className="text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/import" className="text-muted hover:text-brand text-sm transition-colors">
                   数据导入
                 </a>
               </li>
@@ -57,19 +57,19 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-bright mb-4 uppercase tracking-wider">法律条款</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/about" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/about" className="flex items-center space-x-2 text-muted hover:text-brand text-sm transition-colors">
                   <FileText className="w-4 h-4" />
                   <span>关于我们</span>
                 </a>
               </li>
               <li>
-                <a href="/privacy" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/privacy" className="flex items-center space-x-2 text-muted hover:text-brand text-sm transition-colors">
                   <Shield className="w-4 h-4" />
                   <span>隐私政策</span>
                 </a>
               </li>
               <li>
-                <a href="/terms" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
+                <a href="/terms" className="flex items-center space-x-2 text-muted hover:text-brand text-sm transition-colors">
                   <Scale className="w-4 h-4" />
                   <span>用户协议</span>
                 </a>
@@ -87,7 +87,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-2 text-muted text-sm">
                 <Github className="w-4 h-4" />
-                <a href="https://github.com/Wan-1230/-" target="_blank" rel="noopener noreferrer" className="hover:text-primary-500 transition-colors">
+                <a href="https://github.com/Wan-1230/-" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors">
                   GitHub
                 </a>
               </li>

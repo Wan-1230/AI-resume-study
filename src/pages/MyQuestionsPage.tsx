@@ -187,7 +187,7 @@ export default function MyQuestionsPage() {
             </button>
             <button
               onClick={() => navigate('/login')}
-              className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
+              className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
             >
               去登录
             </button>
@@ -204,7 +204,7 @@ export default function MyQuestionsPage() {
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-brand transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -212,7 +212,7 @@ export default function MyQuestionsPage() {
             <h1 className="text-lg font-semibold text-bright">我的题库</h1>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink rounded-xl transition-all btn-hover-scale"
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-on-brand rounded-xl transition-all btn-hover-scale"
             >
               <Plus className="w-5 h-5" />
               <span>添加题目</span>
@@ -224,8 +224,8 @@ export default function MyQuestionsPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {pageError && (
           <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
-            <span className="text-sm text-rose-400">{pageError}</span>
-            <button onClick={() => setPageError(null)} className="text-rose-400/70 hover:text-rose-400 text-sm shrink-0">
+            <span className="text-sm text-danger">{pageError}</span>
+            <button onClick={() => setPageError(null)} className="text-danger/70 hover:text-danger text-sm shrink-0">
               关闭
             </button>
           </div>
@@ -274,7 +274,7 @@ export default function MyQuestionsPage() {
 
         <div className="bg-surface border border-line rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-line flex items-center space-x-2">
-            <FolderOpen className="w-5 h-5 text-primary-500" />
+            <FolderOpen className="w-5 h-5 text-brand" />
             <span className="font-semibold text-bright">我的题目</span>
             <span className="text-muted text-sm">({filteredQuestions.length} 道)</span>
           </div>
@@ -285,7 +285,7 @@ export default function MyQuestionsPage() {
               <p className="text-faint">暂无题目</p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="mt-4 px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
+                className="mt-4 px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale"
               >
                 添加第一道题目
               </button>
@@ -329,7 +329,7 @@ export default function MyQuestionsPage() {
                           <button
                             onClick={() => handleEditSave(question.id)}
                             disabled={saving}
-                            className="px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {saving ? '保存中…' : '保存'}
                           </button>
@@ -345,7 +345,7 @@ export default function MyQuestionsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 text-xs rounded-lg font-medium">
+                            <span className="px-2 py-0.5 bg-primary-500/10 text-brand text-xs rounded-lg font-medium">
                               {question.category?.name || '未分类'}
                             </span>
                             <span className={`px-2 py-0.5 rounded-lg text-xs font-medium ${colors.bg} ${colors.text}`}>
@@ -362,7 +362,7 @@ export default function MyQuestionsPage() {
                         <div className="flex items-center space-x-2 ml-4">
                           <button
                             onClick={() => handleEditStart(question)}
-                            className="p-2 text-faint hover:text-primary-500 hover:bg-primary-500/10 rounded-xl transition-colors"
+                            className="p-2 text-faint hover:text-brand hover:bg-primary-500/10 rounded-xl transition-colors"
                           >
                             <Edit2 className="w-5 h-5" />
                           </button>
@@ -371,7 +371,7 @@ export default function MyQuestionsPage() {
                             title={pendingDelete === question.id ? '再点一次就删除这道题' : '删除这道题'}
                             className={`flex items-center space-x-1.5 rounded-xl transition-colors ${
                               pendingDelete === question.id
-                                ? 'px-3 py-2 bg-rose-500/15 text-rose-400 border border-rose-500/40 text-xs font-medium'
+                                ? 'px-3 py-2 bg-rose-500/15 text-danger border border-rose-500/40 text-xs font-medium'
                                 : 'p-2 text-faint hover:text-rose-500 hover:bg-rose-500/10'
                             }`}
                           >
@@ -396,7 +396,7 @@ export default function MyQuestionsPage() {
                     <button
                       onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 bg-raised border border-edge rounded-xl text-muted hover:text-primary-500 hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
+                      className="px-4 py-2 bg-raised border border-edge rounded-xl text-muted hover:text-brand hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
                     >
                       上一页
                     </button>
@@ -418,7 +418,7 @@ export default function MyQuestionsPage() {
                           className={`w-10 h-10 rounded-xl font-medium transition-all text-sm ${
                             currentPage === pageNum
                               ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-ink'
-                              : 'bg-raised border border-edge text-muted hover:text-primary-500 hover:border-primary-500/30'
+                              : 'bg-raised border border-edge text-muted hover:text-brand hover:border-primary-500/30'
                           }`}
                         >
                           {pageNum}
@@ -428,7 +428,7 @@ export default function MyQuestionsPage() {
                     <button
                       onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 bg-raised border border-edge rounded-xl text-muted hover:text-primary-500 hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
+                      className="px-4 py-2 bg-raised border border-edge rounded-xl text-muted hover:text-brand hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
                     >
                       下一页
                     </button>
@@ -448,7 +448,7 @@ export default function MyQuestionsPage() {
                       <button
                         onClick={handleJumpToPage}
                         disabled={!jumpToPage || parseInt(jumpToPage) < 1 || parseInt(jumpToPage) > totalPages}
-                        className="px-3 h-10 bg-raised border border-edge rounded-lg text-muted hover:text-primary-500 hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
+                        className="px-3 h-10 bg-raised border border-edge rounded-lg text-muted hover:text-brand hover:border-primary-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm"
                       >
                         确定
                       </button>
@@ -576,7 +576,7 @@ export default function MyQuestionsPage() {
               <button
                 onClick={handleAddQuestion}
                 disabled={saving}
-                className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale btn-ripple disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2.5 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all btn-hover-scale btn-ripple disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? '添加中…' : '添加题目'}
               </button>

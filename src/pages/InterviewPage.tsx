@@ -160,7 +160,7 @@ export default function InterviewPage() {
       <Shell onBack={() => navigate('/')} title="模拟面试">
         <div className="bg-surface border border-line rounded-2xl p-8 text-center">
           <p className="text-bright mb-4">{notice || '这份报告打不开'}</p>
-          <button onClick={() => navigate('/interview')} className="px-4 py-2 bg-primary-500/15 text-primary-500 rounded-xl">回到模拟面试</button>
+          <button onClick={() => navigate('/interview')} className="px-4 py-2 bg-primary-500/15 text-brand rounded-xl">回到模拟面试</button>
         </div>
       </Shell>
     );
@@ -193,7 +193,7 @@ export default function InterviewPage() {
             分数低不是坏事，看清差在哪才是这轮的目的。
           </p>
           {!graderReady && (
-            <p className="mt-3 text-sm text-amber-400">
+            <p className="mt-3 text-sm text-warning">
               当前后端没配生成能力：客观题照常判分，但六维点评与追问会缺失（报告里会写明哪部分没跑）。
             </p>
           )}
@@ -212,17 +212,17 @@ export default function InterviewPage() {
                 <span className="font-medium text-bright">{d.name}</span>
                 <span className="text-xs text-muted">{d.available} 题可选</span>
               </div>
-              {picked === d.key && <span className="mt-1 inline-block text-xs text-primary-500">已选择</span>}
+              {picked === d.key && <span className="mt-1 inline-block text-xs text-brand">已选择</span>}
             </button>
           ))}
         </div>
 
-        {notice && <p className="text-sm text-rose-400 mb-4">{notice}</p>}
+        {notice && <p className="text-sm text-danger mb-4">{notice}</p>}
 
         {isAuthenticated ? (
           <button
             onClick={start}
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 hover:opacity-90 transition-opacity"
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-on-brand font-medium flex items-center justify-center space-x-2 hover:opacity-90 transition-opacity"
           >
             <Mic className="w-4 h-4" /><span>开始面试</span>
           </button>
@@ -311,11 +311,11 @@ export default function InterviewPage() {
                 className="w-full px-4 py-3 bg-surface border border-line rounded-xl text-sm text-bright mb-4 focus:outline-none focus:border-primary-500/50 resize-none"
               />
             )}
-            {notice && <p className="text-sm text-rose-400 mb-3">{notice}</p>}
+            {notice && <p className="text-sm text-danger mb-3">{notice}</p>}
             <button
               onClick={submitAnswer}
               disabled={busy !== null}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-on-brand font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
             >
               {busy === 'answer' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{busy === 'answer' ? '面试官在听…' : '回答这题'}</span>
@@ -331,14 +331,14 @@ export default function InterviewPage() {
   if (phase === 'report' && report && sessionId) {
     return (
       <Shell onBack={() => navigate('/interview')} title="复盘报告">
-        {notice && <p className="text-sm text-amber-400 mb-4">{notice}</p>}
+        {notice && <p className="text-sm text-warning mb-4">{notice}</p>}
         <div className="flex items-center justify-between mb-5">
           <div>
             <p className="text-xs text-muted mb-1">{directionName}</p>
             <h2 className="text-lg font-semibold text-bright">这一轮的复盘</h2>
           </div>
           <div className="flex items-center space-x-2">
-            <button onClick={toggleShare} className={`px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 border transition-colors ${visibility === 'public' ? 'border-primary-500/50 bg-primary-500/10 text-primary-500' : 'border-edge text-muted'}`}>
+            <button onClick={toggleShare} className={`px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 border transition-colors ${visibility === 'public' ? 'border-primary-500/50 bg-primary-500/10 text-brand' : 'border-edge text-muted'}`}>
               <Share2 className="w-3.5 h-3.5" /><span>{visibility === 'public' ? '已公开' : '开启分享'}</span>
             </button>
             {visibility === 'public' && (
@@ -365,7 +365,7 @@ function Shell({ onBack, title, children }: { onBack: () => void; title: string;
       <header className="bg-ink-soft/90 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <button onClick={onBack} className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors">
+            <button onClick={onBack} className="flex items-center space-x-2 text-muted hover:text-brand transition-colors">
               <ArrowLeft className="w-5 h-5" /><span>返回</span>
             </button>
             <h1 className="text-lg font-semibold text-bright">{title}</h1>
@@ -399,12 +399,12 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
         {result.feedback ? (
           <p className="text-sm text-bright leading-relaxed whitespace-pre-wrap">{result.feedback}</p>
         ) : (
-          <p className="text-sm text-amber-400">点评没生成（LLM 不可用或这次没返回合法结果），客观题成绩仍然算数。</p>
+          <p className="text-sm text-warning">点评没生成（LLM 不可用或这次没返回合法结果），客观题成绩仍然算数。</p>
         )}
 
         {result.reference && (
           <details className="mt-3">
-            <summary className="text-xs text-muted cursor-pointer hover:text-primary-500">看这个考点的参考要点</summary>
+            <summary className="text-xs text-muted cursor-pointer hover:text-brand">看这个考点的参考要点</summary>
             <p className="mt-2 text-sm text-muted leading-relaxed">{result.reference}</p>
           </details>
         )}
@@ -429,7 +429,7 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
       <button
         onClick={onNext}
         disabled={busy}
-        className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
+        className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-on-brand font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
       >
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
         <span>{busy ? '正在整理…' : last ? '答完，交卷出报告' : '下一题'}</span>
@@ -471,7 +471,7 @@ function ReportView({ report, objective, transcript, items }: {
                 <span>选择 {objective.mcq_correct}/{objective.mcq_answered} 对</span>
               </span>
             </div>
-            {report?.error && <p className="mt-3 text-sm text-amber-400">评审未完成：{report.error}</p>}
+            {report?.error && <p className="mt-3 text-sm text-warning">评审未完成：{report.error}</p>}
             {report?.summary && <p className="mt-3 text-sm text-bright leading-relaxed">{report.summary}</p>}
           </div>
 
@@ -509,7 +509,7 @@ function ReportView({ report, objective, transcript, items }: {
           <div className="space-y-3">
             {report.improvements.map((row, i) => (
               <div key={i} className="flex space-x-3">
-                <span className="shrink-0 w-6 h-6 rounded-lg bg-rose-500/10 text-rose-400 text-xs flex items-center justify-center font-mono">{row.priority}</span>
+                <span className="shrink-0 w-6 h-6 rounded-lg bg-rose-500/10 text-danger text-xs flex items-center justify-center font-mono">{row.priority}</span>
                 <div>
                   <p className="text-sm text-bright">{row.what}</p>
                   {row.how && <p className="text-xs text-muted mt-1 leading-relaxed">{row.how}</p>}
@@ -542,7 +542,7 @@ function ReportView({ report, objective, transcript, items }: {
           <div className="space-y-3">
             {rows.map((t) => (
               <details key={t.item_id}>
-                <summary className="text-sm text-muted cursor-pointer hover:text-primary-500">
+                <summary className="text-sm text-muted cursor-pointer hover:text-brand">
                   {t.correct === null ? '（口头）' : t.correct ? '✓ ' : '✗ '}
                   {titleOf.get(t.item_id) || t.question}
                 </summary>

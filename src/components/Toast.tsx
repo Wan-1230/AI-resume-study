@@ -3,8 +3,8 @@ import { useToasts, type ToastKind } from '@/lib/toast';
 
 const STYLE: Record<ToastKind, { icon: typeof Info; ring: string; text: string }> = {
   info: { icon: Info, ring: 'border-edge', text: 'text-bright' },
-  success: { icon: CheckCircle, ring: 'border-emerald-500/30', text: 'text-emerald-400' },
-  error: { icon: AlertCircle, ring: 'border-rose-500/30', text: 'text-rose-400' },
+  success: { icon: CheckCircle, ring: 'border-emerald-500/30', text: 'text-success' },
+  error: { icon: AlertCircle, ring: 'border-rose-500/30', text: 'text-danger' },
 };
 
 /**

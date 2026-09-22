@@ -213,7 +213,7 @@ export default function ResumePage() {
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-brand transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -267,7 +267,7 @@ export default function ResumePage() {
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-line">
                   <div className="flex items-center space-x-2">
-                    <FileText className="w-4 h-4 text-primary-500" />
+                    <FileText className="w-4 h-4 text-brand" />
                     <span className="text-sm font-medium text-bright">我的简历</span>
                     <span className="text-xs text-muted">粘贴或拖拽文件</span>
                   </div>
@@ -282,7 +282,7 @@ export default function ResumePage() {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={parsingFile}
-                      className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-purple-400 hover:bg-raised rounded-lg transition-colors disabled:opacity-50"
+                      className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-accent-fg hover:bg-raised rounded-lg transition-colors disabled:opacity-50"
                     >
                       {parsingFile ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -298,14 +298,14 @@ export default function ResumePage() {
                 {uploadedFile && (
                   <div className="flex items-center justify-between px-4 py-2 bg-purple-500/10 border-b border-purple-500/20">
                     <div className="flex items-center space-x-2">
-                      <File className="w-4 h-4 text-purple-400" />
+                      <File className="w-4 h-4 text-accent-fg" />
                       <span className="text-sm text-bright">{uploadedFile.name}</span>
                       <span className="text-xs text-muted">{uploadedFile.size}</span>
-                      <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">{uploadedFile.type}</span>
+                      <span className="px-1.5 py-0.5 bg-purple-500/20 text-accent-fg text-xs rounded">{uploadedFile.type}</span>
                     </div>
                     <button
                       onClick={removeFile}
-                      className="p-1 text-faint hover:text-rose-400 transition-colors"
+                      className="p-1 text-faint hover:text-danger transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -316,8 +316,8 @@ export default function ResumePage() {
                 {isDragging && (
                   <div className="absolute inset-0 bg-purple-500/10 backdrop-blur-sm flex items-center justify-center z-10">
                     <div className="text-center">
-                      <Upload className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-                      <p className="text-purple-400 font-medium">释放文件以上传</p>
+                      <Upload className="w-12 h-12 text-accent-fg mx-auto mb-3" />
+                      <p className="text-accent-fg font-medium">释放文件以上传</p>
                     </div>
                   </div>
                 )}
@@ -338,7 +338,7 @@ export default function ResumePage() {
                       className="w-full py-6 border-2 border-dashed border-edge rounded-xl flex flex-col items-center justify-center space-y-2 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all disabled:opacity-50"
                     >
                       {parsingFile ? (
-                        <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
+                        <Loader2 className="w-8 h-8 text-accent-fg animate-spin" />
                       ) : (
                         <Upload className="w-8 h-8 text-faint" />
                       )}
@@ -380,7 +380,7 @@ export default function ResumePage() {
                 {matching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Gauge className="w-4 h-4" />}
                 <span>{matching ? '逐条核对中（约 20~40 秒）…' : '生成匹配报告'}</span>
               </button>
-              {matchError && <p className="text-sm text-rose-400">{matchError}</p>}
+              {matchError && <p className="text-sm text-danger">{matchError}</p>}
               {exported && <p className="text-sm text-muted">{exported}</p>}
             </div>
 
@@ -389,14 +389,14 @@ export default function ResumePage() {
               <div className="flex items-center justify-between px-4 py-3 border-b border-line">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 rounded bg-purple-500/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-purple-400" />
+                    <Sparkles className="w-3 h-3 text-accent-fg" />
                   </div>
                   <span className="text-sm font-medium text-bright">优化结果</span>
                 </div>
                 {result && (
                   <button
                     onClick={handleCopy}
-                    className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-purple-400 hover:bg-raised rounded-lg transition-colors"
+                    className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-accent-fg hover:bg-raised rounded-lg transition-colors"
                   >
                     {copied ? (
                       <>
@@ -447,9 +447,9 @@ export default function ResumePage() {
             <div className="mt-6 bg-surface border border-line rounded-2xl p-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div className="flex items-center space-x-3">
-                  <Gauge className="w-5 h-5 text-primary-500" />
+                  <Gauge className="w-5 h-5 text-brand" />
                   <h3 className="text-lg font-semibold text-bright">匹配报告</h3>
-                  <span className="text-2xl font-bold text-primary-500">{report.scores.overall}%</span>
+                  <span className="text-2xl font-bold text-brand">{report.scores.overall}%</span>
                   <span className="text-xs text-muted">总体</span>
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-muted">
@@ -503,9 +503,9 @@ function fmtScore(value: number | null) {
 }
 
 const VERDICT_STYLE: Record<MatchItem['verdict'], { icon: typeof CircleCheck; label: string; className: string }> = {
-  hit: { icon: CircleCheck, label: '命中', className: 'text-emerald-400' },
-  partial: { icon: CircleDashed, label: '部分命中', className: 'text-amber-400' },
-  missing: { icon: CircleX, label: '未命中', className: 'text-rose-400' },
+  hit: { icon: CircleCheck, label: '命中', className: 'text-success' },
+  partial: { icon: CircleDashed, label: '部分命中', className: 'text-warning' },
+  missing: { icon: CircleX, label: '未命中', className: 'text-danger' },
 };
 
 function MatchRow({ item }: { item: MatchItem }) {
@@ -521,10 +521,10 @@ function MatchRow({ item }: { item: MatchItem }) {
       </div>
       <p className="mt-1.5 text-xs text-muted">
         证据：{item.evidence ? <span className="text-bright">“{item.evidence}”</span> : '简历里没找到支撑的原句'}
-        {item.demoted && <span className="text-amber-400">（判定被下调：说命中但给不出原文）</span>}
+        {item.demoted && <span className="text-warning">（判定被下调：说命中但给不出原文）</span>}
       </p>
       {item.note && <p className="mt-1 text-xs text-muted">说明：{item.note}</p>}
-      {item.study?.length ? <p className="mt-1 text-xs text-primary-400">可补：{item.study.join('、')}</p> : null}
+      {item.study?.length ? <p className="mt-1 text-xs text-brand">可补：{item.study.join('、')}</p> : null}
     </div>
   );
 }

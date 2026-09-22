@@ -186,7 +186,7 @@ export default function PracticePage() {
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-brand transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -210,7 +210,7 @@ export default function PracticePage() {
                 <span className="text-sm text-muted">登录后可保存练习记录、统计正确率与错题本</span>
                 <button
                   onClick={() => navigate('/login')}
-                  className="shrink-0 text-sm text-primary-500 hover:text-primary-400 font-medium"
+                  className="shrink-0 text-sm text-brand hover:text-brand font-medium"
                 >
                   去登录
                 </button>
@@ -255,7 +255,7 @@ export default function PracticePage() {
                     <li key={w.question_id}>
                       <button
                         onClick={() => navigate(`/question/${w.question_id}`)}
-                        className="w-full text-left text-sm text-bright hover:text-primary-500 transition-colors flex items-center justify-between gap-3"
+                        className="w-full text-left text-sm text-bright hover:text-brand transition-colors flex items-center justify-between gap-3"
                       >
                         <span className="line-clamp-1 flex-1">{w.title || w.question_id}</span>
                         <span className="text-muted text-xs shrink-0">
@@ -278,7 +278,7 @@ export default function PracticePage() {
                       onClick={() => setQuestionCount(count)}
                       className={`flex-1 py-2 rounded-xl font-medium transition-all ${
                         questionCount === count
-                          ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink shadow-md'
+                          ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-on-brand shadow-md'
                           : 'bg-raised text-muted hover:bg-edge'
                       }`}
                     >
@@ -309,7 +309,7 @@ export default function PracticePage() {
                     onClick={() => setSelectedDifficulty(null)}
                     className={`flex-1 py-2 rounded-xl font-medium transition-all ${
                       selectedDifficulty === null
-                        ? 'bg-gradient-to-r from-accent-500/90 to-accent-600/90 text-ink shadow-md'
+                        ? 'bg-gradient-to-r from-accent-500/90 to-accent-600/90 text-on-brand shadow-md'
                         : 'bg-raised text-muted hover:bg-edge'
                     }`}
                   >
@@ -323,7 +323,7 @@ export default function PracticePage() {
                         onClick={() => setSelectedDifficulty(diff)}
                         className={`flex-1 py-2 rounded-xl font-medium transition-all ${
                           selectedDifficulty === diff
-                            ? `${config.color} text-white shadow-md`
+                            ? `${config.color} text-bright shadow-md`
                             : 'bg-raised text-muted hover:bg-edge'
                         }`}
                       >
@@ -335,7 +335,7 @@ export default function PracticePage() {
               </div>
 
               {startError && (
-                <p className="text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5">
+                <p className="text-sm text-warning bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5">
                   {startError}
                 </p>
               )}
@@ -343,7 +343,7 @@ export default function PracticePage() {
               <div className="flex space-x-4">
                 <button
                   onClick={() => startPractice('filters')}
-                  className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-accent-500/90 hover:from-primary-500 hover:to-accent-500 text-ink font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg shadow-lg hover:shadow-xl btn-hover-scale"
+                  className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-accent-500/90 hover:from-primary-500 hover:to-accent-500 text-on-brand font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg shadow-lg hover:shadow-xl btn-hover-scale"
                 >
                   <Play className="w-6 h-6" />
                   <span>开始练习</span>
@@ -352,7 +352,7 @@ export default function PracticePage() {
                   <button
                     onClick={() => startPractice('wrong')}
                     title="只抽最近一次答错的题"
-                    className="flex-1 py-4 bg-raised border border-edge hover:border-rose-500/30 hover:text-rose-400 text-muted font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg btn-hover-scale"
+                    className="flex-1 py-4 bg-raised border border-edge hover:border-rose-500/30 hover:text-danger text-muted font-bold rounded-xl transition-all flex items-center justify-center space-x-2 text-lg btn-hover-scale"
                   >
                     <Target className="w-6 h-6" />
                     <span>只练错题 ({wrong.length})</span>
@@ -387,7 +387,7 @@ export default function PracticePage() {
             <div className="bg-surface border border-line rounded-2xl overflow-hidden">
               <div className="p-6 border-b border-line">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 bg-primary-500/10 text-primary-500 text-sm rounded-full font-medium">
+                  <span className="px-3 py-1 bg-primary-500/10 text-brand text-sm rounded-full font-medium">
                     {currentQuestion.category?.name || '未分类'}
                   </span>
                   <span className={`flex items-center space-x-1 ${difficultyConfig[currentQuestion.difficulty].textColor}`}>
@@ -418,11 +418,11 @@ export default function PracticePage() {
                         disabled={showAnswer}
                         className={`w-full text-left p-4 rounded-xl border transition-all ${
                           showCorrect
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-success'
                             : showWrong
-                            ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                            ? 'bg-rose-500/10 border-rose-500/30 text-danger'
                             : isSelected
-                            ? 'bg-primary-500/10 border-primary-500/30 text-primary-400'
+                            ? 'bg-primary-500/10 border-primary-500/30 text-brand'
                             : 'bg-raised border-edge text-muted hover:border-primary-500/20 hover:bg-lift'
                         }`}
                       >
@@ -457,7 +457,7 @@ export default function PracticePage() {
                 {showAnswer && (
                   <button
                     onClick={nextQuestion}
-                    className="mt-6 w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink font-medium rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md hover:shadow-lg btn-hover-scale"
+                    className="mt-6 w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-on-brand font-medium rounded-xl transition-all flex items-center justify-center space-x-2 shadow-md hover:shadow-lg btn-hover-scale"
                   >
                     <span>{currentIndex < questions.length - 1 ? '下一题' : '查看结果'}</span>
                     <ChevronRight className="w-5 h-5" />
@@ -471,9 +471,9 @@ export default function PracticePage() {
         {practiceState === 'finished' && (
           <div className="bg-surface border border-line rounded-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-primary-500/90 to-accent-500/90 p-8 text-center">
-              <Trophy className="w-16 h-16 text-white mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">练习完成!</h2>
-              <p className="text-white/80">太棒了，继续加油!</p>
+              <Trophy className="w-16 h-16 text-bright mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-bright mb-2">练习完成!</h2>
+              <p className="text-bright/80">太棒了，继续加油!</p>
             </div>
 
             <div className="p-8">
@@ -483,21 +483,21 @@ export default function PracticePage() {
                   <div className="text-muted text-sm">总题数</div>
                 </div>
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
-                  <div className="text-3xl font-bold text-emerald-400">{correctCount}</div>
-                  <div className="text-emerald-400/70 text-sm">正确</div>
+                  <div className="text-3xl font-bold text-success">{correctCount}</div>
+                  <div className="text-success/70 text-sm">正确</div>
                 </div>
                 <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 text-center">
-                  <div className="text-3xl font-bold text-rose-400">{questions.length - correctCount}</div>
-                  <div className="text-rose-400/70 text-sm">错误</div>
+                  <div className="text-3xl font-bold text-danger">{questions.length - correctCount}</div>
+                  <div className="text-danger/70 text-sm">错误</div>
                 </div>
                 <div className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-4 text-center">
-                  <div className="text-3xl font-bold text-primary-500">{accuracy}%</div>
-                  <div className="text-primary-500/70 text-sm">正确率</div>
+                  <div className="text-3xl font-bold text-brand">{accuracy}%</div>
+                  <div className="text-brand/70 text-sm">正确率</div>
                 </div>
               </div>
 
               <div className="flex items-center justify-center space-x-2 mb-6">
-                <Target className="w-5 h-5 text-primary-500" />
+                <Target className="w-5 h-5 text-brand" />
                 <span className="text-faint">用时</span>
                 <span className="text-bright font-mono font-bold">{formatTime(timeElapsed)}</span>
               </div>
@@ -505,14 +505,14 @@ export default function PracticePage() {
               {!isAuthenticated ? (
                 <p className="text-center text-sm text-muted mb-6">
                   未登录，本次成绩不会被保存。
-                  <button onClick={() => navigate('/login')} className="ml-1 text-primary-500 hover:text-primary-400">
+                  <button onClick={() => navigate('/login')} className="ml-1 text-brand hover:text-brand">
                     登录后练习
                   </button>
                 </p>
               ) : (
                 <p
                   className={`text-center text-sm mb-6 ${
-                    saveState === 'saved' ? 'text-emerald-400' : saveState === 'failed' ? 'text-rose-400' : 'text-faint'
+                    saveState === 'saved' ? 'text-success' : saveState === 'failed' ? 'text-danger' : 'text-faint'
                   }`}
                 >
                   {saveState === 'saving' && '正在保存练习记录…'}
@@ -542,10 +542,10 @@ export default function PracticePage() {
                       </div>
                       <div className="flex items-center space-x-4 text-sm">
                         <span className="text-faint">
-                          你的答案: <span className={result?.isCorrect ? 'text-emerald-400' : 'text-rose-400'}>{result?.userAnswer}</span>
+                          你的答案: <span className={result?.isCorrect ? 'text-success' : 'text-danger'}>{result?.userAnswer}</span>
                         </span>
                         {!result?.isCorrect && (
-                          <span className="text-emerald-400">正确答案: {result?.correctAnswer}</span>
+                          <span className="text-success">正确答案: {result?.correctAnswer}</span>
                         )}
                       </div>
                     </div>
@@ -563,7 +563,7 @@ export default function PracticePage() {
                 </button>
                 <button
                   onClick={() => navigate('/')}
-                  className="flex-1 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink font-medium rounded-xl transition-all shadow-md btn-hover-scale"
+                  className="flex-1 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-on-brand font-medium rounded-xl transition-all shadow-md btn-hover-scale"
                 >
                   返回首页
                 </button>

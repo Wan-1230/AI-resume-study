@@ -40,7 +40,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
     <div className={`flex space-x-4 ${isUser ? 'justify-end' : ''}`}>
       {!isUser && (
         <div className="w-10 h-10 bg-gradient-to-br from-primary-500/80 to-purple-600/80 rounded-xl flex items-center justify-center shrink-0">
-          <Bot className="w-5 h-5 text-white" />
+          <Bot className="w-5 h-5 text-bright" />
         </div>
       )}
       
@@ -71,7 +71,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <button
               onClick={copyAnswer}
-              className="flex items-center space-x-1.5 text-xs text-muted hover:text-primary-500 transition-colors"
+              className="flex items-center space-x-1.5 text-xs text-muted hover:text-brand transition-colors"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? '已复制' : '复制回答'}</span>
@@ -80,7 +80,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
             {canRegenerate && onRegenerate && (
               <button
                 onClick={onRegenerate}
-                className="flex items-center space-x-1.5 text-xs text-muted hover:text-primary-500 transition-colors"
+                className="flex items-center space-x-1.5 text-xs text-muted hover:text-brand transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>重新生成</span>
@@ -94,7 +94,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
                   title="这条有用"
                   aria-pressed={message.feedback === 'up'}
                   className={`p-1.5 rounded-lg transition-colors ${
-                    message.feedback === 'up' ? 'bg-emerald-500/15 text-emerald-400' : 'text-faint hover:bg-raised hover:text-emerald-400'
+                    message.feedback === 'up' ? 'bg-emerald-500/15 text-success' : 'text-faint hover:bg-raised hover:text-success'
                   }`}
                 >
                   <ThumbsUp className="w-3.5 h-3.5" />
@@ -104,7 +104,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
                   title="这条不对或没用"
                   aria-pressed={message.feedback === 'down'}
                   className={`p-1.5 rounded-lg transition-colors ${
-                    message.feedback === 'down' ? 'bg-rose-500/15 text-rose-400' : 'text-faint hover:bg-raised hover:text-rose-400'
+                    message.feedback === 'down' ? 'bg-rose-500/15 text-danger' : 'text-faint hover:bg-raised hover:text-danger'
                   }`}
                 >
                   <ThumbsDown className="w-3.5 h-3.5" />

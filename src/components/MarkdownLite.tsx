@@ -107,14 +107,14 @@ function renderInline(text: string, keyBase: string, onCite?: (n: number) => voi
           type="button"
           onClick={() => onCite?.(index)}
           title="跳到对应来源"
-          className="align-super mx-0.5 px-1 rounded bg-primary-500/15 text-primary-400 text-[10px] leading-4 hover:bg-primary-500/30 transition-colors"
+          className="align-super mx-0.5 px-1 rounded bg-primary-500/15 text-brand text-[10px] leading-4 hover:bg-primary-500/30 transition-colors"
         >
           {index}
         </button>
       );
     } else {
       nodes.push(
-        <code key={`${keyBase}-c${n++}`} className="px-1.5 py-0.5 bg-raised border border-edge rounded-md text-[13px] text-primary-400 font-mono">
+        <code key={`${keyBase}-c${n++}`} className="px-1.5 py-0.5 bg-raised border border-edge rounded-md text-[13px] text-brand font-mono">
           {token.slice(1, -1)}
         </code>
       );
@@ -147,7 +147,7 @@ function CodeBlock({ code, lang }: { code: string; lang?: string }) {
         </span>
         <button
           onClick={copy}
-          className="flex items-center space-x-1 text-[11px] text-faint hover:text-primary-500 transition-colors"
+          className="flex items-center space-x-1 text-[11px] text-faint hover:text-brand transition-colors"
           title="复制代码"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -182,7 +182,7 @@ export default function MarkdownLite({ content, onCite }: { content: string; onC
               <ol key={index} className="my-2 space-y-1.5">
                 {items.map((item, i) => (
                   <li key={i} className="flex space-x-2">
-                    <span className="text-primary-500/80 font-mono shrink-0">{i + 1}.</span>
+                    <span className="text-brand/80 font-mono shrink-0">{i + 1}.</span>
                     <span className="flex-1">{renderInline(item, `li${index}-${i}`, onCite)}</span>
                   </li>
                 ))}

@@ -81,7 +81,7 @@
 | **业务数据** | Postgres（`node-postgres` 直连，无 ORM；免费档用 Neon） |
 | **LLM** | 任意 OpenAI 兼容服务（`LLM_API_BASE` 切换） |
 | **认证** | JWT + bcrypt + GitHub OAuth |
-| **测试与 CI** | `node:test` 26 个用例（零新增依赖）+ GitHub Actions：tsc → eslint → 构建 → 后端逐文件语法检查 → 单元测试 |
+| **测试与 CI** | `node:test` 32 个用例（零新增依赖）+ GitHub Actions：tsc → eslint → 构建 → 后端逐文件语法检查 → 单元测试 |
 
 ## 📁 项目结构
 

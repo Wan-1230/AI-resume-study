@@ -4,27 +4,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 调色板的唯一来源：三元组（R G B），Tailwind 用 rgb(var(--c-x) / <alpha-value>) 读它。
+   换主题 = 换这一组值；类名、组件都不用动。 */
+:root {
+  --c-ink: 10 10 15;
+  --c-ink-soft: 15 15 20;
+  --c-panel: 18 18 26;
+  --c-surface: 20 20 25;
+  --c-raised: 26 26 34;
+  --c-lift: 34 34 40;
+  --c-line: 30 30 40;
+  --c-edge: 42 42 56;
+  --c-ghost: 58 58 74;
+  --c-faint: 125 125 146;
+  --c-muted: 139 139 154;
+  --c-bright: 232 232 237;
+
+  /* 角色色（暗色档）：薄荷/玫红/紫在深底上够亮，直接可用 */
+  --c-brand: 6 214 160;
+  --c-danger: 251 113 133;
+  --c-success: 52 211 153;
+  --c-warning: 251 191 36;
+  --c-accent-fg: 192 132 252;
+  --c-info: 96 165 250;
+
+  /* 原生控件（select 箭头、滚动条）按暗色画，否则暗色卡片上会嵌一块亮色控件 */
+  color-scheme: dark;
+}
+
+/* 亮色主题：只换这 12 个值。类名、组件、Tailwind 配置都不动。
+   注意 bright 在亮色下是"很深的字"——它是语义角色（主要正文），不是字面的"亮"。 */
+html.light {
+  --c-ink: 248 249 251;
+  --c-ink-soft: 255 255 255;
+  --c-panel: 244 245 248;
+  --c-surface: 255 255 255;
+  --c-raised: 241 242 245;
+  --c-lift: 233 235 239;
+  --c-line: 226 228 233;
+  --c-edge: 209 212 219;
+  --c-ghost: 176 180 190;
+  --c-faint: 108 112 124;
+  --c-muted: 82 86 98;
+  --c-bright: 22 24 30;
+
+  /* 角色色（亮色档）：暗色那组压白底只有 1.7~2.5:1，全部换成同色系的深档 */
+  --c-brand: 4 120 87;      /* primary-700，白底 5.4:1 */
+  --c-danger: 225 29 72;    /* rose-600，白底 4.7:1 */
+  --c-success: 4 120 87;    /* emerald-700 */
+  --c-warning: 180 83 9;    /* amber-700，白底 5.1:1 */
+  --c-accent-fg: 109 40 217; /* purple-700，白底 6.4:1 */
+  --c-info: 29 78 216;       /* blue-700，白底 6.3:1 */
+
+  /* 原生控件（select 箭头、滚动条、输入框日历）跟着翻，否则亮色页面上会冒出深色控件 */
+  color-scheme: light;
+}
+
 :root {
   --color-primary: #06d6a0;
+  --color-brand: rgb(var(--c-brand));   /* 强调文字，亮色下换成深绿 */
+  --color-on-brand: #0a0a0f;            /* 压在薄荷/品红实色上的文字，两个主题都必须是深色 */
   --color-primary-dark: #059669;
   --color-secondary: #7c3aed;
   --color-accent: #f72585;
-  
-  /* 暗色系配色 */
-  --color-bg-base: #0a0a0f;
-  --color-bg-light: #0f0f14;
-  --color-bg-card: #141419;
-  --color-bg-elevated: #1a1a22;
-  --color-bg-hover: #1e1e28;
-  
-  --color-text-primary: #e8e8ed;   /* = Tailwind bright */
-  --color-text-secondary: #8b8b9a; /* = Tailwind muted */
-  --color-text-muted: #7d7d92;     /* = Tailwind faint（名字对不上是历史遗留，值以 tailwind.config.js 为准） */
-  
-  --color-border: #1e1e28;
-  --color-border-hover: #2a2a38;
-  --color-border-active: #3a3a4a;
-  
+
+  /* 手写 CSS 用的别名，值全部来自上面那组三元组，不再各抄一份 hex */
+  --color-bg-base: rgb(var(--c-ink));
+  --color-bg-light: rgb(var(--c-ink-soft));
+  --color-bg-card: rgb(var(--c-surface));
+  --color-bg-elevated: rgb(var(--c-raised));
+  --color-bg-hover: rgb(var(--c-line));
+
+  --color-text-primary: rgb(var(--c-bright));   /* = Tailwind bright */
+  --color-text-secondary: rgb(var(--c-muted));  /* = Tailwind muted */
+  --color-text-muted: rgb(var(--c-faint));      /* = Tailwind faint（名字对不上是历史遗留） */
+
+  --color-border: rgb(var(--c-line));
+  --color-border-hover: rgb(var(--c-edge));
+  --color-border-active: rgb(var(--c-ghost));
+
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
@@ -52,9 +110,6 @@ body {
   margin: 0;
   background: var(--color-bg-base);
   color: var(--color-text-primary);
-  /* 不声明的话，<select> 的下拉箭头、原生滚动条会由浏览器按亮色画一块白，
-     在暗色卡片上特别扎眼；这一行让所有原生控件跟着配色走 */
-  color-scheme: dark;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -540,7 +595,7 @@ body::after {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: #06d6a0;
+  color: var(--color-brand);
   border: 1px solid rgba(42, 42, 56, 0.5);
 }
 
@@ -595,7 +650,7 @@ body::after {
 }
 
 .pill:hover {
-  color: #06d6a0;
+  color: var(--color-brand);
 }
 
 .pill .hover-circle {
@@ -603,7 +658,7 @@ body::after {
   left: 50%;
   bottom: 0;
   border-radius: 50%;
-  background: #06d6a0;
+  background: var(--color-primary);
   z-index: 1;
   display: block;
   pointer-events: none;
@@ -629,14 +684,14 @@ body::after {
   position: absolute;
   left: 0;
   top: 0;
-  color: #fff;
+  color: var(--color-text-primary);
   z-index: 3;
   display: inline-block;
   will-change: transform, opacity;
 }
 
 .pill.is-active {
-  color: #06d6a0;
+  color: var(--color-brand);
 }
 
 .pill.is-active::after {
@@ -647,7 +702,7 @@ body::after {
   transform: translateX(-50%);
   width: 12px;
   height: 12px;
-  background: #06d6a0;
+  background: var(--color-primary);
   border-radius: 50px;
   z-index: 4;
 }
@@ -738,11 +793,11 @@ body::after {
 
 .mobile-menu-popover .mobile-menu-link:hover {
   cursor: pointer;
-  background-color: #06d6a0;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-on-brand);
 }
 
 .mobile-menu-popover .mobile-menu-link.is-active {
-  background-color: #06d6a0;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-on-brand);
 }

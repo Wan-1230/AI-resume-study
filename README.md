@@ -91,7 +91,7 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 | **App data** | PostgreSQL via `node-postgres` (no ORM; free tier: Neon) |
 | **LLM** | Any OpenAI-compatible service (switch via `LLM_API_BASE`) |
 | **Auth** | JWT + bcrypt + GitHub OAuth |
-| **Tests & CI** | 26 `node:test` cases (zero new deps) + GitHub Actions: tsc → eslint → build → per-file backend syntax check → unit tests |
+| **Tests & CI** | 32 `node:test` cases (zero new deps) + GitHub Actions: tsc → eslint → build → per-file backend syntax check → unit tests |
 
 ## 📁 Project structure
 

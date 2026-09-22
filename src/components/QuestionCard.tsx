@@ -48,8 +48,8 @@ export default function QuestionCard({ question }: QuestionCardProps) {
             title={isAuthenticated ? '收藏本题' : '登录后可收藏'}
             className={`p-2 rounded-xl transition-all duration-200 btn-hover-scale ${
               isFavorited
-                ? 'text-amber-400 bg-amber-500/10'
-                : 'text-faint hover:text-amber-400 hover:bg-amber-500/10'
+                ? 'text-warning bg-amber-500/10'
+                : 'text-faint hover:text-warning hover:bg-amber-500/10'
             }`}
           >
             <Star className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
@@ -57,7 +57,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-bright mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-relaxed">
+        <h3 className="text-lg font-semibold text-bright mb-3 line-clamp-2 group-hover:text-brand transition-colors leading-relaxed">
           {question.title}
         </h3>
 
@@ -84,7 +84,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
               e.stopPropagation();
               navigate(`/question/${question.id}`);
             }}
-            className="flex items-center space-x-1.5 text-primary-500 hover:text-primary-400 font-medium text-sm transition-colors group/btn"
+            className="flex items-center space-x-1.5 text-brand hover:text-brand font-medium text-sm transition-colors group/btn"
           >
             <span>查看详情</span>
             <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

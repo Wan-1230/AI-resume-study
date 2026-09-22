@@ -147,7 +147,7 @@ export default function Home() {
         <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-ink">
           {/* 机器人背景 */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.08]">
-            <svg viewBox="0 0 200 200" className="w-[600px] h-[600px] text-primary-500" fill="currentColor">
+            <svg viewBox="0 0 200 200" className="w-[600px] h-[600px] text-brand" fill="currentColor">
               <circle cx="100" cy="70" r="45" stroke="currentColor" strokeWidth="2" fill="none"/>
               <circle cx="82" cy="60" r="8" fill="currentColor"/>
               <circle cx="118" cy="60" r="8" fill="currentColor"/>
@@ -170,11 +170,11 @@ export default function Home() {
             {/* 左侧内容 */}
             <div className="order-2 md:order-1">
               <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-primary-500/10 border border-primary-500/20 mb-4 sm:mb-6">
-                <span className="text-primary-500 text-sm font-medium">AI 驱动</span>
+                <span className="text-brand text-sm font-medium">AI 驱动</span>
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright mb-4 sm:mb-6 leading-tight">
                 智能问答助手<br/>
-                <span className="text-primary-500">精准解答</span>面试难题
+                <span className="text-brand">精准解答</span>面试难题
               </h2>
               <p className="text-muted text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
                 基于{stats ? ` ${stats.articles} 篇` : '站内'} AI 应用开发文章构建的知识库，覆盖 LLM、RAG、Agent、MCP 等核心领域。输入任何面试相关问题，AI 助手为你提供专业、准确的解答。
@@ -182,7 +182,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 <button
                   onClick={() => navigate('/chat')}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-primary-500 hover:bg-primary-600 text-ink font-semibold transition-all duration-200 btn-hover-scale"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-primary-500 hover:bg-primary-600 text-on-brand font-semibold transition-all duration-200 btn-hover-scale"
                 >
                   立即体验
                 </button>
@@ -249,11 +249,11 @@ export default function Home() {
             {/* 右侧介绍 */}
             <div className="order-1 md:order-2">
               <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-purple-500/10 border border-purple-500/20 mb-4 sm:mb-6">
-                <span className="text-purple-400 text-sm font-medium">智能优化</span>
+                <span className="text-accent-fg text-sm font-medium">智能优化</span>
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright mb-4 sm:mb-6 leading-tight">
                 AI 简历优化<br/>
-                <span className="text-purple-400">精准匹配</span>目标岗位
+                <span className="text-accent-fg">精准匹配</span>目标岗位
               </h2>
               <p className="text-muted text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
                 粘贴或上传简历，输入目标岗位 JD，AI 自动分析匹配度，生成优化建议和改进后的简历，让你的简历更符合岗位要求。
@@ -269,7 +269,7 @@ export default function Home() {
                 ].map((feature, i) => (
                   <div key={i} className="flex items-center space-x-3">
                     <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                      <FileCheck className="w-3 h-3 text-purple-400" />
+                      <FileCheck className="w-3 h-3 text-accent-fg" />
                     </div>
                     <span className="text-muted text-sm">{feature}</span>
                   </div>
@@ -292,7 +292,7 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright text-center mb-6 sm:mb-8">热门题目</h2>
             {loading ? (
               <div className="flex justify-center">
-                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-500 animate-spin" />
+                <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-brand animate-spin" />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -328,7 +328,7 @@ export default function Home() {
 
       {/* 页码显示 */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-sm text-muted">
-        <span className="text-primary-500 font-semibold">{String(currentPage + 1).padStart(2, '0')}</span>
+        <span className="text-brand font-semibold">{String(currentPage + 1).padStart(2, '0')}</span>
         <span> / </span>
         <span>{String(PAGE_COUNT).padStart(2, '0')}</span>
       </div>

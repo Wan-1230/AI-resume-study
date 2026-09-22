@@ -134,27 +134,27 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-ink text-white">
+    <div className="min-h-screen bg-ink text-bright">
       {/* 顶部栏 */}
-      <header className="bg-panel border-b border-white/[0.06] px-6 py-4">
+      <header className="bg-panel border-b border-line px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-faint hover:text-primary-500 transition-colors"
+              className="flex items-center space-x-2 text-faint hover:text-brand transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
             </button>
             <div className="w-px h-5 bg-white/10" />
             <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-primary-500" />
+              <Shield className="w-5 h-5 text-brand" />
               <span className="font-semibold">管理后台</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-muted hover:text-red-400 transition-colors text-sm"
+            className="flex items-center space-x-2 text-muted hover:text-danger transition-colors text-sm"
           >
             <LogOut className="w-4 h-4" />
             <span>退出登录</span>
@@ -165,10 +165,10 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-line">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-primary-500" />
+                <Users className="w-5 h-5 text-brand" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.total}</div>
@@ -176,10 +176,10 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-line">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-400" />
+                <Mail className="w-5 h-5 text-info" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.emailUsers}</div>
@@ -187,10 +187,10 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-line">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                <Github className="w-5 h-5 text-purple-400" />
+                <Github className="w-5 h-5 text-accent-fg" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.githubUsers}</div>
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
 
         {/* 检索质量：阈值是不是拍脑袋定的，看这里 */}
         {retrieval && (
-          <section className="mb-8 bg-panel border border-white/[0.06] rounded-xl p-5">
+          <section className="mb-8 bg-panel border border-line rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold">检索质量（近 {retrieval.window_days} 天）</h2>
               <span className="text-xs text-muted">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
@@ -247,7 +247,7 @@ export default function AdminDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead className="text-faint">
-                    <tr className="text-left border-b border-white/[0.06]">
+                    <tr className="text-left border-b border-line">
                       <th className="py-2 font-medium">问了什么</th>
                       <th className="py-2 font-medium">top1 命中</th>
                       <th className="py-2 font-medium text-right">分数</th>
@@ -256,9 +256,9 @@ export default function AdminDashboard() {
                   <tbody>
                     {retrieval.recent.map((row, i) => (
                       <tr key={`${row.created_at}-${i}`} className="border-b border-white/[0.03]">
-                        <td className="py-2 pr-3 text-white/90 max-w-xs truncate">{row.query}</td>
+                        <td className="py-2 pr-3 text-bright/90 max-w-xs truncate">{row.query}</td>
                         <td className="py-2 pr-3 text-muted max-w-xs truncate">
-                          {row.abstained ? <span className="text-amber-400">已拒答（无过阈值内容）</span> : row.top_title}
+                          {row.abstained ? <span className="text-warning">已拒答（无过阈值内容）</span> : row.top_title}
                         </td>
                         <td className="py-2 text-right font-mono text-muted">{row.top_score === null ? '—' : row.top_score.toFixed(3)}</td>
                       </tr>
@@ -280,12 +280,12 @@ export default function AdminDashboard() {
                 value={searchInput}
                 onChange={(e) => handleSearchInputChange(e.target.value)}
                 placeholder="搜索用户名或邮箱..."
-                className="w-full pl-11 pr-4 py-2.5 bg-panel border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors text-sm"
+                className="w-full pl-11 pr-4 py-2.5 bg-panel border border-line rounded-xl text-bright placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors text-sm"
               />
             </div>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-ink text-sm font-medium rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-on-brand text-sm font-medium rounded-xl transition-colors"
             >
               搜索
             </button>
@@ -293,11 +293,11 @@ export default function AdminDashboard() {
         </form>
 
         {/* 用户表格 */}
-        <div className="bg-panel rounded-xl border border-white/[0.06] overflow-hidden">
+        <div className="bg-panel rounded-xl border border-line overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-line">
                   <th className="text-left px-5 py-3.5 text-faint font-medium">用户</th>
                   <th className="text-left px-5 py-3.5 text-faint font-medium">邮箱</th>
                   <th className="text-left px-5 py-3.5 text-faint font-medium hidden sm:table-cell">登录方式</th>
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
                       <Empty
                         title={searchTerm ? "没有匹配的用户" : "还没有注册用户"}
                         description={searchTerm ? `「${searchTerm}」在用户名和邮箱里都没命中，换个关键词试试。` : '注册第一个账号后，用户会出现在这里。'}
-                        className="border-white/[0.06] bg-transparent"
+                        className="border-line bg-transparent"
                       />
                     </td>
                   </tr>
@@ -348,21 +348,21 @@ export default function AdminDashboard() {
                             />
                           ) : (
                             <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center">
-                              <UserIcon className="w-4 h-4 text-primary-400" />
+                              <UserIcon className="w-4 h-4 text-brand" />
                             </div>
                           )}
-                          <span className="text-white">{u.username || '未设置'}</span>
+                          <span className="text-bright">{u.username || '未设置'}</span>
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-muted">{u.email || '-'}</td>
                       <td className="px-5 py-3.5 hidden sm:table-cell">
                         {u.auth_provider === 'github' ? (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs">
+                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-purple-500/10 text-accent-fg rounded-lg text-xs">
                             <Github className="w-3.5 h-3.5" />
                             <span>GitHub</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs">
+                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-blue-500/10 text-info rounded-lg text-xs">
                             <Mail className="w-3.5 h-3.5" />
                             <span>邮箱</span>
                           </span>
@@ -375,13 +375,13 @@ export default function AdminDashboard() {
                         <div className="flex items-center justify-end space-x-2">
                           <button
                             onClick={() => setDetailUser(u)}
-                            className="px-3 py-1.5 text-xs text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+                            className="px-3 py-1.5 text-xs text-brand hover:bg-primary-500/10 rounded-lg transition-colors"
                           >
                             详情
                           </button>
                           <button
                             onClick={() => setDeleteTarget(u)}
-                            className="px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                            className="px-3 py-1.5 text-xs text-danger hover:bg-red-500/10 rounded-lg transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -396,7 +396,7 @@ export default function AdminDashboard() {
 
           {/* 分页 */}
           {totalPages > 1 && (
-            <div className="px-5 py-3.5 border-t border-white/[0.06] flex items-center justify-between text-sm">
+            <div className="px-5 py-3.5 border-t border-line flex items-center justify-between text-sm">
               <span className="text-faint">
                 共 {total} 个用户，第 {page}/{totalPages} 页
               </span>
@@ -424,13 +424,13 @@ export default function AdminDashboard() {
       {/* 删除确认弹窗 */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-raised rounded-2xl p-6 w-full max-w-sm border border-white/[0.06] mx-4">
-            <h3 className="text-lg font-semibold text-white mb-2">确认删除</h3>
+          <div className="bg-raised rounded-2xl p-6 w-full max-w-sm border border-line mx-4">
+            <h3 className="text-lg font-semibold text-bright mb-2">确认删除</h3>
             <p className="text-muted text-sm mb-1">
               确定要删除以下用户吗？此操作不可撤销。
             </p>
             <div className="bg-ink rounded-lg p-3 mb-5 mt-3">
-              <div className="text-white text-sm font-medium">
+              <div className="text-bright text-sm font-medium">
                 {deleteTarget.username || '未设置'}
               </div>
               <div className="text-muted text-xs mt-0.5">{deleteTarget.email}</div>
@@ -464,9 +464,9 @@ export default function AdminDashboard() {
       {/* 用户详情弹窗 */}
       {detailUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-raised rounded-2xl p-6 w-full max-w-md border border-white/[0.06] mx-4">
+          <div className="bg-raised rounded-2xl p-6 w-full max-w-md border border-line mx-4">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold text-white">用户详情</h3>
+              <h3 className="text-lg font-semibold text-bright">用户详情</h3>
               <button
                 onClick={() => setDetailUser(null)}
                 className="text-faint hover:text-white transition-colors"
@@ -484,11 +484,11 @@ export default function AdminDashboard() {
                 />
               ) : (
                 <div className="w-14 h-14 rounded-full bg-primary-500/20 flex items-center justify-center">
-                  <UserIcon className="w-7 h-7 text-primary-400" />
+                  <UserIcon className="w-7 h-7 text-brand" />
                 </div>
               )}
               <div>
-                <div className="text-white font-medium text-lg">
+                <div className="text-bright font-medium text-lg">
                   {detailUser.username || '未设置'}
                 </div>
                 <div className="text-muted text-sm">{detailUser.email}</div>
@@ -498,18 +498,18 @@ export default function AdminDashboard() {
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <span className="text-muted text-sm">用户 ID</span>
-                <span className="text-white text-sm font-mono">{detailUser.id}</span>
+                <span className="text-bright text-sm font-mono">{detailUser.id}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <span className="text-muted text-sm">登录方式</span>
-                <span className="text-white text-sm">
+                <span className="text-bright text-sm">
                   {detailUser.auth_provider === 'github' ? 'GitHub' : '邮箱'}
                 </span>
               </div>
               {detailUser.github_username && (
                 <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                   <span className="text-muted text-sm">GitHub 用户名</span>
-                  <span className="text-white text-sm">{detailUser.github_username}</span>
+                  <span className="text-bright text-sm">{detailUser.github_username}</span>
                 </div>
               )}
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
@@ -517,21 +517,21 @@ export default function AdminDashboard() {
                   <Calendar className="w-3.5 h-3.5" />
                   <span>注册时间</span>
                 </span>
-                <span className="text-white text-sm">{formatDate(detailUser.created_at)}</span>
+                <span className="text-bright text-sm">{formatDate(detailUser.created_at)}</span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-muted text-sm flex items-center space-x-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>更新时间</span>
                 </span>
-                <span className="text-white text-sm">{formatDate(detailUser.updated_at)}</span>
+                <span className="text-bright text-sm">{formatDate(detailUser.updated_at)}</span>
               </div>
             </div>
 
             <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setDetailUser(null)}
-                className="px-4 py-2 text-sm bg-white/[0.05] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="px-4 py-2 text-sm bg-white/[0.05] hover:bg-white/[0.1] text-bright rounded-lg transition-colors"
               >
                 关闭
               </button>
