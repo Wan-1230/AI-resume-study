@@ -1,6 +1,13 @@
+declare global {
+  interface Window {
+    /** 首页分屏滚动的全局入口，只有 Home 会注册 */
+    __goToFirstPage?: () => void;
+  }
+}
+
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Loader2, ArrowDown, Upload, FileCheck } from 'lucide-react';
+import { Loader2, ArrowDown, Upload, FileCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import QuestionCard from '@/components/QuestionCard';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -26,9 +33,9 @@ export default function Home() {
 
   // 暴露 goToFirst 到全局，供导航使用
   useEffect(() => {
-    (window as any).__goToFirstPage = goToFirst;
+    window.__goToFirstPage = goToFirst;
     return () => {
-      delete (window as any).__goToFirstPage;
+      delete window.__goToFirstPage;
     };
   }, [goToFirst]);
 

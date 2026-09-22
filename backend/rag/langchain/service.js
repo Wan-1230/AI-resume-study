@@ -186,11 +186,13 @@ class RagService {
   }
 
   /**
-   * 流式问答：onSources 先回调完整来源列表，onChunk 逐段回调答案文本
+   * 流式问答：onRetrieve 先回调原始检索结果（供调用方记检索日志），
+   * onSources 回调给前端的来源列表，onChunk 逐段回调答案文本
    * @returns {Promise<string>} 完整答案
    */
-  async chatStream(message, history = [], { onChunk, onSources } = {}) {
+  async chatStream(message, history = [], { onChunk, onSources, onRetrieve } = {}) {
     const documents = await this.retrieve(message);
+    if (onRetrieve) onRetrieve(documents);
     if (onSources) onSources(documents.map((d) => toSource(d)));
 
     if (!documents.length) {

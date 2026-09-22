@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 
 const PillNav = ({
@@ -28,7 +28,6 @@ const PillNav = ({
   const mobileMenuRef = useRef(null);
   const navItemsRef = useRef(null);
   const logoRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const layout = () => {
@@ -206,17 +205,17 @@ const PillNav = ({
     onMobileMenuClick?.();
   };
 
+  // 自定义属性在 CSSProperties 上要转一次型；转在这里，用就不用 @ts-ignore 和 any 了
   const cssVars = {
-    ['--base']: baseColor,
-    ['--pill-bg']: pillColor,
-    ['--hover-text']: hoveredPillTextColor,
-    ['--pill-text']: resolvedPillTextColor
-  };
+    '--base': baseColor,
+    '--pill-bg': pillColor,
+    '--hover-text': hoveredPillTextColor,
+    '--pill-text': resolvedPillTextColor,
+  } as CSSProperties;
 
   return (
     <div className="pill-nav-container">
-      {/* @ts-ignore - CSS variables are valid */}
-      <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars as any}>
+      <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
         <Link
           className="pill-logo"
           to="/"
@@ -283,8 +282,7 @@ const PillNav = ({
         </button>
       </nav>
 
-      {/* @ts-ignore - CSS variables are valid */}
-      <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars as any}>
+      <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars}>
         <ul className="mobile-menu-list">
           {items.map((item, i) => (
             <li key={item.href || `mobile-item-${i}`}>

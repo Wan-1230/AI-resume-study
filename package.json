@@ -11,7 +11,6 @@
     "check": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.2",
     "clsx": "^2.1.1",
     "docx": "^9.7.1",
     "gsap": "^3.15.0",
