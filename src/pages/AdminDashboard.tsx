@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-faint hover:text-red-400 transition-colors text-sm"
+            className="flex items-center space-x-2 text-muted hover:text-red-400 transition-colors text-sm"
           >
             <LogOut className="w-4 h-4" />
             <span>退出登录</span>
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.total}</div>
-                <div className="text-faint text-sm">总用户数</div>
+                <div className="text-muted text-sm">总用户数</div>
               </div>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.emailUsers}</div>
-                <div className="text-faint text-sm">邮箱用户</div>
+                <div className="text-muted text-sm">邮箱用户</div>
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.githubUsers}</div>
-                <div className="text-faint text-sm">GitHub 用户</div>
+                <div className="text-muted text-sm">GitHub 用户</div>
               </div>
             </div>
           </div>
@@ -205,25 +205,25 @@ export default function AdminDashboard() {
           <section className="mb-8 bg-panel border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold">检索质量（近 {retrieval.window_days} 天）</h2>
-              <span className="text-xs text-faint">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
+              <span className="text-xs text-muted">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-sm">
               <div>
                 <div className="text-xl font-bold">{retrieval.queries}</div>
-                <div className="text-faint text-xs">真实查询数</div>
+                <div className="text-muted text-xs">真实查询数</div>
               </div>
               <div>
                 <div className="text-xl font-bold">{retrieval.abstain_rate === null ? '—' : `${(retrieval.abstain_rate * 100).toFixed(1)}%`}</div>
-                <div className="text-faint text-xs">拒答率（{retrieval.abstained} 次）</div>
+                <div className="text-muted text-xs">拒答率（{retrieval.abstained} 次）</div>
               </div>
               <div>
-                <div className="text-xl font-bold">{retrieval.avg_latency_ms ?? '—'}<span className="text-xs text-faint">ms</span></div>
-                <div className="text-faint text-xs">平均问答耗时</div>
+                <div className="text-xl font-bold">{retrieval.avg_latency_ms ?? '—'}<span className="text-xs text-muted">ms</span></div>
+                <div className="text-muted text-xs">平均问答耗时</div>
               </div>
               <div>
                 <div className="text-xl font-bold">{retrieval.feedback.up} / {retrieval.feedback.down}</div>
-                <div className="text-faint text-xs">赞 / 踩（{retrieval.feedback.unrated} 条未评）</div>
+                <div className="text-muted text-xs">赞 / 踩（{retrieval.feedback.unrated} 条未评）</div>
               </div>
             </div>
 
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                   <span className="w-8 text-right text-faint">{b.n}</span>
                 </div>
               ))}
-              {!retrieval.top1_score_buckets.length && <p className="text-xs text-faint">还没有检索记录。</p>}
+              {!retrieval.top1_score_buckets.length && <p className="text-xs text-muted">还没有检索记录。</p>}
             </div>
 
             {retrieval.recent.length > 0 && (
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
             </div>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-xl transition-colors"
+              className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-ink text-sm font-medium rounded-xl transition-colors"
             >
               搜索
             </button>
@@ -433,7 +433,7 @@ export default function AdminDashboard() {
               <div className="text-white text-sm font-medium">
                 {deleteTarget.username || '未设置'}
               </div>
-              <div className="text-faint text-xs mt-0.5">{deleteTarget.email}</div>
+              <div className="text-muted text-xs mt-0.5">{deleteTarget.email}</div>
             </div>
             <div className="flex justify-end space-x-3">
               <button
@@ -491,36 +491,36 @@ export default function AdminDashboard() {
                 <div className="text-white font-medium text-lg">
                   {detailUser.username || '未设置'}
                 </div>
-                <div className="text-faint text-sm">{detailUser.email}</div>
+                <div className="text-muted text-sm">{detailUser.email}</div>
               </div>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-faint text-sm">用户 ID</span>
+                <span className="text-muted text-sm">用户 ID</span>
                 <span className="text-white text-sm font-mono">{detailUser.id}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-faint text-sm">登录方式</span>
+                <span className="text-muted text-sm">登录方式</span>
                 <span className="text-white text-sm">
                   {detailUser.auth_provider === 'github' ? 'GitHub' : '邮箱'}
                 </span>
               </div>
               {detailUser.github_username && (
                 <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                  <span className="text-faint text-sm">GitHub 用户名</span>
+                  <span className="text-muted text-sm">GitHub 用户名</span>
                   <span className="text-white text-sm">{detailUser.github_username}</span>
                 </div>
               )}
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-faint text-sm flex items-center space-x-1">
+                <span className="text-muted text-sm flex items-center space-x-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>注册时间</span>
                 </span>
                 <span className="text-white text-sm">{formatDate(detailUser.created_at)}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-faint text-sm flex items-center space-x-1">
+                <span className="text-muted text-sm flex items-center space-x-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>更新时间</span>
                 </span>

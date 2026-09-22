@@ -171,12 +171,12 @@ export default function InterviewPage() {
       <Shell onBack={() => navigate('/')} title={sharedByLink ? '面试复盘报告（分享）' : '面试复盘报告'}>
         <div className="bg-surface border border-line rounded-2xl p-5 mb-6 flex items-center justify-between">
           <div>
-            <p className="text-faint text-xs mb-1">
+            <p className="text-muted text-xs mb-1">
               {sharedByLink ? '分享的报告' : '我的报告'} · {new Date(shared.created_at).toLocaleString('zh-CN')}
             </p>
             <h2 className="text-lg font-semibold text-bright">{shared.direction}</h2>
           </div>
-          {sharedByLink && <span className="text-xs text-faint">只读</span>}
+          {sharedByLink && <span className="text-xs text-muted">只读</span>}
         </div>
         <ReportView report={shared.report} objective={shared.objective} transcript={shared.transcript} items={shared.items} />
       </Shell>
@@ -210,7 +210,7 @@ export default function InterviewPage() {
             >
               <div className="flex items-center justify-between">
                 <span className="font-medium text-bright">{d.name}</span>
-                <span className="text-xs text-faint">{d.available} 题可选</span>
+                <span className="text-xs text-muted">{d.available} 题可选</span>
               </div>
               {picked === d.key && <span className="mt-1 inline-block text-xs text-primary-500">已选择</span>}
             </button>
@@ -222,7 +222,7 @@ export default function InterviewPage() {
         {isAuthenticated ? (
           <button
             onClick={start}
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-white font-medium flex items-center justify-center space-x-2 hover:opacity-90 transition-opacity"
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 hover:opacity-90 transition-opacity"
           >
             <Mic className="w-4 h-4" /><span>开始面试</span>
           </button>
@@ -248,7 +248,7 @@ export default function InterviewPage() {
                   className="w-full flex items-center justify-between px-4 py-3 bg-surface border border-line rounded-xl hover:border-primary-500/30 transition-colors"
                 >
                   <span className="text-sm text-bright">{h.direction}</span>
-                  <span className="text-xs text-faint flex items-center space-x-3">
+                  <span className="text-xs text-muted flex items-center space-x-3">
                     <span>{h.answered} 题</span>
                     <span className="text-bright">{h.finished ? (h.score_total ?? '—') : '未交卷'}</span>
                     <ChevronRight className="w-4 h-4" />
@@ -267,7 +267,7 @@ export default function InterviewPage() {
     return (
       <Shell onBack={() => navigate('/interview')} title="面试进行中">
         <div className="mb-5">
-          <div className="flex items-center justify-between text-xs text-faint mb-2">
+          <div className="flex items-center justify-between text-xs text-muted mb-2">
             <span>第 {index + 1} / {items.length} 题 · {item.category}</span>
             <span>{directionName}</span>
           </div>
@@ -279,7 +279,7 @@ export default function InterviewPage() {
         <div className="bg-surface border border-line rounded-2xl p-6 mb-4">
           <p className="text-bright leading-relaxed">{item.question}</p>
           {item.kind === 'open' && (
-            <p className="mt-2 text-xs text-faint">口头题：像面试时那样把想法说出来，两到四句。</p>
+            <p className="mt-2 text-xs text-muted">口头题：像面试时那样把想法说出来，两到四句。</p>
           )}
         </div>
 
@@ -315,7 +315,7 @@ export default function InterviewPage() {
             <button
               onClick={submitAnswer}
               disabled={busy !== null}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-white font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
             >
               {busy === 'answer' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{busy === 'answer' ? '面试官在听…' : '回答这题'}</span>
@@ -334,7 +334,7 @@ export default function InterviewPage() {
         {notice && <p className="text-sm text-amber-400 mb-4">{notice}</p>}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <p className="text-xs text-faint mb-1">{directionName}</p>
+            <p className="text-xs text-muted mb-1">{directionName}</p>
             <h2 className="text-lg font-semibold text-bright">这一轮的复盘</h2>
           </div>
           <div className="flex items-center space-x-2">
@@ -404,7 +404,7 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
 
         {result.reference && (
           <details className="mt-3">
-            <summary className="text-xs text-faint cursor-pointer hover:text-primary-500">看这个考点的参考要点</summary>
+            <summary className="text-xs text-muted cursor-pointer hover:text-primary-500">看这个考点的参考要点</summary>
             <p className="mt-2 text-sm text-muted leading-relaxed">{result.reference}</p>
           </details>
         )}
@@ -412,7 +412,7 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
 
       {result.follow_up && (
         <div className="bg-surface border border-line rounded-2xl p-5">
-          <p className="text-xs text-faint mb-2 flex items-center space-x-1.5">
+          <p className="text-xs text-muted mb-2 flex items-center space-x-1.5">
             <Sparkles className="w-3.5 h-3.5" /><span>面试官顺着你的话追问</span>
           </p>
           <p className="text-bright mb-3">{result.follow_up}</p>
@@ -429,7 +429,7 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
       <button
         onClick={onNext}
         disabled={busy}
-        className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-white font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
+        className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary-500 to-purple-600 text-ink font-medium flex items-center justify-center space-x-2 disabled:opacity-60"
       >
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
         <span>{busy ? '正在整理…' : last ? '答完，交卷出报告' : '下一题'}</span>
@@ -454,7 +454,7 @@ function ReportView({ report, objective, transcript, items }: {
       <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-5">
         <div className="bg-surface border border-line rounded-2xl p-4">
           {dimensionsReady ? <RadarChart dimensions={dimensions} /> : (
-            <div className="h-[240px] flex items-center justify-center text-sm text-faint px-6 text-center">
+            <div className="h-[240px] flex items-center justify-center text-sm text-muted px-6 text-center">
               六维评分没生成，右边是客观题的真实成绩
             </div>
           )}
@@ -462,10 +462,10 @@ function ReportView({ report, objective, transcript, items }: {
 
         <div className="space-y-4">
           <div className="bg-surface border border-line rounded-2xl p-5">
-            <p className="text-xs text-faint mb-1">综合评分</p>
+            <p className="text-xs text-muted mb-1">综合评分</p>
             <div className="flex items-end space-x-3">
               <span className="text-4xl font-bold text-bright">{report?.score_total ?? '—'}</span>
-              <span className="text-sm text-faint mb-1.5">/ 5</span>
+              <span className="text-sm text-muted mb-1.5">/ 5</span>
               <span className="ml-auto text-sm text-muted mb-1.5 flex items-center space-x-1.5">
                 <Target className="w-4 h-4" />
                 <span>选择 {objective.mcq_correct}/{objective.mcq_answered} 对</span>
@@ -546,7 +546,7 @@ function ReportView({ report, objective, transcript, items }: {
                   {t.correct === null ? '（口头）' : t.correct ? '✓ ' : '✗ '}
                   {titleOf.get(t.item_id) || t.question}
                 </summary>
-                <p className="mt-2 text-xs text-faint">你说：{t.answer}</p>
+                <p className="mt-2 text-xs text-muted">你说：{t.answer}</p>
                 {t.feedback && <p className="mt-1 text-xs text-muted">点评：{t.feedback}</p>}
               </details>
             ))}

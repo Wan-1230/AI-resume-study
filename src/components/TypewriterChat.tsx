@@ -81,7 +81,7 @@ export default function TypewriterChat() {
         <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
         <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
         <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-        <span className="ml-2 text-faint text-xs">AI 助手</span>
+        <span className="ml-2 text-muted text-xs">AI 助手</span>
       </div>
       
       {/* 对话区域 */}

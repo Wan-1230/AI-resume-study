@@ -10,7 +10,7 @@ export default function Footer() {
           {/* 品牌信息 */}
           <div className="md:col-span-1">
             <h3 className="text-xl font-bold text-bright mb-4">AI 面试题库</h3>
-            <p className="text-faint text-sm leading-relaxed mb-4">
+            <p className="text-muted text-sm leading-relaxed mb-4">
               专注 AI 应用开发面试准备，涵盖大模型、Agent、RAG 等核心领域。
             </p>
             <a
@@ -30,22 +30,22 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-bright mb-4 uppercase tracking-wider">快速链接</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/practice" className="text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/practice" className="text-muted hover:text-primary-500 text-sm transition-colors">
                   练习模式
                 </a>
               </li>
               <li>
-                <a href="/chat" className="text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/chat" className="text-muted hover:text-primary-500 text-sm transition-colors">
                   AI 助手
                 </a>
               </li>
               <li>
-                <a href="/my-questions" className="text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/my-questions" className="text-muted hover:text-primary-500 text-sm transition-colors">
                   我的题库
                 </a>
               </li>
               <li>
-                <a href="/import" className="text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/import" className="text-muted hover:text-primary-500 text-sm transition-colors">
                   数据导入
                 </a>
               </li>
@@ -57,19 +57,19 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-bright mb-4 uppercase tracking-wider">法律条款</h4>
             <ul className="space-y-3">
               <li>
-                <a href="/about" className="flex items-center space-x-2 text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/about" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
                   <FileText className="w-4 h-4" />
                   <span>关于我们</span>
                 </a>
               </li>
               <li>
-                <a href="/privacy" className="flex items-center space-x-2 text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/privacy" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
                   <Shield className="w-4 h-4" />
                   <span>隐私政策</span>
                 </a>
               </li>
               <li>
-                <a href="/terms" className="flex items-center space-x-2 text-faint hover:text-primary-500 text-sm transition-colors">
+                <a href="/terms" className="flex items-center space-x-2 text-muted hover:text-primary-500 text-sm transition-colors">
                   <Scale className="w-4 h-4" />
                   <span>用户协议</span>
                 </a>
@@ -81,11 +81,11 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-bright mb-4 uppercase tracking-wider">联系我们</h4>
             <ul className="space-y-3">
-              <li className="flex items-center space-x-2 text-faint text-sm">
+              <li className="flex items-center space-x-2 text-muted text-sm">
                 <Mail className="w-4 h-4" />
                 <span>wth123500@qq.com</span>
               </li>
-              <li className="flex items-center space-x-2 text-faint text-sm">
+              <li className="flex items-center space-x-2 text-muted text-sm">
                 <Github className="w-4 h-4" />
                 <a href="https://github.com/Wan-1230/-" target="_blank" rel="noopener noreferrer" className="hover:text-primary-500 transition-colors">
                   GitHub
@@ -97,15 +97,15 @@ export default function Footer() {
 
         {/* 底部版权信息 */}
         <div className="border-t border-line pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-faint text-sm">
+          <p className="text-muted text-sm">
             © {currentYear} AI 面试题库. All rights reserved.
           </p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <span className="text-faint text-xs">
+            <span className="text-muted text-xs">
               京ICP备XXXXXXXX号-1
             </span>
             <span className="text-edge">|</span>
-            <span className="text-faint text-xs">
+            <span className="text-muted text-xs">
               京公网安备XXXXXXXXXXXXXX号
             </span>
           </div>

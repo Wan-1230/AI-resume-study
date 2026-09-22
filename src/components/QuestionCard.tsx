@@ -62,18 +62,18 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         </h3>
 
         {/* Content preview */}
-        <p className="text-faint text-sm mb-5 line-clamp-2 leading-relaxed">
+        <p className="text-muted text-sm mb-5 line-clamp-2 leading-relaxed">
           {question.content}
         </p>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-line">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1.5 text-faint text-xs">
+            <div className="flex items-center space-x-1.5 text-muted text-xs">
               <Clock className="w-3.5 h-3.5" />
               <span>5分钟</span>
             </div>
-            <div className="flex items-center space-x-1.5 text-faint text-xs">
+            <div className="flex items-center space-x-1.5 text-muted text-xs">
               <MessageSquare className="w-3.5 h-3.5" />
               <span>{question.options?.length || 4}个选项</span>
             </div>

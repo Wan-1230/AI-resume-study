@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
               <Shield className="w-7 h-7 text-primary-500" />
             </div>
             <h1 className="text-2xl font-bold text-white">管理员登录</h1>
-            <p className="text-faint mt-2 text-sm">此页面仅限管理员访问</p>
+            <p className="text-muted mt-2 text-sm">此页面仅限管理员访问</p>
           </div>
 
           {/* 错误提示 */}
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500/50 text-white font-medium rounded-xl transition-colors flex items-center justify-center space-x-2 btn-hover-scale"
+              className="w-full py-3 bg-primary-500 hover:bg-primary-600 disabled:bg-primary-500/50 text-ink font-medium rounded-xl transition-colors flex items-center justify-center space-x-2 btn-hover-scale"
             >
               {loading ? (
                 <>

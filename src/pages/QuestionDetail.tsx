@@ -100,7 +100,7 @@ export default function QuestionDetail() {
           <p className="text-muted text-lg mb-6">题目不存在</p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/10 btn-hover-scale btn-ripple"
+            className="px-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/10 btn-hover-scale btn-ripple"
           >
             返回首页
           </button>
@@ -186,7 +186,7 @@ export default function QuestionDetail() {
 
             <h2 className="text-2xl md:text-3xl font-bold text-bright mb-6 leading-relaxed">{question.title}</h2>
 
-            <div className="flex items-center space-x-6 text-sm text-faint">
+            <div className="flex items-center space-x-6 text-sm text-muted">
               {stats && stats.attempts > 0 ? (
                 <>
                   <span className="flex items-center space-x-2">
@@ -255,11 +255,11 @@ export default function QuestionDetail() {
                       <div className="flex items-center space-x-4">
                         <span className={`w-10 h-10 rounded-xl flex items-center justify-center font-semibold text-sm ${
                           showCorrect
-                            ? 'bg-emerald-500 text-white'
+                            ? 'bg-emerald-500 text-ink'
                             : showWrong
                             ? 'bg-rose-500 text-white'
                             : isSelected
-                            ? 'bg-primary-500 text-white'
+                            ? 'bg-primary-500 text-ink'
                             : 'bg-edge text-faint'
                         }`}>
                           {optionLetter}
@@ -326,7 +326,7 @@ export default function QuestionDetail() {
         <div className="mt-8 flex space-x-4">
           <button
             onClick={() => navigate('/practice')}
-            className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-hover-scale btn-ripple"
+            className="flex-1 py-4 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink font-medium rounded-xl transition-all duration-200 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 btn-hover-scale btn-ripple"
           >
             开始练习
           </button>

@@ -246,7 +246,7 @@ export default function ResumePage() {
                 <div className="flex items-center space-x-2 px-4 py-3 border-b border-line">
                   <Briefcase className="w-4 h-4 text-purple-500" />
                   <span className="text-sm font-medium text-bright">职位描述 (JD)</span>
-                  <span className="text-xs text-faint">粘贴目标岗位的 JD</span>
+                  <span className="text-xs text-muted">粘贴目标岗位的 JD</span>
                 </div>
                 <textarea
                   value={jd}
@@ -269,7 +269,7 @@ export default function ResumePage() {
                   <div className="flex items-center space-x-2">
                     <FileText className="w-4 h-4 text-primary-500" />
                     <span className="text-sm font-medium text-bright">我的简历</span>
-                    <span className="text-xs text-faint">粘贴或拖拽文件</span>
+                    <span className="text-xs text-muted">粘贴或拖拽文件</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -300,7 +300,7 @@ export default function ResumePage() {
                     <div className="flex items-center space-x-2">
                       <File className="w-4 h-4 text-purple-400" />
                       <span className="text-sm text-bright">{uploadedFile.name}</span>
-                      <span className="text-xs text-faint">{uploadedFile.size}</span>
+                      <span className="text-xs text-muted">{uploadedFile.size}</span>
                       <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">{uploadedFile.type}</span>
                     </div>
                     <button
@@ -345,7 +345,7 @@ export default function ResumePage() {
                       <span className="text-sm text-muted">
                         {parsingFile ? '正在解析文件...' : '点击或拖拽上传简历文件'}
                       </span>
-                      <span className="text-xs text-faint">支持 PDF、DOCX、MD、TXT 格式</span>
+                      <span className="text-xs text-muted">支持 PDF、DOCX、MD、TXT 格式</span>
                     </button>
                   </div>
                 )}
@@ -425,8 +425,8 @@ export default function ResumePage() {
                     <div className="w-16 h-16 rounded-2xl bg-raised border border-edge flex items-center justify-center mb-4">
                       <FileText className="w-8 h-8 text-ghost" />
                     </div>
-                    <p className="text-faint text-sm mb-1">粘贴 JD 和简历后</p>
-                    <p className="text-ghost text-xs">AI 将为你生成优化建议</p>
+                    <p className="text-muted text-sm mb-1">粘贴 JD 和简历后</p>
+                    <p className="text-muted text-xs">AI 将为你生成优化建议</p>
                   </div>
                 )}
                 
@@ -436,7 +436,7 @@ export default function ResumePage() {
                       <div className="absolute inset-0 bg-purple-500/10 rounded-full blur-xl animate-pulse"></div>
                       <Loader2 className="w-10 h-10 text-purple-500 animate-spin relative" />
                     </div>
-                    <p className="text-faint text-sm mt-4">AI 正在分析 JD 并优化简历...</p>
+                    <p className="text-muted text-sm mt-4">AI 正在分析 JD 并优化简历...</p>
                   </div>
                 )}
               </div>
@@ -450,7 +450,7 @@ export default function ResumePage() {
                   <Gauge className="w-5 h-5 text-primary-500" />
                   <h3 className="text-lg font-semibold text-bright">匹配报告</h3>
                   <span className="text-2xl font-bold text-primary-500">{report.scores.overall}%</span>
-                  <span className="text-xs text-faint">总体</span>
+                  <span className="text-xs text-muted">总体</span>
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-muted">
                   <span>技能 {fmtScore(report.scores.groups.skill)}</span>
@@ -461,7 +461,7 @@ export default function ResumePage() {
                 </div>
               </div>
 
-              <p className="text-xs text-faint mb-4">
+              <p className="text-xs text-muted mb-4">
                 JD 拆出 {report.items.length} 条要求，命中 {report.scores.counts.hit} · 部分 {report.scores.counts.partial} · 未命中 {report.scores.counts.missing}。
                 分数是按逐条判定汇总算的（命中 1 / 部分 0.5 / 未命中 0），不是模型直接报的数；证据一栏是简历原句，可直接回去核对。
               </p>
@@ -523,7 +523,7 @@ function MatchRow({ item }: { item: MatchItem }) {
         证据：{item.evidence ? <span className="text-bright">“{item.evidence}”</span> : '简历里没找到支撑的原句'}
         {item.demoted && <span className="text-amber-400">（判定被下调：说命中但给不出原文）</span>}
       </p>
-      {item.note && <p className="mt-1 text-xs text-faint">说明：{item.note}</p>}
+      {item.note && <p className="mt-1 text-xs text-muted">说明：{item.note}</p>}
       {item.study?.length ? <p className="mt-1 text-xs text-primary-400">可补：{item.study.join('、')}</p> : null}
     </div>
   );

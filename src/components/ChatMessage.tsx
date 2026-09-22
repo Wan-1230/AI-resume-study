@@ -47,7 +47,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
       <div className={`max-w-[80%] ${isUser ? 'order-first' : ''}`}>
         <div className={`rounded-2xl p-4 ${
           isUser 
-            ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white' 
+            ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink' 
             : 'bg-surface border border-line text-bright'
         }`}>
           {isLoading ? (
@@ -71,7 +71,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <button
               onClick={copyAnswer}
-              className="flex items-center space-x-1.5 text-xs text-faint hover:text-primary-500 transition-colors"
+              className="flex items-center space-x-1.5 text-xs text-muted hover:text-primary-500 transition-colors"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? '已复制' : '复制回答'}</span>
@@ -80,7 +80,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
             {canRegenerate && onRegenerate && (
               <button
                 onClick={onRegenerate}
-                className="flex items-center space-x-1.5 text-xs text-faint hover:text-primary-500 transition-colors"
+                className="flex items-center space-x-1.5 text-xs text-muted hover:text-primary-500 transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>重新生成</span>
@@ -117,7 +117,7 @@ export default function ChatMessage({ message, isLoading, onFeedback, onRegenera
         {/* 来源卡片：数量与答案里的 [n] 编号一一对应，不做截断 */}
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="mt-3 space-y-2">
-            <p className="text-xs text-faint font-medium">参考来源（{message.sources.length} 条）：</p>
+            <p className="text-xs text-muted font-medium">参考来源（{message.sources.length} 条）：</p>
             <div className="grid grid-cols-1 gap-2">
               {message.sources.map((source, index) => (
                 <SourceCard

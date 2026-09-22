@@ -45,7 +45,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                 this.setState({ hasError: false, error: null });
                 window.location.href = '/';
               }}
-              className="px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-xl transition-colors"
+              className="px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-ink text-sm font-medium rounded-xl transition-colors"
             >
               返回首页
             </button>

@@ -131,12 +131,12 @@ export default function AuthPage() {
           {/* 顶部渐变区域 */}
           <div className="bg-gradient-to-r from-primary-500/90 to-purple-600/90 p-8 text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-white" />
+              <User className="w-8 h-8 text-ink" />
             </div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-ink">
               {mode === 'login' ? '欢迎回来' : '创建账户'}
             </h1>
-            <p className="text-white/80 text-sm mt-2">
+            <p className="text-ink/80 text-sm mt-2">
               {mode === 'login' ? '登录您的账户开始学习' : '注册新账户开启学习之旅'}
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-white font-medium rounded-xl transition-all btn-hover-scale flex items-center justify-center space-x-2"
+                className="w-full py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-ink font-medium rounded-xl transition-all btn-hover-scale flex items-center justify-center space-x-2"
               >
                 {loading ? (
                   <>
@@ -268,7 +268,7 @@ export default function AuthPage() {
 
             {/* 切换登录/注册 */}
             <div className="mt-6 text-center">
-              <p className="text-faint text-sm">
+              <p className="text-muted text-sm">
                 {mode === 'login' ? '还没有账户？' : '已有账户？'}
                 <button
                   onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(null); }}
@@ -281,7 +281,7 @@ export default function AuthPage() {
           </div>
         </div>
 
-        <p className="text-center text-faint text-xs mt-6">
+        <p className="text-center text-muted text-xs mt-6">
           登录即表示您同意我们的服务条款和隐私政策
         </p>
       </div>

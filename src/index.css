@@ -17,9 +17,9 @@
   --color-bg-elevated: #1a1a22;
   --color-bg-hover: #1e1e28;
   
-  --color-text-primary: #e8e8ed;
-  --color-text-secondary: #8b8b9a;
-  --color-text-muted: #5a5a6e;
+  --color-text-primary: #e8e8ed;   /* = Tailwind bright */
+  --color-text-secondary: #8b8b9a; /* = Tailwind muted */
+  --color-text-muted: #7d7d92;     /* = Tailwind faint（名字对不上是历史遗留，值以 tailwind.config.js 为准） */
   
   --color-border: #1e1e28;
   --color-border-hover: #2a2a38;
@@ -52,6 +52,9 @@ body {
   margin: 0;
   background: var(--color-bg-base);
   color: var(--color-text-primary);
+  /* 不声明的话，<select> 的下拉箭头、原生滚动条会由浏览器按亮色画一块白，
+     在暗色卡片上特别扎眼；这一行让所有原生控件跟着配色走 */
+  color-scheme: dark;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

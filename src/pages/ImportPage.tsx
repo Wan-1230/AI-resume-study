@@ -174,7 +174,7 @@ export default function ImportPage() {
                   成功导入 {result.created} 道
                   {result.failed.length ? `，${result.failed.length} 道被跳过` : ''}
                 </p>
-                <p className="text-faint text-sm">
+                <p className="text-muted text-sm">
                   {result.created ? '可在「我的题库」查看与编辑。' : '没有题目入库。'}
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function ImportPage() {
             >
               <Upload className="w-12 h-12 text-faint mx-auto mb-4" />
               <p className="text-muted mb-2">拖拽文件到此处，或点击选择文件</p>
-              <p className="text-faint text-sm">支持 Excel (.xlsx, .xls) 和 CSV 文件</p>
+              <p className="text-muted text-sm">支持 Excel (.xlsx, .xls) 和 CSV 文件</p>
               <input
                 type="file"
                 accept=".xlsx,.xls,.csv"
@@ -221,7 +221,7 @@ export default function ImportPage() {
               />
               <label
                 htmlFor="file-input"
-                className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-white rounded-xl cursor-pointer transition-all btn-hover-scale"
+                className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 text-ink rounded-xl cursor-pointer transition-all btn-hover-scale"
               >
                 选择文件
               </label>
@@ -251,8 +251,8 @@ export default function ImportPage() {
             )}
 
             <div className="mt-6 p-4 bg-raised border border-edge rounded-xl">
-              <p className="text-faint text-sm mb-3">文件格式要求：</p>
-              <ul className="text-faint text-xs space-y-1">
+              <p className="text-muted text-sm mb-3">文件格式要求：</p>
+              <ul className="text-muted text-xs space-y-1">
                 <li>• 列名：title, content, option_a, option_b, option_c, option_d, answer, explanation, difficulty, category</li>
                 <li>• 支持中文列名：标题, 题目内容, 选项A-D, 正确答案, 解析, 难度, 分类</li>
                 <li>• difficulty 值：easy, medium, hard</li>
@@ -270,7 +270,7 @@ export default function ImportPage() {
           <div className="bg-surface border border-line rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-bright">数据预览</h2>
-              <span className="text-faint text-sm">共 {importData.length} 条</span>
+              <span className="text-muted text-sm">共 {importData.length} 条</span>
             </div>
 
             {loading ? (
@@ -287,7 +287,7 @@ export default function ImportPage() {
                 {importData.map((item, index) => (
                   <div key={index} className="bg-raised border border-edge rounded-xl p-4">
                     <div className="flex items-start justify-between mb-2">
-                      <span className="text-xs text-faint">第 {index + 1} 条</span>
+                      <span className="text-xs text-muted">第 {index + 1} 条</span>
                       <button
                         onClick={() => removeRow(index)}
                         className="p-1 text-faint hover:text-rose-500 transition-colors"
@@ -310,7 +310,7 @@ export default function ImportPage() {
               <button
                 onClick={handleImport}
                 disabled={importing || !isAuthenticated}
-                className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-white font-medium rounded-xl transition-all flex items-center justify-center space-x-2 btn-hover-scale btn-ripple"
+                className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-ink font-medium rounded-xl transition-all flex items-center justify-center space-x-2 btn-hover-scale btn-ripple"
               >
                 {importing ? (
                   <>

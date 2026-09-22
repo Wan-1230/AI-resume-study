@@ -137,7 +137,7 @@ export default function Home() {
 
             {/* 滚动提示 */}
             <div className="mt-10 sm:mt-16 flex flex-col items-center animate-bounce">
-              <span className="text-faint text-xs mb-2">向下滚动</span>
+              <span className="text-muted text-xs mb-2">向下滚动</span>
               <ArrowDown className="w-4 h-4 text-faint" />
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                 <button
                   onClick={() => navigate('/chat')}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold transition-all duration-200 btn-hover-scale"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-primary-500 hover:bg-primary-600 text-ink font-semibold transition-all duration-200 btn-hover-scale"
                 >
                   立即体验
                 </button>
@@ -229,8 +229,8 @@ export default function Home() {
                   {/* 拖拽上传区 */}
                   <div className="border-2 border-dashed border-edge rounded-xl p-6 sm:p-8 text-center hover:border-purple-500/50 transition-colors">
                     <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-ghost mx-auto mb-3" />
-                    <p className="text-faint text-sm">拖拽文件到此处</p>
-                    <p className="text-ghost text-xs mt-1">支持 PDF、Word、Markdown</p>
+                    <p className="text-muted text-sm">拖拽文件到此处</p>
+                    <p className="text-muted text-xs mt-1">支持 PDF、Word、Markdown</p>
                   </div>
 
                   {/* 支持格式 */}
@@ -327,7 +327,7 @@ export default function Home() {
       />
 
       {/* 页码显示 */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-sm text-faint">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-sm text-muted">
         <span className="text-primary-500 font-semibold">{String(currentPage + 1).padStart(2, '0')}</span>
         <span> / </span>
         <span>{String(PAGE_COUNT).padStart(2, '0')}</span>

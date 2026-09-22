@@ -266,7 +266,7 @@ export default function ChatPage() {
         {sidebar && (
           <aside className="w-60 shrink-0 border-r border-line bg-ink-soft overflow-y-auto">
             <div className="p-3 space-y-1">
-              <p className="px-2 py-1 text-xs text-faint">历史会话</p>
+              <p className="px-2 py-1 text-xs text-muted">历史会话</p>
               {!isAuthenticated && (
                 <button onClick={() => navigate('/login')} className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-primary-500 hover:bg-raised rounded-xl">
                   <LogIn className="w-4 h-4" /><span>登录后保留历史</span>
@@ -333,7 +333,7 @@ export default function ChatPage() {
 
             {messages.length === 1 && (
               <div className="mt-8">
-                <p className="text-sm text-faint mb-3">试试问这些：</p>
+                <p className="text-sm text-muted mb-3">试试问这些：</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTED_QUESTIONS.map((question, index) => (
                     <button
@@ -365,7 +365,7 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={!input.trim() || isLoading || isConnected === false}
-              className="p-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-white rounded-xl transition-all"
+              className="p-3 bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-ink rounded-xl transition-all"
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </button>
@@ -377,7 +377,7 @@ export default function ChatPage() {
             </p>
           )}
           {!isAuthenticated && isConnected !== false && (
-            <p className="mt-2 text-xs text-faint">未登录时对话不会被保存；登录后可以回看历史会话并对回答点赞/踩。</p>
+            <p className="mt-2 text-xs text-muted">未登录时对话不会被保存；登录后可以回看历史会话并对回答点赞/踩。</p>
           )}
         </form>
       </footer>

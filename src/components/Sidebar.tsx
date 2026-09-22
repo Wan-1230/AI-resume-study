@@ -34,7 +34,7 @@ export default function Sidebar({
               onClick={() => onCategoryChange(null)}
               className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                 selectedCategory === null
-                  ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white shadow-lg shadow-primary-500/10'
+                  ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink shadow-lg shadow-primary-500/10'
                   : 'text-muted hover:text-primary-500 hover:bg-raised'
               }`}
             >
@@ -47,7 +47,7 @@ export default function Sidebar({
                 onClick={() => onCategoryChange(category.id)}
                 className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-sm btn-hover-scale ${
                   selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-white shadow-lg shadow-primary-500/10'
+                    ? 'bg-gradient-to-r from-primary-500/90 to-primary-600/90 text-ink shadow-lg shadow-primary-500/10'
                     : 'text-muted hover:text-primary-500 hover:bg-raised'
                 }`}
               >
@@ -109,7 +109,7 @@ export default function Sidebar({
               </div>
               <h3 className="font-semibold text-bright text-sm">学习提示</h3>
             </div>
-            <p className="text-sm text-faint leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed">
               上传你的私有题库数据，打造个性化学习体验！支持 Excel 和 CSV 格式。
             </p>
           </div>
