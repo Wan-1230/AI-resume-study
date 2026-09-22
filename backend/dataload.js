@@ -49,26 +49,36 @@ const getArticles = () => readJsonCached('articles.json');
 
 /** 列表接口的可选过滤；不传参数时返回全量，保持既有前端契约不变 */
 function filterList(list, query) {
+  return filterWithTotal(list, query).items;
+}
+
+/**
+ * 同上，但把"截断前的命中数"一起带出来。
+ * 前端要显示"共 N 题、这次取回 M 题"时，只能靠服务端给，否则它得把全量拉下来才知道。
+ */
+function filterWithTotal(list, query) {
   const { category, difficulty, limit } = query || {};
-  let out = list;
-  if (category) out = out.filter((item) => item.category === category);
-  if (difficulty) out = out.filter((item) => item.difficulty === difficulty);
+  let matched = list;
+  if (category) matched = matched.filter((item) => item.category === category);
+  if (difficulty) matched = matched.filter((item) => item.difficulty === difficulty);
+  const total = matched.length;
   const max = Number(limit);
-  if (Number.isFinite(max) && max > 0) out = out.slice(0, Math.min(max, 500));
-  return out;
+  const items = Number.isFinite(max) && max > 0 ? matched.slice(0, Math.min(max, 500)) : matched;
+  return { items, total };
 }
 
 /**
  * 带 ETag 的读取响应：命中 If-None-Match 直接 304，正文一个字都不发。
  * 304 响应按规范不能带 body，所以这里绝不调 res.json。
  */
-function sendWithCache(req, res, { data, etag, body }) {
+function sendWithCache(req, res, { data, etag, body, total }) {
   if (req.headers['if-none-match'] === etag) return res.status(304).end();
   res.set('ETag', etag);
   // 题库是低频变更的共享内容，允许公有缓存但要带校验，避免 CDN 拿旧版打不掉
   res.set('Cache-Control', 'public, max-age=60, must-revalidate');
+  if (Number.isFinite(total)) res.set('X-Total-Count', String(total));
   if (typeof body === 'string') return res.type('application/json').send(body);
   return res.json(data);
 }
 
-module.exports = { getQuestions, getArticles, filterList, sendWithCache, readJsonCached };
+module.exports = { getQuestions, getArticles, filterList, filterWithTotal, sendWithCache, readJsonCached };

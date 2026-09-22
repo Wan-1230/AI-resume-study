@@ -164,6 +164,39 @@ async function myRequest<T>(path: string, { method = 'GET', body }: { method?: s
   return response.json() as Promise<T>;
 }
 
+/**
+ * 服务端过滤版取题。只支持 category / difficulty / limit；
+ * 带 search 或 page 时返回 null，让调用方走"拉全量再本地筛"的老路径。
+ * 后端不可达、或返回结构不对，同样返回 null 兜底 —— 这里宁可多拉一次全量，也不要白屏。
+ */
+async function fetchQuestionsFiltered(params?: {
+  categoryId?: string;
+  difficulty?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ data: Question[]; total: number } | null> {
+  if (params?.search || params?.page) return null;
+  const query = new URLSearchParams();
+  if (params?.categoryId) query.set('category', params.categoryId);
+  if (params?.difficulty) query.set('difficulty', params.difficulty);
+  if (params?.limit) query.set('limit', String(params.limit));
+  if (!query.toString()) return null;
+
+  try {
+    const response = await fetch(`${API_BASE}/api/questions?${query.toString()}`, { headers: getAuthHeaders() });
+    if (!response.ok) return null;
+    const rows = await response.json();
+    if (!Array.isArray(rows)) return null;
+    const data = transformQuestions(rows);
+    // 命中总数在 X-Total-Count 里（服务端已 exposedHeaders），拿不到就退成"这次取回多少"
+    const total = Number(response.headers.get('X-Total-Count')) || data.length;
+    return { data, total };
+  } catch {
+    return null;
+  }
+}
+
 export const api = {
   /** 落地页的收录计数：拿不到就宁可不显示，也不写死一个会过期的数字 */
   async stats(): Promise<{ articles: number; questions: number }> {
@@ -188,6 +221,10 @@ export const api = {
       page?: number;
       limit?: number;
     }): Promise<{ data: Question[]; total: number }> {
+      // 能交给服务端筛就先交给服务端：全量是 677KB，练习页只要一个分类时不该整份拉回浏览器
+      const serverSide = await fetchQuestionsFiltered(params);
+      if (serverSide) return serverSide;
+
       let questions = await fetchQuestionsFromBackend();
 
       // 过滤

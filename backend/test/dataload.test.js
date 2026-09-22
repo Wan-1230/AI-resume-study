@@ -50,3 +50,23 @@ test('文章库缺失时返回空数组而不是抛错', () => {
   assert.equal(missing.body, '[]');
   assert.equal(missing.etag, 'W/"absent"');
 });
+
+test('filterWithTotal：total 是截断前的命中数，不是本次返回条数', () => {
+  const { filterWithTotal } = require('../dataload');
+  const rows = [
+    { id: 1, category: 'RAG', difficulty: 'easy' },
+    { id: 2, category: 'RAG', difficulty: 'hard' },
+    { id: 3, category: 'RAG', difficulty: 'hard' },
+    { id: 4, category: 'LLM', difficulty: 'hard' },
+  ];
+
+  const limited = filterWithTotal(rows, { category: 'RAG', limit: 2 });
+  assert.equal(limited.items.length, 2, 'limit 该截断');
+  assert.equal(limited.total, 3, '但 total 要说清"其实命中 3 条"，否则前端以为 RAG 只有 2 题');
+
+  const both = filterWithTotal(rows, { category: 'RAG', difficulty: 'hard' });
+  assert.equal(both.total, 2);
+  assert.equal(both.items.length, 2);
+
+  assert.equal(filterWithTotal(rows, {}).total, 4, '不过滤时 total 就是全量');
+});

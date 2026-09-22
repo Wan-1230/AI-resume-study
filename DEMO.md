@@ -77,7 +77,7 @@ curl -s localhost:3001/api/health        # 向量后端、embedding 版本、LLM
 
 ```bash
 npm run check && npm run lint            # 类型 + 静态检查（lint 现为 0 error / 1 warning）
-npm test                                 # 后端 32 个用例；后端在跑时会顺带做端到端，没跑就跳过
+npm test                                 # 后端 33 个用例；后端在跑时会顺带做端到端，没跑就跳过
 npm run build                            # 前端能构建产物
 cd backend && node --check server.js     # 后端语法
 cd backend && node scripts/eval-retrieval.js   # 检索质量没退化（hit@5 / MRR，约 1 分钟）
@@ -85,7 +85,7 @@ cd backend && node scripts/eval-retrieval.js   # 检索质量没退化（hit@5 /
 再手工过演示脚本的 2、5、5b、7、8、11、12 七步（流式、拒答、会话持久化、入库、跨刷新、失败回报、面试闭环），
 以及问一句库里没有的话（如"推荐杭州的川菜馆"）—— 应该 0 来源 + 「知识库里没找到」，而不是一段编出来的推荐。
 
-> `npm test` 覆盖 guard 限流、检索阈值与角标编号契约、分块幂等、匹配分加权、语料计数一致性等 32 个用例；
+> `npm test` 覆盖 guard 限流、检索阈值与角标编号契约、分块幂等、匹配分加权、语料计数一致性、过滤后总数语义等 33 个用例；
 > CI（`.github/workflows/ci.yml`）跑的是同一套命令。其中 1 条端到端用例要 `E2E_LLM=1` 才跑（会真花上游额度），默认显式跳过。
 
 ## 4. 部署后待补

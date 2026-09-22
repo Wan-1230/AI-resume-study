@@ -20,7 +20,7 @@ const interviewRoutes = require('./interview');
 const chatThreadRoutes = require('./chat');
 const { logRetrieval, retrievalStats } = require('./chat/log');
 const { analyzeMatch } = require('./resume/match');
-const { getQuestions, getArticles, filterList, sendWithCache } = require('./dataload');
+const { getQuestions, getArticles, filterList, filterWithTotal, sendWithCache } = require('./dataload');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
 const usersManager = require('./auth/users');
@@ -39,6 +39,9 @@ const gateLlm = llmConcurrencyGate();
 
 // 中间件
 const corsOptions = {
+  // 跨域时浏览器默认只让前端读 6 个安全响应头，X-Total-Count 不在其中；
+  // 不 exposedHeaders 的话，服务端发了也等于没发（前端只会静默退回"本次条数"）
+  exposedHeaders: ['X-Total-Count', 'ETag'],
   origin: function (origin, callback) {
     // 允许没有 origin 的请求（如 Postman、服务器间调用、curl）
     if (!origin) {
@@ -306,7 +309,8 @@ app.get('/api/questions', (req, res) => {
   if (category || difficulty || limit) {
     // 过滤结果与全量是不同表示，共用一个 ETag 会让缓存拿到"对的校验号、错的内容"
     const variant = `${etag}-f${crypto.createHash('sha1').update(`${category}|${difficulty}|${limit}`).digest('hex').slice(0, 8)}`;
-    return sendWithCache(req, res, { data: filterList(data, req.query), etag: variant });
+    const { items, total } = filterWithTotal(data, req.query);
+    return sendWithCache(req, res, { data: items, etag: variant, total });
   }
   sendWithCache(req, res, { data, etag });
 });
