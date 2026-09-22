@@ -18,6 +18,9 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 - Typewriter demo of the assistant
 
 ### 🤖 AI Q&A (RAG)
+- **Conversations persist**: history sidebar with rename / delete / regenerate and per-answer thumbs up/down
+- **Admin ships a retrieval-quality panel**: live query count, abstain rate, average latency, thumbs ratio and
+  top-1 score buckets, all from `retrieval_log` (query and hit metadata only — never the answers)
 - **LangChain pipeline**: load → split → embed → store → retrieve → generate
   (architecture and every environment variable: [LANGCHAIN_RAG.md](./LANGCHAIN_RAG.md))
 - `Xenova/bge-small-zh-v1.5` runs inside the Node process; **once cached, the embedding stage makes no network calls at all**

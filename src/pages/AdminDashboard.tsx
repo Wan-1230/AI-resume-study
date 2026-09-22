@@ -16,7 +16,7 @@ import {
   Calendar,
   User as UserIcon,
 } from 'lucide-react';
-import { getUsers, deleteUser, clearAdminToken } from '@/lib/adminApi';
+import { getUsers, deleteUser, clearAdminToken, getRetrievalStats, type RetrievalStats } from '@/lib/adminApi';
 
 interface AdminUser {
   id: string;
@@ -43,6 +43,7 @@ export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [detailUser, setDetailUser] = useState<AdminUser | null>(null);
+  const [retrieval, setRetrieval] = useState<RetrievalStats | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const limit = 15;
@@ -83,6 +84,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // 检索质量读不到不该把用户列表也带崩，所以单独一条 effect 且失败静默
+  useEffect(() => {
+    getRetrievalStats(7).then(setRetrieval).catch(() => setRetrieval(null));
+  }, []);
 
   // 组件卸载时清理防抖定时器
   useEffect(() => {
@@ -190,6 +196,76 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* 检索质量：阈值是不是拍脑袋定的，看这里 */}
+        {retrieval && (
+          <section className="mb-8 bg-[#12121a] border border-white/[0.06] rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold">检索质量（近 {retrieval.window_days} 天）</h2>
+              <span className="text-xs text-[#5a5a6e]">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-sm">
+              <div>
+                <div className="text-xl font-bold">{retrieval.queries}</div>
+                <div className="text-[#5a5a6e] text-xs">真实查询数</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold">{retrieval.abstain_rate === null ? '—' : `${(retrieval.abstain_rate * 100).toFixed(1)}%`}</div>
+                <div className="text-[#5a5a6e] text-xs">拒答率（{retrieval.abstained} 次）</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold">{retrieval.avg_latency_ms ?? '—'}<span className="text-xs text-[#5a5a6e]">ms</span></div>
+                <div className="text-[#5a5a6e] text-xs">平均问答耗时</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold">{retrieval.feedback.up} / {retrieval.feedback.down}</div>
+                <div className="text-[#5a5a6e] text-xs">赞 / 踩（{retrieval.feedback.unrated} 条未评）</div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 mb-4">
+              {retrieval.top1_score_buckets.map((b) => (
+                <div key={b.bucket} className="flex items-center space-x-3 text-xs">
+                  <span className="w-24 text-[#8b8b9a] font-mono">{b.bucket}</span>
+                  <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary-500/70"
+                      style={{ width: `${retrieval.queries ? Math.min(100, (b.n / retrieval.queries) * 100) : 0}%` }}
+                    />
+                  </div>
+                  <span className="w-8 text-right text-[#5a5a6e]">{b.n}</span>
+                </div>
+              ))}
+              {!retrieval.top1_score_buckets.length && <p className="text-xs text-[#5a5a6e]">还没有检索记录。</p>}
+            </div>
+
+            {retrieval.recent.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="text-[#5a5a6e]">
+                    <tr className="text-left border-b border-white/[0.06]">
+                      <th className="py-2 font-medium">问了什么</th>
+                      <th className="py-2 font-medium">top1 命中</th>
+                      <th className="py-2 font-medium text-right">分数</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {retrieval.recent.map((row, i) => (
+                      <tr key={`${row.created_at}-${i}`} className="border-b border-white/[0.03]">
+                        <td className="py-2 pr-3 text-white/90 max-w-xs truncate">{row.query}</td>
+                        <td className="py-2 pr-3 text-[#8b8b9a] max-w-xs truncate">
+                          {row.abstained ? <span className="text-amber-400">已拒答（无过阈值内容）</span> : row.top_title}
+                        </td>
+                        <td className="py-2 text-right font-mono text-[#8b8b9a]">{row.top_score === null ? '—' : row.top_score.toFixed(3)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* 搜索栏 */}
         <form onSubmit={handleSearch} className="mb-6">

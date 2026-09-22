@@ -134,3 +134,26 @@ export function getStoredAdminToken(): string | null {
 export function clearAdminToken(): void {
   localStorage.removeItem(ADMIN_TOKEN_KEY);
 }
+
+/** 检索质量面板：真实查询的命中分布、拒答率与赞踩比 */
+export interface RetrievalStats {
+  window_days: number;
+  queries: number;
+  abstained: number;
+  empty_hits: number;
+  abstain_rate: number | null;
+  avg_latency_ms: number | null;
+  top1_score_buckets: { bucket: string; n: number }[];
+  feedback: { up: number; down: number; unrated: number };
+  recent: { query: string; top_title: string; top_score: number | null; abstained: boolean; created_at: string }[];
+}
+
+export async function getRetrievalStats(days = 7): Promise<RetrievalStats> {
+  const response = await fetch(`${API_BASE}/api/admin/retrieval/stats?days=${days}`, {
+    headers: getAdminHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error(`读取检索统计失败（${response.status}）`);
+  }
+  return response.json() as Promise<RetrievalStats>;
+}

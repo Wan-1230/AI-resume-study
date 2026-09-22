@@ -16,6 +16,8 @@ const authRoutes = require('./auth');
 const learningRoutes = require('./learning');
 const myQuestionsRoutes = require('./myquestions');
 const interviewRoutes = require('./interview');
+const chatThreadRoutes = require('./chat');
+const { logRetrieval, retrievalStats } = require('./chat/log');
 const { analyzeMatch } = require('./resume/match');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
@@ -87,6 +89,9 @@ app.use('/api/my/questions', myQuestionsRoutes);
 // 模拟面试：一路要 8 次点评 + 1 次报告，比问答更贵；限流与并发闸门按路由细分，见 interview/index.js
 app.use('/api/interview', interviewRoutes);
 
+// 对话会话持久化（列表 / 逐条落库 / 赞踩），整个前缀要求登录
+app.use('/api/chat/threads', chatThreadRoutes);
+
 // ==================== 管理员 API ====================
 
 // 获取用户列表（支持搜索和分页）
@@ -114,6 +119,16 @@ app.get('/api/admin/users/:id', requireAdmin, async (req, res) => {
   } catch (error) {
     console.error('Admin get user error:', error);
     res.status(500).json({ error: '获取用户详情失败' });
+  }
+});
+
+// 检索质量：真实查询的命中分布、拒答率、赞踩比（阈值校准与"是不是在瞎答"的唯一依据）
+app.get('/api/admin/retrieval/stats', requireAdmin, async (req, res) => {
+  try {
+    res.json(await retrievalStats({ days: req.query.days }));
+  } catch (error) {
+    console.error('Admin retrieval stats error:', error);
+    res.status(500).json({ error: '检索统计读取失败' });
   }
 });
 
@@ -201,9 +216,22 @@ app.post('/api/chat', optionalAuth, requireRag, limitChat, gateLlm, async (req, 
     }
 
     // 检索 + 生成（service 内部处理 LLM 不可用的降级、以及检索为空时的拒答）
+    const startedAt = Date.now();
     const { answer, sources, abstained } = await ragService.chat(message, history);
 
     res.json({ answer, sources, abstained: !!abstained });
+
+    // 观测不能影响回答：放在响应之后 fire-and-forget，内部也不抛错
+    void logRetrieval({
+      userId: req.user?.id,
+      query: message,
+      topK: ragService.config.retriever.topK,
+      minScore: ragService.config.retriever.minScore,
+      documents: sources,
+      llmModel: ragService.config.llm.model,
+      abstained: !!abstained,
+      latencyMs: Date.now() - startedAt,
+    });
   } catch (error) {
     console.error('Chat error:', error);
     res.status(500).json({ error: '处理请求时出错' });
@@ -227,7 +255,12 @@ app.post('/api/chat/stream', optionalAuth, requireRag, limitChat, gateLlm, async
     startSseHeartbeat(res);
 
     // 检索 → 发送来源 → 流式生成（service 内部处理 LLM 不可用的降级）
+    const startedAt = Date.now();
+    let retrieved = [];
     await ragService.chatStream(message, history, {
+      onRetrieve: (documents) => {
+        retrieved = documents;
+      },
       onSources: (sources) => {
         sendSse(res, { type: 'sources', sources });
       },
@@ -239,6 +272,17 @@ app.post('/api/chat/stream', optionalAuth, requireRag, limitChat, gateLlm, async
     // 发送完成信号
     sendSse(res, { type: 'done' });
     res.end();
+
+    void logRetrieval({
+      userId: req.user?.id,
+      query: message,
+      topK: ragService.config.retriever.topK,
+      minScore: ragService.config.retriever.minScore,
+      documents: retrieved,
+      llmModel: ragService.config.llm.model,
+      abstained: retrieved.length === 0,
+      latencyMs: Date.now() - startedAt,
+    });
   } catch (error) {
     console.error('Stream error:', error);
     sendSse(res, { type: 'error', error: '处理请求时出错' });

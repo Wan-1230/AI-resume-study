@@ -90,12 +90,49 @@ const SCHEMA_STATEMENTS = [
     finished_at     TEXT
   )`,
 
+  `CREATE TABLE IF NOT EXISTS chat_threads (
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL,
+    title      TEXT NOT NULL DEFAULT '新对话',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS chat_messages (
+    id           TEXT PRIMARY KEY,
+    thread_id    TEXT NOT NULL,
+    role         TEXT NOT NULL,
+    content      TEXT NOT NULL,
+    sources_json TEXT NOT NULL DEFAULT '[]',
+    feedback     TEXT,
+    created_at   TEXT NOT NULL
+  )`,
+
+  // 检索日志：阈值校准与"检索质量"面板的唯一数据来源。只存查询与命中元数据，
+  // 不存答案正文，避免这张表变成第二份用户内容。
+  `CREATE TABLE IF NOT EXISTS retrieval_log (
+    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id     TEXT,
+    thread_id   TEXT,
+    query       TEXT NOT NULL,
+    top_k       INTEGER NOT NULL,
+    min_score   DOUBLE PRECISION NOT NULL,
+    hit_ids_json TEXT NOT NULL DEFAULT '[]',
+    llm_model   TEXT,
+    abstained   INTEGER NOT NULL DEFAULT 0,
+    latency_ms  INTEGER,
+    created_at  TEXT NOT NULL
+  )`,
+
   `CREATE INDEX IF NOT EXISTS idx_users_username  ON users(username)`,
   `CREATE INDEX IF NOT EXISTS idx_sessions_user   ON practice_sessions(user_id, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_answers_session ON practice_answers(session_id)`,
   `CREATE INDEX IF NOT EXISTS idx_answers_user_q  ON practice_answers(user_id, question_id, answered_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_custom_owner    ON custom_questions(owner_user_id, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_interview_user  ON interview_sessions(user_id, created_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_threads_user    ON chat_threads(user_id, updated_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_messages_thread ON chat_messages(thread_id, created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_retrieval_time  ON retrieval_log(created_at DESC)`,
 ];
 
 function isLocal(url) {

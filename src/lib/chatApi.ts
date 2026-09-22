@@ -32,6 +32,9 @@ export interface ChatMessage {
   timestamp: number;
   /** 流式输出中：渲染光标，结束后由调用方置回 false */
   streaming?: boolean;
+  /** 落库后的服务端消息 id；赞/踩要有它才认 */
+  serverId?: string;
+  feedback?: 'up' | 'down' | null;
 }
 
 export interface Source {
