@@ -48,6 +48,12 @@ the vector store supports an in-memory backend and ChromaDB, and answers are gen
 - **Favorites**, **practice history**, **wrong-answer book** (answered correctly once = graduated) and
   **per-category mastery stats** persist in Postgres and survive refresh, restart and redeploy
 - **My questions**: create / edit / delete your own questions after login; the system bank is read-only and cannot be edited away
+- **Mock interview**: 6 multiple-choice + 2 open questions, the interviewer probes one level deeper based on what
+  you actually said, then a debrief scores six dimensions (concepts, structure, hands-on evidence, depth/trade-offs,
+  consistency, communication) with a prioritised fix list, publishable as a read-only share link
+- Objective questions are graded against the bank (6,000 shuffle checks, 0 mismatches); open answers are reviewed
+  but never faked into right/wrong. When generation is unavailable the debrief still ships the real objective
+  score and says plainly which part did not run
 - **Bulk import**: Excel / CSV validated row by row, failures reported with line numbers and reasons (nothing is silently dropped)
 
 ### 🔐 Auth and admin

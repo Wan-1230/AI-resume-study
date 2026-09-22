@@ -76,11 +76,26 @@ const SCHEMA_STATEMENTS = [
     updated_at    TEXT NOT NULL
   )`,
 
+  `CREATE TABLE IF NOT EXISTS interview_sessions (
+    id              TEXT PRIMARY KEY,
+    user_id         TEXT NOT NULL,
+    direction       TEXT NOT NULL,
+    direction_key   TEXT NOT NULL,
+    items_json      TEXT NOT NULL DEFAULT '[]',
+    transcript_json TEXT NOT NULL DEFAULT '[]',
+    report_json     TEXT,
+    score_total     DOUBLE PRECISION,
+    visibility      TEXT NOT NULL DEFAULT 'private',
+    created_at      TEXT NOT NULL,
+    finished_at     TEXT
+  )`,
+
   `CREATE INDEX IF NOT EXISTS idx_users_username  ON users(username)`,
   `CREATE INDEX IF NOT EXISTS idx_sessions_user   ON practice_sessions(user_id, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_answers_session ON practice_answers(session_id)`,
   `CREATE INDEX IF NOT EXISTS idx_answers_user_q  ON practice_answers(user_id, question_id, answered_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_custom_owner    ON custom_questions(owner_user_id, created_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_interview_user  ON interview_sessions(user_id, created_at DESC)`,
 ];
 
 function isLocal(url) {

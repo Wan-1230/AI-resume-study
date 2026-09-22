@@ -41,6 +41,7 @@ export default function Header() {
     { label: '简历优化', href: '/resume' },
     { label: '数据导入', href: '/import' },
     { label: '练习模式', href: '/practice' },
+    { label: '模拟面试', href: '/interview' },
     { label: '我的题库', href: '/my-questions' },
   ];
 

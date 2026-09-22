@@ -15,6 +15,7 @@ const { SystemMessage, HumanMessage } = require('@langchain/core/messages');
 const authRoutes = require('./auth');
 const learningRoutes = require('./learning');
 const myQuestionsRoutes = require('./myquestions');
+const interviewRoutes = require('./interview');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
 const usersManager = require('./auth/users');
@@ -81,6 +82,9 @@ app.use('/api', learningRoutes);
 
 // 我的题库（用户自建题），整个前缀要求登录
 app.use('/api/my/questions', myQuestionsRoutes);
+
+// 模拟面试：一路要 8 次点评 + 1 次报告，比问答更贵；限流与并发闸门按路由细分，见 interview/index.js
+app.use('/api/interview', interviewRoutes);
 
 // ==================== 管理员 API ====================
 

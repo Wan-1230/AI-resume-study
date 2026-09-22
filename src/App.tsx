@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import QuestionDetail from "@/pages/QuestionDetail";
 import ImportPage from "@/pages/ImportPage";
 import PracticePage from "@/pages/PracticePage";
+import InterviewPage from "@/pages/InterviewPage";
 import MyQuestionsPage from "@/pages/MyQuestionsPage";
 import AuthPage from "@/pages/AuthPage";
 import ChatPage from "@/pages/ChatPage";
@@ -38,6 +39,8 @@ export default function App() {
           <Route path="/question/:id" element={<QuestionDetail />} />
           <Route path="/import" element={<ImportPage />} />
           <Route path="/practice" element={<PracticePage />} />
+          <Route path="/interview" element={<InterviewPage />} />
+          <Route path="/interview/:id" element={<InterviewPage />} />
           <Route path="/my-questions" element={<MyQuestionsPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/resume" element={<ResumePage />} />
