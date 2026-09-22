@@ -16,10 +16,10 @@ interface EmptyProps {
  */
 export default function Empty({ title, description, action, icon, className }: EmptyProps) {
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#2a2a38] px-6 py-12 text-center', className)}>
-      <span className="text-[#5a5a6e]">{icon ?? <Inbox className="w-7 h-7" />}</span>
-      <p className="text-sm font-medium text-[#e8e8ed]">{title}</p>
-      {description && <p className="max-w-sm text-xs leading-relaxed text-[#8b8b9a]">{description}</p>}
+    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-edge px-6 py-12 text-center', className)}>
+      <span className="text-faint">{icon ?? <Inbox className="w-7 h-7" />}</span>
+      <p className="text-sm font-medium text-bright">{title}</p>
+      {description && <p className="max-w-sm text-xs leading-relaxed text-muted">{description}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );

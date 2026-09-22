@@ -1,7 +1,8 @@
 import { useRef, useEffect, useCallback } from 'react';
+import { uiColors } from '@/constants/config';
 
 const ClickSpark = ({
-  sparkColor = '#06d6a0',
+  sparkColor = uiColors.primary,
   sparkSize = 10,
   sparkRadius = 15,
   sparkCount = 8,

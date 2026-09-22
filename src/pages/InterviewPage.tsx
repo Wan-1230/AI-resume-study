@@ -147,8 +147,8 @@ export default function InterviewPage() {
   if (phase === 'unavailable') {
     return (
       <Shell onBack={() => navigate('/')} title="模拟面试">
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-8 text-center">
-          <p className="text-[#e8e8ed] mb-4">{notice || '这份报告打不开'}</p>
+        <div className="bg-surface border border-line rounded-2xl p-8 text-center">
+          <p className="text-bright mb-4">{notice || '这份报告打不开'}</p>
           <button onClick={() => navigate('/interview')} className="px-4 py-2 bg-primary-500/15 text-primary-500 rounded-xl">回到模拟面试</button>
         </div>
       </Shell>
@@ -158,12 +158,12 @@ export default function InterviewPage() {
   if (phase === 'shared' && shared) {
     return (
       <Shell onBack={() => navigate('/')} title="面试复盘报告（分享）">
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5 mb-6 flex items-center justify-between">
+        <div className="bg-surface border border-line rounded-2xl p-5 mb-6 flex items-center justify-between">
           <div>
-            <p className="text-[#5a5a6e] text-xs mb-1">分享的报告 · {new Date(shared.created_at).toLocaleString('zh-CN')}</p>
-            <h2 className="text-lg font-semibold text-[#e8e8ed]">{shared.direction}</h2>
+            <p className="text-faint text-xs mb-1">分享的报告 · {new Date(shared.created_at).toLocaleString('zh-CN')}</p>
+            <h2 className="text-lg font-semibold text-bright">{shared.direction}</h2>
           </div>
-          <span className="text-xs text-[#5a5a6e]">只读</span>
+          <span className="text-xs text-faint">只读</span>
         </div>
         <ReportView report={shared.report} objective={shared.objective} transcript={shared.transcript} items={shared.items} />
       </Shell>
@@ -173,9 +173,9 @@ export default function InterviewPage() {
   if (phase === 'setup') {
     return (
       <Shell onBack={() => navigate('/')} title="模拟面试">
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-6 mb-6">
-          <h2 className="text-xl font-semibold text-[#e8e8ed] mb-2">一轮 8 题，讲完就出复盘报告</h2>
-          <p className="text-sm text-[#8b8b9a] leading-relaxed">
+        <div className="bg-surface border border-line rounded-2xl p-6 mb-6">
+          <h2 className="text-xl font-semibold text-bright mb-2">一轮 8 题，讲完就出复盘报告</h2>
+          <p className="text-sm text-muted leading-relaxed">
             6 道选择 + 2 道口头展开。每题面试官会针对你说的话追问一层，最后按六个维度打分并给出改进清单 ——
             分数低不是坏事，看清差在哪才是这轮的目的。
           </p>
@@ -192,12 +192,12 @@ export default function InterviewPage() {
               key={d.key}
               onClick={() => setPicked(d.key)}
               className={`text-left p-4 rounded-2xl border transition-colors ${
-                picked === d.key ? 'border-primary-500/70 bg-primary-500/10' : 'border-[#1e1e28] bg-[#141419] hover:border-[#2a2a38]'
+                picked === d.key ? 'border-primary-500/70 bg-primary-500/10' : 'border-line bg-surface hover:border-edge'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-[#e8e8ed]">{d.name}</span>
-                <span className="text-xs text-[#5a5a6e]">{d.available} 题可选</span>
+                <span className="font-medium text-bright">{d.name}</span>
+                <span className="text-xs text-faint">{d.available} 题可选</span>
               </div>
               {picked === d.key && <span className="mt-1 inline-block text-xs text-primary-500">已选择</span>}
             </button>
@@ -216,7 +216,7 @@ export default function InterviewPage() {
         ) : (
           <button
             onClick={() => navigate('/login')}
-            className="w-full py-3 rounded-2xl bg-[#1a1a22] border border-[#2a2a38] text-[#e8e8ed] font-medium flex items-center justify-center space-x-2"
+            className="w-full py-3 rounded-2xl bg-raised border border-edge text-bright font-medium flex items-center justify-center space-x-2"
           >
             <LogIn className="w-4 h-4" /><span>登录后开始（成绩要存进你的账号）</span>
           </button>
@@ -224,7 +224,7 @@ export default function InterviewPage() {
 
         {history.length > 0 && (
           <div className="mt-8">
-            <h3 className="text-sm font-medium text-[#8b8b9a] mb-3 flex items-center space-x-2">
+            <h3 className="text-sm font-medium text-muted mb-3 flex items-center space-x-2">
               <ClipboardList className="w-4 h-4" /><span>最近的面试</span>
             </h3>
             <div className="space-y-2">
@@ -232,12 +232,12 @@ export default function InterviewPage() {
                 <button
                   key={h.id}
                   onClick={() => navigate(`/interview/${h.id}`)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-[#141419] border border-[#1e1e28] rounded-xl hover:border-primary-500/30 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-surface border border-line rounded-xl hover:border-primary-500/30 transition-colors"
                 >
-                  <span className="text-sm text-[#e8e8ed]">{h.direction}</span>
-                  <span className="text-xs text-[#5a5a6e] flex items-center space-x-3">
+                  <span className="text-sm text-bright">{h.direction}</span>
+                  <span className="text-xs text-faint flex items-center space-x-3">
                     <span>{h.answered} 题</span>
-                    <span className="text-[#e8e8ed]">{h.finished ? (h.score_total ?? '—') : '未交卷'}</span>
+                    <span className="text-bright">{h.finished ? (h.score_total ?? '—') : '未交卷'}</span>
                     <ChevronRight className="w-4 h-4" />
                   </span>
                 </button>
@@ -254,19 +254,19 @@ export default function InterviewPage() {
     return (
       <Shell onBack={() => navigate('/interview')} title="面试进行中">
         <div className="mb-5">
-          <div className="flex items-center justify-between text-xs text-[#5a5a6e] mb-2">
+          <div className="flex items-center justify-between text-xs text-faint mb-2">
             <span>第 {index + 1} / {items.length} 题 · {item.category}</span>
             <span>{directionName}</span>
           </div>
-          <div className="h-1 bg-[#1e1e28] rounded-full overflow-hidden">
+          <div className="h-1 bg-line rounded-full overflow-hidden">
             <div className="h-full bg-primary-500/70 transition-all" style={{ width: `${((index + (answered ? 1 : 0)) / items.length) * 100}%` }} />
           </div>
         </div>
 
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-6 mb-4">
-          <p className="text-[#e8e8ed] leading-relaxed">{item.question}</p>
+        <div className="bg-surface border border-line rounded-2xl p-6 mb-4">
+          <p className="text-bright leading-relaxed">{item.question}</p>
           {item.kind === 'open' && (
-            <p className="mt-2 text-xs text-[#5a5a6e]">口头题：像面试时那样把想法说出来，两到四句。</p>
+            <p className="mt-2 text-xs text-faint">口头题：像面试时那样把想法说出来，两到四句。</p>
           )}
         </div>
 
@@ -281,7 +281,7 @@ export default function InterviewPage() {
                       key={option}
                       onClick={() => { setChosen(letter); setNotice(null); }}
                       className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors ${
-                        chosen === letter ? 'border-primary-500/70 bg-primary-500/10 text-[#e8e8ed]' : 'border-[#1e1e28] bg-[#141419] text-[#8b8b9a] hover:border-[#2a2a38]'
+                        chosen === letter ? 'border-primary-500/70 bg-primary-500/10 text-bright' : 'border-line bg-surface text-muted hover:border-edge'
                       }`}
                     >
                       {option}
@@ -295,7 +295,7 @@ export default function InterviewPage() {
                 onChange={(e) => { setDraft(e.target.value); setNotice(null); }}
                 rows={5}
                 placeholder="把你的理解讲出来…"
-                className="w-full px-4 py-3 bg-[#141419] border border-[#1e1e28] rounded-xl text-sm text-[#e8e8ed] mb-4 focus:outline-none focus:border-primary-500/50 resize-none"
+                className="w-full px-4 py-3 bg-surface border border-line rounded-xl text-sm text-bright mb-4 focus:outline-none focus:border-primary-500/50 resize-none"
               />
             )}
             {notice && <p className="text-sm text-rose-400 mb-3">{notice}</p>}
@@ -321,22 +321,22 @@ export default function InterviewPage() {
         {notice && <p className="text-sm text-amber-400 mb-4">{notice}</p>}
         <div className="flex items-center justify-between mb-5">
           <div>
-            <p className="text-xs text-[#5a5a6e] mb-1">{directionName}</p>
-            <h2 className="text-lg font-semibold text-[#e8e8ed]">这一轮的复盘</h2>
+            <p className="text-xs text-faint mb-1">{directionName}</p>
+            <h2 className="text-lg font-semibold text-bright">这一轮的复盘</h2>
           </div>
           <div className="flex items-center space-x-2">
-            <button onClick={toggleShare} className={`px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 border transition-colors ${visibility === 'public' ? 'border-primary-500/50 bg-primary-500/10 text-primary-500' : 'border-[#2a2a38] text-[#8b8b9a]'}`}>
+            <button onClick={toggleShare} className={`px-3 py-2 rounded-xl text-xs flex items-center space-x-1.5 border transition-colors ${visibility === 'public' ? 'border-primary-500/50 bg-primary-500/10 text-primary-500' : 'border-edge text-muted'}`}>
               <Share2 className="w-3.5 h-3.5" /><span>{visibility === 'public' ? '已公开' : '开启分享'}</span>
             </button>
             {visibility === 'public' && (
-              <button onClick={copyLink} className="px-3 py-2 rounded-xl text-xs border border-[#2a2a38] text-[#8b8b9a] flex items-center space-x-1.5">
+              <button onClick={copyLink} className="px-3 py-2 rounded-xl text-xs border border-edge text-muted flex items-center space-x-1.5">
                 <Link2 className="w-3.5 h-3.5" /><span>复制链接</span>
               </button>
             )}
           </div>
         </div>
         <ReportView report={report} objective={report.objective} transcript={sessionView?.transcript ?? []} items={items} />
-        <button onClick={loadSetup} className="mt-6 w-full py-3 rounded-2xl bg-[#1a1a22] border border-[#2a2a38] text-[#e8e8ed] font-medium">
+        <button onClick={loadSetup} className="mt-6 w-full py-3 rounded-2xl bg-raised border border-edge text-bright font-medium">
           再来一轮
         </button>
       </Shell>
@@ -348,14 +348,14 @@ export default function InterviewPage() {
 
 function Shell({ onBack, title, children }: { onBack: () => void; title: string; children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      <header className="bg-[#0f0f14]/90 backdrop-blur-xl border-b border-[#1e1e28] sticky top-0 z-50">
+    <div className="min-h-screen bg-ink">
+      <header className="bg-ink-soft/90 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <button onClick={onBack} className="flex items-center space-x-2 text-[#8b8b9a] hover:text-primary-500 transition-colors">
+            <button onClick={onBack} className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors">
               <ArrowLeft className="w-5 h-5" /><span>返回</span>
             </button>
-            <h1 className="text-lg font-semibold text-[#e8e8ed]">{title}</h1>
+            <h1 className="text-lg font-semibold text-bright">{title}</h1>
             <span className="w-16" />
           </div>
         </div>
@@ -371,44 +371,44 @@ function Verdict({ result, item, followDraft, setFollowDraft, onNext, busy, last
 }) {
   return (
     <div className="space-y-4">
-      <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
+      <div className="bg-surface border border-line rounded-2xl p-5">
         {item.kind === 'mcq' ? (
           <div className="flex items-center space-x-2 mb-3">
             {result.correct ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-rose-500" />}
-            <span className="text-[#e8e8ed]">{result.correct ? '选对了' : `正确选项是 ${result.correct_answer}`}</span>
+            <span className="text-bright">{result.correct ? '选对了' : `正确选项是 ${result.correct_answer}`}</span>
           </div>
         ) : (
-          <div className="flex items-center space-x-2 mb-3 text-[#8b8b9a]">
+          <div className="flex items-center space-x-2 mb-3 text-muted">
             <MinusCircle className="w-5 h-5" /><span className="text-sm">口头题不判对错，看的是说得清不清楚</span>
           </div>
         )}
 
         {result.feedback ? (
-          <p className="text-sm text-[#e8e8ed] leading-relaxed whitespace-pre-wrap">{result.feedback}</p>
+          <p className="text-sm text-bright leading-relaxed whitespace-pre-wrap">{result.feedback}</p>
         ) : (
           <p className="text-sm text-amber-400">点评没生成（LLM 不可用或这次没返回合法结果），客观题成绩仍然算数。</p>
         )}
 
         {result.reference && (
           <details className="mt-3">
-            <summary className="text-xs text-[#5a5a6e] cursor-pointer hover:text-primary-500">看这个考点的参考要点</summary>
-            <p className="mt-2 text-sm text-[#8b8b9a] leading-relaxed">{result.reference}</p>
+            <summary className="text-xs text-faint cursor-pointer hover:text-primary-500">看这个考点的参考要点</summary>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{result.reference}</p>
           </details>
         )}
       </div>
 
       {result.follow_up && (
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-          <p className="text-xs text-[#5a5a6e] mb-2 flex items-center space-x-1.5">
+        <div className="bg-surface border border-line rounded-2xl p-5">
+          <p className="text-xs text-faint mb-2 flex items-center space-x-1.5">
             <Sparkles className="w-3.5 h-3.5" /><span>面试官顺着你的话追问</span>
           </p>
-          <p className="text-[#e8e8ed] mb-3">{result.follow_up}</p>
+          <p className="text-bright mb-3">{result.follow_up}</p>
           <textarea
             value={followDraft}
             onChange={(e) => setFollowDraft(e.target.value)}
             rows={3}
             placeholder="补充一句（不想答可以留空跳过）"
-            className="w-full px-4 py-3 bg-[#0f0f14] border border-[#1e1e28] rounded-xl text-sm text-[#e8e8ed] focus:outline-none focus:border-primary-500/50 resize-none"
+            className="w-full px-4 py-3 bg-ink-soft border border-line rounded-xl text-sm text-bright focus:outline-none focus:border-primary-500/50 resize-none"
           />
         </div>
       )}
@@ -439,41 +439,41 @@ function ReportView({ report, objective, transcript, items }: {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-5">
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-4">
+        <div className="bg-surface border border-line rounded-2xl p-4">
           {dimensionsReady ? <RadarChart dimensions={dimensions} /> : (
-            <div className="h-[240px] flex items-center justify-center text-sm text-[#5a5a6e] px-6 text-center">
+            <div className="h-[240px] flex items-center justify-center text-sm text-faint px-6 text-center">
               六维评分没生成，右边是客观题的真实成绩
             </div>
           )}
         </div>
 
         <div className="space-y-4">
-          <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-            <p className="text-xs text-[#5a5a6e] mb-1">综合评分</p>
+          <div className="bg-surface border border-line rounded-2xl p-5">
+            <p className="text-xs text-faint mb-1">综合评分</p>
             <div className="flex items-end space-x-3">
-              <span className="text-4xl font-bold text-[#e8e8ed]">{report?.score_total ?? '—'}</span>
-              <span className="text-sm text-[#5a5a6e] mb-1.5">/ 5</span>
-              <span className="ml-auto text-sm text-[#8b8b9a] mb-1.5 flex items-center space-x-1.5">
+              <span className="text-4xl font-bold text-bright">{report?.score_total ?? '—'}</span>
+              <span className="text-sm text-faint mb-1.5">/ 5</span>
+              <span className="ml-auto text-sm text-muted mb-1.5 flex items-center space-x-1.5">
                 <Target className="w-4 h-4" />
                 <span>选择 {objective.mcq_correct}/{objective.mcq_answered} 对</span>
               </span>
             </div>
             {report?.error && <p className="mt-3 text-sm text-amber-400">评审未完成：{report.error}</p>}
-            {report?.summary && <p className="mt-3 text-sm text-[#e8e8ed] leading-relaxed">{report.summary}</p>}
+            {report?.summary && <p className="mt-3 text-sm text-bright leading-relaxed">{report.summary}</p>}
           </div>
 
           {dimensionsReady && (
-            <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5 space-y-3">
+            <div className="bg-surface border border-line rounded-2xl p-5 space-y-3">
               {dimensions.map((d) => (
                 <div key={d.key}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-[#e8e8ed]">{d.name}</span>
-                    <span className="text-[#8b8b9a] font-mono">{d.score ?? '未评'}</span>
+                    <span className="text-bright">{d.name}</span>
+                    <span className="text-muted font-mono">{d.score ?? '未评'}</span>
                   </div>
-                  <div className="h-1 bg-[#1e1e28] rounded-full overflow-hidden mb-1">
+                  <div className="h-1 bg-line rounded-full overflow-hidden mb-1">
                     <div className="h-full bg-primary-500/70" style={{ width: `${((d.score ?? 0) / 5) * 100}%` }} />
                   </div>
-                  {d.reason && <p className="text-xs text-[#8b8b9a] leading-relaxed">{d.reason}</p>}
+                  {d.reason && <p className="text-xs text-muted leading-relaxed">{d.reason}</p>}
                 </div>
               ))}
             </div>
@@ -482,24 +482,24 @@ function ReportView({ report, objective, transcript, items }: {
       </div>
 
       {report?.strengths?.length ? (
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-          <p className="text-sm font-medium text-[#e8e8ed] mb-2">这轮做对的</p>
+        <div className="bg-surface border border-line rounded-2xl p-5">
+          <p className="text-sm font-medium text-bright mb-2">这轮做对的</p>
           <ul className="space-y-1.5">
-            {report.strengths.map((s, i) => <li key={i} className="text-sm text-[#8b8b9a]">· {s}</li>)}
+            {report.strengths.map((s, i) => <li key={i} className="text-sm text-muted">· {s}</li>)}
           </ul>
         </div>
       ) : null}
 
       {report?.improvements?.length ? (
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-          <p className="text-sm font-medium text-[#e8e8ed] mb-3">改进清单</p>
+        <div className="bg-surface border border-line rounded-2xl p-5">
+          <p className="text-sm font-medium text-bright mb-3">改进清单</p>
           <div className="space-y-3">
             {report.improvements.map((row, i) => (
               <div key={i} className="flex space-x-3">
                 <span className="shrink-0 w-6 h-6 rounded-lg bg-rose-500/10 text-rose-400 text-xs flex items-center justify-center font-mono">{row.priority}</span>
                 <div>
-                  <p className="text-sm text-[#e8e8ed]">{row.what}</p>
-                  {row.how && <p className="text-xs text-[#8b8b9a] mt-1 leading-relaxed">{row.how}</p>}
+                  <p className="text-sm text-bright">{row.what}</p>
+                  {row.how && <p className="text-xs text-muted mt-1 leading-relaxed">{row.how}</p>}
                 </div>
               </div>
             ))}
@@ -508,13 +508,13 @@ function ReportView({ report, objective, transcript, items }: {
       ) : null}
 
       {objective.categories?.length > 0 && (
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-          <p className="text-sm font-medium text-[#e8e8ed] mb-3">按分类看</p>
+        <div className="bg-surface border border-line rounded-2xl p-5">
+          <p className="text-sm font-medium text-bright mb-3">按分类看</p>
           <div className="space-y-2">
             {objective.categories.map((c) => (
               <div key={c.category} className="flex items-center justify-between text-sm">
-                <span className="text-[#8b8b9a]">{c.category}</span>
-                <span className="text-[#e8e8ed] font-mono">
+                <span className="text-muted">{c.category}</span>
+                <span className="text-bright font-mono">
                   {c.correct}/{c.total - c.open} 选择对{c.open ? ` · ${c.open} 口头` : ''}
                 </span>
               </div>
@@ -524,17 +524,17 @@ function ReportView({ report, objective, transcript, items }: {
       )}
 
       {rows.length > 0 && (
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-5">
-          <p className="text-sm font-medium text-[#e8e8ed] mb-3">逐题回看</p>
+        <div className="bg-surface border border-line rounded-2xl p-5">
+          <p className="text-sm font-medium text-bright mb-3">逐题回看</p>
           <div className="space-y-3">
             {rows.map((t) => (
               <details key={t.item_id}>
-                <summary className="text-sm text-[#8b8b9a] cursor-pointer hover:text-primary-500">
+                <summary className="text-sm text-muted cursor-pointer hover:text-primary-500">
                   {t.correct === null ? '（口头）' : t.correct ? '✓ ' : '✗ '}
                   {titleOf.get(t.item_id) || t.question}
                 </summary>
-                <p className="mt-2 text-xs text-[#5a5a6e]">你说：{t.answer}</p>
-                {t.feedback && <p className="mt-1 text-xs text-[#8b8b9a]">点评：{t.feedback}</p>}
+                <p className="mt-2 text-xs text-faint">你说：{t.answer}</p>
+                {t.feedback && <p className="mt-1 text-xs text-muted">点评：{t.feedback}</p>}
               </details>
             ))}
           </div>
@@ -547,7 +547,7 @@ function ReportView({ report, objective, transcript, items }: {
 function Skelton() {
   return (
     <div className="space-y-4">
-      {[0, 1, 2].map((i) => <div key={i} className="h-24 bg-[#141419] border border-[#1e1e28] rounded-2xl animate-pulse" />)}
+      {[0, 1, 2].map((i) => <div key={i} className="h-24 bg-surface border border-line rounded-2xl animate-pulse" />)}
     </div>
   );
 }

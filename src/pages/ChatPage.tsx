@@ -222,21 +222,21 @@ export default function ChatPage() {
   const lastIndex = messages.length - 1;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
-      <header className="bg-[#0f0f14]/90 backdrop-blur-xl border-b border-[#1e1e28] sticky top-0 z-50">
+    <div className="min-h-screen bg-ink flex flex-col">
+      <header className="bg-ink-soft/90 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setSidebar(v => !v)}
-                className="p-2 text-[#8b8b9a] hover:text-primary-500 hover:bg-[#1a1a22] rounded-xl transition-colors"
+                className="p-2 text-muted hover:text-primary-500 hover:bg-raised rounded-xl transition-colors"
                 title="历史会话"
               >
                 {sidebar ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
               </button>
               <button
                 onClick={() => navigate('/')}
-                className="flex items-center space-x-2 text-[#8b8b9a] hover:text-primary-500 transition-colors"
+                className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="hidden sm:inline">返回首页</span>
@@ -245,7 +245,7 @@ export default function ChatPage() {
 
             <div className="flex items-center space-x-2">
               <Sparkles className="w-5 h-5 text-primary-500" />
-              <h1 className="text-lg font-semibold text-[#e8e8ed]">AI 面试助手</h1>
+              <h1 className="text-lg font-semibold text-bright">AI 面试助手</h1>
               {isConnected !== null && (
                 <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
               )}
@@ -253,7 +253,7 @@ export default function ChatPage() {
 
             <button
               onClick={startNewThread}
-              className="flex items-center space-x-1.5 px-3 py-2 text-sm text-[#8b8b9a] hover:text-primary-500 hover:bg-[#1a1a22] rounded-xl transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-2 text-sm text-muted hover:text-primary-500 hover:bg-raised rounded-xl transition-colors"
               title="开始新对话"
             >
               <Plus className="w-4 h-4" /><span className="hidden sm:inline">新对话</span>
@@ -264,11 +264,11 @@ export default function ChatPage() {
 
       <div className="flex-1 flex overflow-hidden max-w-6xl w-full mx-auto">
         {sidebar && (
-          <aside className="w-60 shrink-0 border-r border-[#1e1e28] bg-[#0f0f14] overflow-y-auto">
+          <aside className="w-60 shrink-0 border-r border-line bg-ink-soft overflow-y-auto">
             <div className="p-3 space-y-1">
-              <p className="px-2 py-1 text-xs text-[#5a5a6e]">历史会话</p>
+              <p className="px-2 py-1 text-xs text-faint">历史会话</p>
               {!isAuthenticated && (
-                <button onClick={() => navigate('/login')} className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-primary-500 hover:bg-[#1a1a22] rounded-xl">
+                <button onClick={() => navigate('/login')} className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-primary-500 hover:bg-raised rounded-xl">
                   <LogIn className="w-4 h-4" /><span>登录后保留历史</span>
                 </button>
               )}
@@ -281,17 +281,17 @@ export default function ChatPage() {
                 />
               )}
               {threads.map(t => (
-                <div key={t.id} className={`group flex items-center gap-1 rounded-xl ${t.id === activeId ? 'bg-[#1a1a22]' : 'hover:bg-[#141419]'}`}>
+                <div key={t.id} className={`group flex items-center gap-1 rounded-xl ${t.id === activeId ? 'bg-raised' : 'hover:bg-surface'}`}>
                   <button onClick={() => openThread(t.id)} className="flex-1 flex items-start space-x-2 px-3 py-2 text-left min-w-0">
-                    <MessageSquare className="w-4 h-4 mt-0.5 shrink-0 text-[#5a5a6e]" />
+                    <MessageSquare className="w-4 h-4 mt-0.5 shrink-0 text-faint" />
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-[#e8e8ed]">{t.title}</span>
-                      <span className="block text-[11px] text-[#5a5a6e]">{t.message_count} 条 · {new Date(t.updated_at).toLocaleDateString('zh-CN')}</span>
+                      <span className="block truncate text-sm text-bright">{t.title}</span>
+                      <span className="block text-[11px] text-faint">{t.message_count} 条 · {new Date(t.updated_at).toLocaleDateString('zh-CN')}</span>
                     </span>
                   </button>
                   <button
                     onClick={() => removeThread(t.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 text-[#5a5a6e] hover:text-rose-400 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 text-faint hover:text-rose-400 transition-all"
                     title="删除这个会话"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -333,13 +333,13 @@ export default function ChatPage() {
 
             {messages.length === 1 && (
               <div className="mt-8">
-                <p className="text-sm text-[#5a5a6e] mb-3">试试问这些：</p>
+                <p className="text-sm text-faint mb-3">试试问这些：</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTED_QUESTIONS.map((question, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(question)}
-                      className="px-4 py-2 bg-[#141419] border border-[#1e1e28] rounded-xl text-sm text-[#8b8b9a] hover:border-primary-500/30 hover:text-primary-500 transition-all"
+                      className="px-4 py-2 bg-surface border border-line rounded-xl text-sm text-muted hover:border-primary-500/30 hover:text-primary-500 transition-all"
                     >
                       {question}
                     </button>
@@ -351,7 +351,7 @@ export default function ChatPage() {
         </main>
       </div>
 
-      <footer className="bg-[#0f0f14] border-t border-[#1e1e28] p-4">
+      <footer className="bg-ink-soft border-t border-line p-4">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="flex items-center space-x-3">
             <input
@@ -360,7 +360,7 @@ export default function ChatPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={isConnected === false ? '后端服务未启动...' : '输入你的问题...'}
               disabled={isLoading || isConnected === false}
-              className="flex-1 bg-[#141419] border border-[#1e1e28] rounded-xl px-4 py-3 text-[#e8e8ed] placeholder-[#5a5a6e] focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 disabled:opacity-50"
+              className="flex-1 bg-surface border border-line rounded-xl px-4 py-3 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20 disabled:opacity-50"
             />
             <button
               type="submit"
@@ -377,7 +377,7 @@ export default function ChatPage() {
             </p>
           )}
           {!isAuthenticated && isConnected !== false && (
-            <p className="mt-2 text-xs text-[#5a5a6e]">未登录时对话不会被保存；登录后可以回看历史会话并对回答点赞/踩。</p>
+            <p className="mt-2 text-xs text-faint">未登录时对话不会被保存；登录后可以回看历史会话并对回答点赞/踩。</p>
           )}
         </form>
       </footer>

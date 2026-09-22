@@ -1,4 +1,5 @@
 import { User, LogOut } from 'lucide-react';
+import { uiColors } from '@/constants/config';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PillNav from './PillNav';
 import { useStore } from '@/store';
@@ -51,10 +52,10 @@ export default function Header() {
         <PillNav
           items={navItems}
           activeHref={location.pathname}
-          baseColor="#0f0f14"
-          pillColor="#1a1a22"
-          hoveredPillTextColor="#06d6a0"
-          pillTextColor="#8b8b9a"
+          baseColor={uiColors.inkSoft}
+          pillColor={uiColors.raised}
+          hoveredPillTextColor={uiColors.primary}
+          pillTextColor={uiColors.muted}
           initialLoadAnimation={false}
           onItemClick={handleNavClick}
           logo="/logo.png"
@@ -66,7 +67,7 @@ export default function Header() {
             href="https://github.com/Wan-1230/AI-resume-study"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 sm:p-2.5 text-[#8b8b9a] hover:text-[#e8e8ed] hover:bg-[#1a1a22] rounded-lg transition-all duration-200"
+            className="p-2 sm:p-2.5 text-muted hover:text-bright hover:bg-raised rounded-lg transition-all duration-200"
             title="GitHub"
           >
             <GitHubIcon className="w-5 h-5" />
@@ -79,19 +80,19 @@ export default function Header() {
                 <img
                   src={user.avatar_url}
                   alt={displayName}
-                  className="w-8 h-8 rounded-lg border border-[#2a2a38]"
+                  className="w-8 h-8 rounded-lg border border-edge"
                 />
               ) : (
                 <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
                   <User className="w-4 h-4 text-primary-500" />
                 </div>
               )}
-              <span className="text-[#8b8b9a] text-sm font-medium hidden sm:inline">
+              <span className="text-muted text-sm font-medium hidden sm:inline">
                 {displayName}
               </span>
               <button
                 onClick={handleLogout}
-                className="p-2 text-[#5a5a6e] hover:text-rose-400 hover:bg-[#1a1a22] rounded-lg transition-all duration-200"
+                className="p-2 text-faint hover:text-rose-400 hover:bg-raised rounded-lg transition-all duration-200"
                 title="退出登录"
               >
                 <LogOut className="w-4 h-4" />
@@ -100,7 +101,7 @@ export default function Header() {
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-2.5 bg-[#e8e8ed] hover:bg-white text-[#0a0a0f] font-semibold transition-all duration-200 btn-hover-scale"
+              className="flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-2.5 bg-bright hover:bg-white text-ink font-semibold transition-all duration-200 btn-hover-scale"
             >
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">登录</span>

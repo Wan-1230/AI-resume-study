@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
+import { uiColors } from '@/constants/config';
 import { gsap } from 'gsap';
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -466,7 +467,7 @@ const MagicBento = ({
           const cardProps = {
             className: baseClassName,
             style: {
-              backgroundColor: card.color || '#141419',
+              backgroundColor: card.color || uiColors.surface,
               '--glow-color': glowColor
             }
           };

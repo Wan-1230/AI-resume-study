@@ -95,7 +95,7 @@ function renderInline(text: string, keyBase: string, onCite?: (n: number) => voi
     const token = match[0];
     if (token.startsWith('**')) {
       nodes.push(
-        <strong key={`${keyBase}-b${n++}`} className="font-semibold text-[#e8e8ed]">
+        <strong key={`${keyBase}-b${n++}`} className="font-semibold text-bright">
           {token.slice(2, -2)}
         </strong>
       );
@@ -114,7 +114,7 @@ function renderInline(text: string, keyBase: string, onCite?: (n: number) => voi
       );
     } else {
       nodes.push(
-        <code key={`${keyBase}-c${n++}`} className="px-1.5 py-0.5 bg-[#1a1a22] border border-[#2a2a38] rounded-md text-[13px] text-primary-400 font-mono">
+        <code key={`${keyBase}-c${n++}`} className="px-1.5 py-0.5 bg-raised border border-edge rounded-md text-[13px] text-primary-400 font-mono">
           {token.slice(1, -1)}
         </code>
       );
@@ -139,22 +139,22 @@ function CodeBlock({ code, lang }: { code: string; lang?: string }) {
   };
 
   return (
-    <div className="my-3 bg-[#0f0f14] border border-[#1e1e28] rounded-xl overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#1e1e28] bg-[#141419]">
-        <span className="flex items-center space-x-1.5 text-[11px] text-[#5a5a6e] font-mono">
+    <div className="my-3 bg-ink-soft border border-line rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-line bg-surface">
+        <span className="flex items-center space-x-1.5 text-[11px] text-faint font-mono">
           <Code2 className="w-3.5 h-3.5" />
           <span>{lang || 'code'}</span>
         </span>
         <button
           onClick={copy}
-          className="flex items-center space-x-1 text-[11px] text-[#5a5a6e] hover:text-primary-500 transition-colors"
+          className="flex items-center space-x-1 text-[11px] text-faint hover:text-primary-500 transition-colors"
           title="复制代码"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
           <span>{copied ? '已复制' : '复制'}</span>
         </button>
       </div>
-      <pre className="p-3 overflow-x-auto text-[13px] leading-relaxed text-[#e8e8ed] font-mono whitespace-pre">
+      <pre className="p-3 overflow-x-auto text-[13px] leading-relaxed text-bright font-mono whitespace-pre">
         {code}
       </pre>
     </div>
@@ -172,7 +172,7 @@ export default function MarkdownLite({ content, onCite }: { content: string; onC
             return <CodeBlock key={index} code={block.text || ''} lang={block.lang} />;
           case 'heading':
             return (
-              <p key={index} className="mt-3 mb-1.5 font-semibold text-[#e8e8ed]">
+              <p key={index} className="mt-3 mb-1.5 font-semibold text-bright">
                 {renderInline(block.text || '', `h${index}`, onCite)}
               </p>
             );
@@ -191,7 +191,7 @@ export default function MarkdownLite({ content, onCite }: { content: string; onC
               <ul key={index} className="my-2 space-y-1.5">
                 {items.map((item, i) => (
                   <li key={i} className="flex space-x-2">
-                    <span className="text-[#5a5a6e] shrink-0">•</span>
+                    <span className="text-faint shrink-0">•</span>
                     <span className="flex-1">{renderInline(item, `ul${index}-${i}`, onCite)}</span>
                   </li>
                 ))}

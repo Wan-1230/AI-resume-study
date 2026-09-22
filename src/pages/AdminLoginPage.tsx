@@ -34,26 +34,26 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-[#5a5a6e] hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
+          className="flex items-center space-x-2 text-faint hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>返回首页</span>
         </button>
 
         {/* 登录卡片 */}
-        <div className="bg-[#12121a] rounded-2xl p-8 border border-white/[0.06]">
+        <div className="bg-panel rounded-2xl p-8 border border-white/[0.06]">
           {/* 标题 */}
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-primary-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Shield className="w-7 h-7 text-primary-500" />
             </div>
             <h1 className="text-2xl font-bold text-white">管理员登录</h1>
-            <p className="text-[#5a5a6e] mt-2 text-sm">此页面仅限管理员访问</p>
+            <p className="text-faint mt-2 text-sm">此页面仅限管理员访问</p>
           </div>
 
           {/* 错误提示 */}
@@ -67,39 +67,39 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* 邮箱 */}
             <div>
-              <label className="block text-sm font-medium text-[#8a8a9e] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 管理员邮箱
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@example.com"
-                  className="w-full pl-11 pr-4 py-3 bg-[#0a0a0f] border border-white/[0.06] rounded-xl text-white placeholder-[#3a3a4e] focus:outline-none focus:border-primary-500/50 transition-colors"
+                  className="w-full pl-11 pr-4 py-3 bg-ink border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
                 />
               </div>
             </div>
 
             {/* 密码 */}
             <div>
-              <label className="block text-sm font-medium text-[#8a8a9e] mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 管理员密码
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="输入密码"
-                  className="w-full pl-11 pr-12 py-3 bg-[#0a0a0f] border border-white/[0.06] rounded-xl text-white placeholder-[#3a3a4e] focus:outline-none focus:border-primary-500/50 transition-colors"
+                  className="w-full pl-11 pr-12 py-3 bg-ink border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5a5a6e] hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-faint hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>

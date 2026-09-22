@@ -58,7 +58,7 @@ export default function Home() {
   const pageLabels = ['首页', 'AI 助手', '简历优化', '题库', '关于'];
 
   return (
-    <div className="bg-[#0a0a0f] relative">
+    <div className="bg-ink relative">
       <Header />
 
       {/* 全屏滚动容器 */}
@@ -72,7 +72,7 @@ export default function Home() {
         {/* Page 1: Hero */}
         <section className="h-screen w-full relative overflow-hidden flex items-center justify-center">
           {/* Threads 背景 */}
-          <div className="absolute inset-0 bg-[#0a0a0f]">
+          <div className="absolute inset-0 bg-ink">
             <Threads
               color={[0.5, 0.2, 0.8]}
               amplitude={1.2}
@@ -80,12 +80,12 @@ export default function Home() {
               enableMouseInteraction={true}
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-transparent to-[#0a0a0f]/50 z-[1]"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/50 z-[1]"></div>
           
           <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="inline-flex items-center space-x-2 px-3 sm:px-4 py-1.5 bg-[#1a1a22]/80 backdrop-blur-sm border border-[#2a2a38] mb-6 sm:mb-8">
-              <span className="px-2 py-0.5 bg-[#e8e8ed] text-[#0a0a0f] text-xs font-bold">NEW</span>
-              <span className="text-[#8b8b9a] text-xs sm:text-sm">AI 面试准备平台，已收录 27 篇文章 + 255 道题目</span>
+            <div className="inline-flex items-center space-x-2 px-3 sm:px-4 py-1.5 bg-raised/80 backdrop-blur-sm border border-edge mb-6 sm:mb-8">
+              <span className="px-2 py-0.5 bg-bright text-ink text-xs font-bold">NEW</span>
+              <span className="text-muted text-xs sm:text-sm">AI 面试准备平台，已收录 27 篇文章 + 255 道题目</span>
             </div>
 
             <ScrollReveal
@@ -94,7 +94,7 @@ export default function Home() {
               baseRotation={3}
               blurStrength={8}
               containerClassName="mb-3 sm:mb-4"
-              textClassName="text-[#e8e8ed] text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+              textClassName="text-bright text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
             >
               掌握 AI Agent 面试核心知识
             </ScrollReveal>
@@ -105,7 +105,7 @@ export default function Home() {
               baseRotation={2}
               blurStrength={6}
               containerClassName="mb-6 sm:mb-8"
-              textClassName="text-[#e8e8ed]/80 text-lg sm:text-xl md:text-2xl"
+              textClassName="text-bright/80 text-lg sm:text-xl md:text-2xl"
             >
               平滑的知识体系让学习更加完美
             </ScrollReveal>
@@ -113,13 +113,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <button
                 onClick={() => navigate('/practice')}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-[#e8e8ed] hover:bg-white text-[#0a0a0f] font-semibold transition-all duration-200 btn-hover-scale"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-bright hover:bg-white text-ink font-semibold transition-all duration-200 btn-hover-scale"
               >
                 开始学习
               </button>
               <button
                 onClick={() => goToPage(2)}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-transparent border border-purple-500/50 text-[#e8e8ed] hover:bg-purple-500/20 font-semibold transition-all duration-200 btn-hover-scale"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-transparent border border-purple-500/50 text-bright hover:bg-purple-500/20 font-semibold transition-all duration-200 btn-hover-scale"
               >
                 浏览题库
               </button>
@@ -127,14 +127,14 @@ export default function Home() {
 
             {/* 滚动提示 */}
             <div className="mt-10 sm:mt-16 flex flex-col items-center animate-bounce">
-              <span className="text-[#5a5a6e] text-xs mb-2">向下滚动</span>
-              <ArrowDown className="w-4 h-4 text-[#5a5a6e]" />
+              <span className="text-faint text-xs mb-2">向下滚动</span>
+              <ArrowDown className="w-4 h-4 text-faint" />
             </div>
           </div>
         </section>
 
         {/* Page 2: AI 助手介绍 */}
-        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-[#0a0a0f]">
+        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-ink">
           {/* 机器人背景 */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.08]">
             <svg viewBox="0 0 200 200" className="w-[600px] h-[600px] text-primary-500" fill="currentColor">
@@ -162,11 +162,11 @@ export default function Home() {
               <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-primary-500/10 border border-primary-500/20 mb-4 sm:mb-6">
                 <span className="text-primary-500 text-sm font-medium">AI 驱动</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#e8e8ed] mb-4 sm:mb-6 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright mb-4 sm:mb-6 leading-tight">
                 智能问答助手<br/>
                 <span className="text-primary-500">精准解答</span>面试难题
               </h2>
-              <p className="text-[#8b8b9a] text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
+              <p className="text-muted text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
                 基于 27 篇 AI 应用开发文章构建的知识库，覆盖 LLM、RAG、Agent、MCP 等核心领域。输入任何面试相关问题，AI 助手为你提供专业、准确的解答。
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -176,7 +176,7 @@ export default function Home() {
                 >
                   立即体验
                 </button>
-                <div className="flex items-center space-x-2 text-[#5a5a6e]">
+                <div className="flex items-center space-x-2 text-faint">
                   <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
@@ -193,7 +193,7 @@ export default function Home() {
         </section>
 
         {/* Page 3: 简历优化介绍 */}
-        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-[#0a0a0f]">
+        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-ink">
           {/* 背景装饰 */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05]">
             <svg viewBox="0 0 200 280" className="w-[400px] h-[560px] text-purple-500" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -214,21 +214,21 @@ export default function Home() {
 <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 sm:gap-12 items-center">
             {/* 左侧功能展示 */}
             <div className="order-2 md:order-1">
-              <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-4 sm:p-6 shadow-2xl">
+              <div className="bg-surface border border-line rounded-2xl p-4 sm:p-6 shadow-2xl">
                 <div className="space-y-4">
                   {/* 拖拽上传区 */}
-                  <div className="border-2 border-dashed border-[#2a2a38] rounded-xl p-6 sm:p-8 text-center hover:border-purple-500/50 transition-colors">
-                    <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-[#3a3a4a] mx-auto mb-3" />
-                    <p className="text-[#5a5a6e] text-sm">拖拽文件到此处</p>
-                    <p className="text-[#3a3a4a] text-xs mt-1">支持 PDF、Word、Markdown</p>
+                  <div className="border-2 border-dashed border-edge rounded-xl p-6 sm:p-8 text-center hover:border-purple-500/50 transition-colors">
+                    <Upload className="w-8 h-8 sm:w-10 sm:h-10 text-ghost mx-auto mb-3" />
+                    <p className="text-faint text-sm">拖拽文件到此处</p>
+                    <p className="text-ghost text-xs mt-1">支持 PDF、Word、Markdown</p>
                   </div>
 
                   {/* 支持格式 */}
                   <div className="flex items-center justify-center gap-2 sm:gap-4">
                     {['PDF', 'DOCX', 'MD'].map((format) => (
-                      <div key={format} className="flex items-center space-x-1.5 px-2 sm:px-3 py-1.5 bg-[#1a1a22] border border-[#2a2a38] rounded-lg">
+                      <div key={format} className="flex items-center space-x-1.5 px-2 sm:px-3 py-1.5 bg-raised border border-edge rounded-lg">
                         <FileCheck className="w-3.5 h-3.5 text-green-500" />
-                        <span className="text-xs text-[#8b8b9a]">.{format.toLowerCase()}</span>
+                        <span className="text-xs text-muted">.{format.toLowerCase()}</span>
                       </div>
                     ))}
                   </div>
@@ -241,11 +241,11 @@ export default function Home() {
               <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-purple-500/10 border border-purple-500/20 mb-4 sm:mb-6">
                 <span className="text-purple-400 text-sm font-medium">智能优化</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#e8e8ed] mb-4 sm:mb-6 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright mb-4 sm:mb-6 leading-tight">
                 AI 简历优化<br/>
                 <span className="text-purple-400">精准匹配</span>目标岗位
               </h2>
-              <p className="text-[#8b8b9a] text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
+              <p className="text-muted text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
                 粘贴或上传简历，输入目标岗位 JD，AI 自动分析匹配度，生成优化建议和改进后的简历，让你的简历更符合岗位要求。
               </p>
 
@@ -261,7 +261,7 @@ export default function Home() {
                     <div className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                       <FileCheck className="w-3 h-3 text-purple-400" />
                     </div>
-                    <span className="text-[#8b8b9a] text-sm">{feature}</span>
+                    <span className="text-muted text-sm">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -277,9 +277,9 @@ export default function Home() {
         </section>
 
         {/* Page 4: Questions */}
-        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-[#0a0a0f]">
+        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-ink">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#e8e8ed] text-center mb-6 sm:mb-8">热门题目</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-bright text-center mb-6 sm:mb-8">热门题目</h2>
             {loading ? (
               <div className="flex justify-center">
                 <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-500 animate-spin" />
@@ -294,7 +294,7 @@ export default function Home() {
             <div className="text-center mt-6 sm:mt-8">
               <button
                 onClick={() => navigate('/practice')}
-                className="px-6 py-3 bg-[#e8e8ed] hover:bg-white text-[#0a0a0f] font-semibold transition-all"
+                className="px-6 py-3 bg-bright hover:bg-white text-ink font-semibold transition-all"
               >
                 查看全部题目
               </button>
@@ -303,7 +303,7 @@ export default function Home() {
         </section>
 
         {/* Page 5: Footer */}
-        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-[#0a0a0f]">
+        <section className="h-screen w-full relative overflow-hidden flex items-center justify-center bg-ink">
           <Footer />
         </section>
       </div>
@@ -317,7 +317,7 @@ export default function Home() {
       />
 
       {/* 页码显示 */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-sm text-[#5a5a6e]">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-sm text-faint">
         <span className="text-primary-500 font-semibold">{String(currentPage + 1).padStart(2, '0')}</span>
         <span> / </span>
         <span>{String(PAGE_COUNT).padStart(2, '0')}</span>

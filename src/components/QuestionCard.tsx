@@ -16,7 +16,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
 
   return (
     <div 
-      className="group relative bg-[#141419] border border-[#1e1e28] rounded-2xl p-6 hover:border-primary-500/20 hover:bg-[#1a1a22] transition-all duration-300 cursor-pointer overflow-hidden btn-hover-scale"
+      className="group relative bg-surface border border-line rounded-2xl p-6 hover:border-primary-500/20 hover:bg-raised transition-all duration-300 cursor-pointer overflow-hidden btn-hover-scale"
       onClick={() => navigate(`/question/${question.id}`)}
     >
       {/* Hover gradient effect */}
@@ -27,7 +27,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <span className="px-3 py-1.5 bg-[#1a1a22] border border-[#2a2a38] text-[#8b8b9a] text-xs rounded-lg font-mono">
+            <span className="px-3 py-1.5 bg-raised border border-edge text-muted text-xs rounded-lg font-mono">
               {question.category?.name || '未分类'}
             </span>
             <span className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border ${difficultyPill[question.difficulty as keyof typeof difficultyPill]}`}>
@@ -49,7 +49,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
             className={`p-2 rounded-xl transition-all duration-200 btn-hover-scale ${
               isFavorited
                 ? 'text-amber-400 bg-amber-500/10'
-                : 'text-[#5a5a6e] hover:text-amber-400 hover:bg-amber-500/10'
+                : 'text-faint hover:text-amber-400 hover:bg-amber-500/10'
             }`}
           >
             <Star className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
@@ -57,23 +57,23 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-[#e8e8ed] mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-relaxed">
+        <h3 className="text-lg font-semibold text-bright mb-3 line-clamp-2 group-hover:text-primary-500 transition-colors leading-relaxed">
           {question.title}
         </h3>
 
         {/* Content preview */}
-        <p className="text-[#5a5a6e] text-sm mb-5 line-clamp-2 leading-relaxed">
+        <p className="text-faint text-sm mb-5 line-clamp-2 leading-relaxed">
           {question.content}
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#1e1e28]">
+        <div className="flex items-center justify-between pt-4 border-t border-line">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1.5 text-[#5a5a6e] text-xs">
+            <div className="flex items-center space-x-1.5 text-faint text-xs">
               <Clock className="w-3.5 h-3.5" />
               <span>5分钟</span>
             </div>
-            <div className="flex items-center space-x-1.5 text-[#5a5a6e] text-xs">
+            <div className="flex items-center space-x-1.5 text-faint text-xs">
               <MessageSquare className="w-3.5 h-3.5" />
               <span>{question.options?.length || 4}个选项</span>
             </div>

@@ -479,7 +479,7 @@
 > 但**没有真实窄屏验证**（这台机器的内嵌浏览器 viewport 是 0×0，截不了图、媒体查询也测不了），
 > 所以这一项算"代码与产物层面完成、视觉未验收"。
 >
-> **P2 仍未做**：字面 hex 收敛为 Tailwind token（`#0a0a0f` 一类还有大量残留）、主题开关（`darkMode:"class"` 配了但没有入口）与 i18n 文案集中。
+> **P2 仍未做**：主题开关（`darkMode:"class"` 配了但没有入口）与 i18n 文案集中。
 >
 > **进度补记（2026-09-23，交互行）**：4 处 `alert/confirm` 全部去掉。
 > - 新增 `src/lib/toast.ts` + `ToastViewport`（挂在 App 顶层一次），带 `role="status" aria-live="polite"` ——
@@ -528,6 +528,27 @@
 > 过滤是**可选**的：不传参数时响应结构与以前完全一样（255 条数组），前端不用改就能跑；
 > 练习页要缩量时才带 query。过滤结果的 ETag 带变体后缀，避免"校验号对、内容不对"。
 > 端到端回归：`/api/articles` 200、筛选变体二次请求 304、单测 25/26 通过（1 条显式跳过）。
+>
+> **进度补记（2026-09-23，设计 token 行）**：字面 hex 收敛完成。
+> - `tailwind.config.js` 的 `theme.extend.colors` 加了 12 个语义名
+>   （ink / ink-soft / panel / surface / raised / lift / line / edge / ghost / faint / muted / bright），
+>   组件里 **755 处** `[#hex]` 换成语义类（其中 `#8a8a9e`、`#3a3a4e` 本来就是 `#8b8b9a`、`#3a3a4a` 的手抄走偏版本，
+>   `#1a1a24`/`#22222a` 之类是"差 2 个色阶"的近似重复 —— 这正是收敛要解决的：肉眼看不出、grep 也数不清）。
+> - `src/` 里只剩 2 处任意值 hex，都在 `AuthPage.tsx` 的 GitHub 登录按钮上（`#24292e`/`#2f363d` 是 GitHub 品牌灰，
+>   不属于站内调色板），就地写了注释挡掉下一次的"顺手收敛"。
+> - SVG 的 `fill`/`stroke`、动画组件的 color props 吃的是**字符串**不是类名，Tailwind 类在这里没用；
+>   这 15 处收进 `src/constants/config.ts` 的 `uiColors`（Header / PillNav / ClickSpark / RadarChart / MagicBento 引用）。
+>   RadarChart 的 `fill="rgba(6,214,160,0.18)"` 改成 `fill={uiColors.primary} fillOpacity={0.18}`，色相只剩一处定义。
+> - `index.css` 里 `:root` 之外的 3 处裸 hex 改为引用 CSS 变量，并补了 `--color-border-active`。
+>   调色板现在只有两个声明点：`tailwind.config.js`（生成类名用，必须写字面量才能支持 `/80` 这类透明度）与 `index.css :root`（手写 CSS 用）。
+> - 验收：编译产物里 36 个语义类逐条对得上规则（含 `hover:`/`disabled:` 变体与 `/80` 形式），任意值 hex 类 0 个；
+>   再用生产构建 `vite preview` 取 computed style —— `bg-ink`→`rgb(10,10,15)`、`bg-surface`→`rgb(20,20,25)`、
+>   导航 pill 底色→`rgb(26,26,34)`、高亮文字→`rgb(6,214,160)`，全部落地。tsc / eslint(0 error) / vite build 全过。
+> - **探针第三次骗人**：脚本报"7 个类在产物中缺失"，实际是我把 `/` 转义成 `\/\` 的串本身是错的、
+>   以及漏了 `:hover`/`:disabled` 后缀和 `#` 在类名里被转义成 `\23` 这三类口径问题；
+>   逐条肉眼看到样例后全部否掉。"计数为 0 先怀疑探针"这条教训这一轮又应验一次。
+> - 顺带一个坑：dev server 上 `bg-ink-soft` 计算出来是透明的，因为 `tailwind.config.js` 中途被回退又恢复，
+>   watcher 留了旧产物；dist 里规则是好的。复核颜色要看 preview/构建产物，别拿 dev 端口下结论。
 
 | 项 | 内容 | 备注 |
 |---|---|---|

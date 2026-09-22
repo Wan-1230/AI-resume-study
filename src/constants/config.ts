@@ -47,3 +47,18 @@ export const difficulties = (['easy', 'medium', 'hard'] as const).map((value) =>
 
 /** 收藏/练习里用到的分类统计条配色，同样集中定义 */
 export const statsBar = 'bg-gradient-to-r from-primary-500/80 to-purple-600/80';
+
+/**
+ * 需要"颜色字符串"而非 Tailwind 类名时的唯一来源：SVG 的 fill/stroke 属性、
+ * 动画组件的 color props、内联 style。className 场景不要用这里，写语义 token 类。
+ * 值与 tailwind.config.js 的 theme.extend.colors 保持一致。
+ */
+export const uiColors = {
+  ink: '#0a0a0f',
+  inkSoft: '#0f0f14',
+  surface: '#141419',
+  raised: '#1a1a22',
+  edge: '#2a2a38',
+  muted: '#8b8b9a',
+  primary: '#06d6a0',
+} as const;

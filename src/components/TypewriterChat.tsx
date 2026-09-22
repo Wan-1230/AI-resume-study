@@ -75,13 +75,13 @@ export default function TypewriterChat() {
   }, [currentMessageIndex, currentScript]);
 
   return (
-    <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-6 shadow-2xl h-[500px] flex flex-col">
+    <div className="bg-surface border border-line rounded-2xl p-6 shadow-2xl h-[500px] flex flex-col">
       {/* 标题栏 */}
-      <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-[#1e1e28]">
+      <div className="flex items-center space-x-2 mb-4 pb-4 border-b border-line">
         <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
         <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
         <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-        <span className="ml-2 text-[#5a5a6e] text-xs">AI 助手</span>
+        <span className="ml-2 text-faint text-xs">AI 助手</span>
       </div>
       
       {/* 对话区域 */}
@@ -92,11 +92,11 @@ export default function TypewriterChat() {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
           >
             {msg.role === 'user' ? (
-              <div className="bg-primary-500/20 text-[#e8e8ed] px-4 py-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm whitespace-pre-line">
+              <div className="bg-primary-500/20 text-bright px-4 py-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm whitespace-pre-line">
                 {msg.content}
               </div>
             ) : (
-              <div className="bg-[#1a1a22] text-[#8b8b9a] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] border border-[#2a2a38] text-sm whitespace-pre-line">
+              <div className="bg-raised text-muted px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] border border-edge text-sm whitespace-pre-line">
                 {msg.content}
               </div>
             )}
@@ -111,12 +111,12 @@ export default function TypewriterChat() {
             } animate-fade-in`}
           >
             {script[currentMessageIndex]?.role === 'user' ? (
-              <div className="bg-primary-500/20 text-[#e8e8ed] px-4 py-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm whitespace-pre-line">
+              <div className="bg-primary-500/20 text-bright px-4 py-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm whitespace-pre-line">
                 {displayedText}
                 {isTyping && <span className="animate-pulse">|</span>}
               </div>
             ) : (
-              <div className="bg-[#1a1a22] text-[#8b8b9a] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] border border-[#2a2a38] text-sm whitespace-pre-line">
+              <div className="bg-raised text-muted px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] border border-edge text-sm whitespace-pre-line">
                 {displayedText}
                 {isTyping && <span className="animate-pulse">|</span>}
               </div>

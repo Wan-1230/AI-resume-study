@@ -134,14 +134,14 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-ink text-white">
       {/* 顶部栏 */}
-      <header className="bg-[#12121a] border-b border-white/[0.06] px-6 py-4">
+      <header className="bg-panel border-b border-white/[0.06] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-[#5a5a6e] hover:text-primary-500 transition-colors"
+              className="flex items-center space-x-2 text-faint hover:text-primary-500 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 text-[#5a5a6e] hover:text-red-400 transition-colors text-sm"
+            className="flex items-center space-x-2 text-faint hover:text-red-400 transition-colors text-sm"
           >
             <LogOut className="w-4 h-4" />
             <span>退出登录</span>
@@ -165,36 +165,36 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-[#12121a] rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center">
                 <Users className="w-5 h-5 text-primary-500" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.total}</div>
-                <div className="text-[#5a5a6e] text-sm">总用户数</div>
+                <div className="text-faint text-sm">总用户数</div>
               </div>
             </div>
           </div>
-          <div className="bg-[#12121a] rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
                 <Mail className="w-5 h-5 text-blue-400" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.emailUsers}</div>
-                <div className="text-[#5a5a6e] text-sm">邮箱用户</div>
+                <div className="text-faint text-sm">邮箱用户</div>
               </div>
             </div>
           </div>
-          <div className="bg-[#12121a] rounded-xl p-5 border border-white/[0.06]">
+          <div className="bg-panel rounded-xl p-5 border border-white/[0.06]">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
                 <Github className="w-5 h-5 text-purple-400" />
               </div>
               <div>
                 <div className="text-2xl font-bold">{stats.githubUsers}</div>
-                <div className="text-[#5a5a6e] text-sm">GitHub 用户</div>
+                <div className="text-faint text-sm">GitHub 用户</div>
               </div>
             </div>
           </div>
@@ -202,51 +202,51 @@ export default function AdminDashboard() {
 
         {/* 检索质量：阈值是不是拍脑袋定的，看这里 */}
         {retrieval && (
-          <section className="mb-8 bg-[#12121a] border border-white/[0.06] rounded-xl p-5">
+          <section className="mb-8 bg-panel border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold">检索质量（近 {retrieval.window_days} 天）</h2>
-              <span className="text-xs text-[#5a5a6e]">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
+              <span className="text-xs text-faint">数据来自 retrieval_log，只记查询与命中元数据，不存答案正文</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-sm">
               <div>
                 <div className="text-xl font-bold">{retrieval.queries}</div>
-                <div className="text-[#5a5a6e] text-xs">真实查询数</div>
+                <div className="text-faint text-xs">真实查询数</div>
               </div>
               <div>
                 <div className="text-xl font-bold">{retrieval.abstain_rate === null ? '—' : `${(retrieval.abstain_rate * 100).toFixed(1)}%`}</div>
-                <div className="text-[#5a5a6e] text-xs">拒答率（{retrieval.abstained} 次）</div>
+                <div className="text-faint text-xs">拒答率（{retrieval.abstained} 次）</div>
               </div>
               <div>
-                <div className="text-xl font-bold">{retrieval.avg_latency_ms ?? '—'}<span className="text-xs text-[#5a5a6e]">ms</span></div>
-                <div className="text-[#5a5a6e] text-xs">平均问答耗时</div>
+                <div className="text-xl font-bold">{retrieval.avg_latency_ms ?? '—'}<span className="text-xs text-faint">ms</span></div>
+                <div className="text-faint text-xs">平均问答耗时</div>
               </div>
               <div>
                 <div className="text-xl font-bold">{retrieval.feedback.up} / {retrieval.feedback.down}</div>
-                <div className="text-[#5a5a6e] text-xs">赞 / 踩（{retrieval.feedback.unrated} 条未评）</div>
+                <div className="text-faint text-xs">赞 / 踩（{retrieval.feedback.unrated} 条未评）</div>
               </div>
             </div>
 
             <div className="space-y-1.5 mb-4">
               {retrieval.top1_score_buckets.map((b) => (
                 <div key={b.bucket} className="flex items-center space-x-3 text-xs">
-                  <span className="w-24 text-[#8b8b9a] font-mono">{b.bucket}</span>
+                  <span className="w-24 text-muted font-mono">{b.bucket}</span>
                   <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary-500/70"
                       style={{ width: `${retrieval.queries ? Math.min(100, (b.n / retrieval.queries) * 100) : 0}%` }}
                     />
                   </div>
-                  <span className="w-8 text-right text-[#5a5a6e]">{b.n}</span>
+                  <span className="w-8 text-right text-faint">{b.n}</span>
                 </div>
               ))}
-              {!retrieval.top1_score_buckets.length && <p className="text-xs text-[#5a5a6e]">还没有检索记录。</p>}
+              {!retrieval.top1_score_buckets.length && <p className="text-xs text-faint">还没有检索记录。</p>}
             </div>
 
             {retrieval.recent.length > 0 && (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="text-[#5a5a6e]">
+                  <thead className="text-faint">
                     <tr className="text-left border-b border-white/[0.06]">
                       <th className="py-2 font-medium">问了什么</th>
                       <th className="py-2 font-medium">top1 命中</th>
@@ -257,10 +257,10 @@ export default function AdminDashboard() {
                     {retrieval.recent.map((row, i) => (
                       <tr key={`${row.created_at}-${i}`} className="border-b border-white/[0.03]">
                         <td className="py-2 pr-3 text-white/90 max-w-xs truncate">{row.query}</td>
-                        <td className="py-2 pr-3 text-[#8b8b9a] max-w-xs truncate">
+                        <td className="py-2 pr-3 text-muted max-w-xs truncate">
                           {row.abstained ? <span className="text-amber-400">已拒答（无过阈值内容）</span> : row.top_title}
                         </td>
-                        <td className="py-2 text-right font-mono text-[#8b8b9a]">{row.top_score === null ? '—' : row.top_score.toFixed(3)}</td>
+                        <td className="py-2 text-right font-mono text-muted">{row.top_score === null ? '—' : row.top_score.toFixed(3)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -274,13 +274,13 @@ export default function AdminDashboard() {
         <form onSubmit={handleSearch} className="mb-6">
           <div className="flex space-x-3">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => handleSearchInputChange(e.target.value)}
                 placeholder="搜索用户名或邮箱..."
-                className="w-full pl-11 pr-4 py-2.5 bg-[#12121a] border border-white/[0.06] rounded-xl text-white placeholder-[#3a3a4e] focus:outline-none focus:border-primary-500/50 transition-colors text-sm"
+                className="w-full pl-11 pr-4 py-2.5 bg-panel border border-white/[0.06] rounded-xl text-white placeholder-ghost focus:outline-none focus:border-primary-500/50 transition-colors text-sm"
               />
             </div>
             <button
@@ -293,16 +293,16 @@ export default function AdminDashboard() {
         </form>
 
         {/* 用户表格 */}
-        <div className="bg-[#12121a] rounded-xl border border-white/[0.06] overflow-hidden">
+        <div className="bg-panel rounded-xl border border-white/[0.06] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">用户</th>
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium">邮箱</th>
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium hidden sm:table-cell">登录方式</th>
-                  <th className="text-left px-5 py-3.5 text-[#5a5a6e] font-medium hidden sm:table-cell">注册时间</th>
-                  <th className="text-right px-5 py-3.5 text-[#5a5a6e] font-medium">操作</th>
+                  <th className="text-left px-5 py-3.5 text-faint font-medium">用户</th>
+                  <th className="text-left px-5 py-3.5 text-faint font-medium">邮箱</th>
+                  <th className="text-left px-5 py-3.5 text-faint font-medium hidden sm:table-cell">登录方式</th>
+                  <th className="text-left px-5 py-3.5 text-faint font-medium hidden sm:table-cell">注册时间</th>
+                  <th className="text-right px-5 py-3.5 text-faint font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
                           <span className="text-white">{u.username || '未设置'}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 text-[#8a8a9e]">{u.email || '-'}</td>
+                      <td className="px-5 py-3.5 text-muted">{u.email || '-'}</td>
                       <td className="px-5 py-3.5 hidden sm:table-cell">
                         {u.auth_provider === 'github' ? (
                           <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs">
@@ -368,7 +368,7 @@ export default function AdminDashboard() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-[#5a5a6e] hidden sm:table-cell">
+                      <td className="px-5 py-3.5 text-faint hidden sm:table-cell">
                         {formatDate(u.created_at)}
                       </td>
                       <td className="px-5 py-3.5 text-right">
@@ -397,21 +397,21 @@ export default function AdminDashboard() {
           {/* 分页 */}
           {totalPages > 1 && (
             <div className="px-5 py-3.5 border-t border-white/[0.06] flex items-center justify-between text-sm">
-              <span className="text-[#5a5a6e]">
+              <span className="text-faint">
                 共 {total} 个用户，第 {page}/{totalPages} 页
               </span>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="p-1.5 rounded-lg hover:bg-white/[0.05] disabled:opacity-30 transition-colors text-[#5a5a6e]"
+                  className="p-1.5 rounded-lg hover:bg-white/[0.05] disabled:opacity-30 transition-colors text-faint"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className="p-1.5 rounded-lg hover:bg-white/[0.05] disabled:opacity-30 transition-colors text-[#5a5a6e]"
+                  className="p-1.5 rounded-lg hover:bg-white/[0.05] disabled:opacity-30 transition-colors text-faint"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -424,21 +424,21 @@ export default function AdminDashboard() {
       {/* 删除确认弹窗 */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#1a1a24] rounded-2xl p-6 w-full max-w-sm border border-white/[0.06] mx-4">
+          <div className="bg-raised rounded-2xl p-6 w-full max-w-sm border border-white/[0.06] mx-4">
             <h3 className="text-lg font-semibold text-white mb-2">确认删除</h3>
-            <p className="text-[#8a8a9e] text-sm mb-1">
+            <p className="text-muted text-sm mb-1">
               确定要删除以下用户吗？此操作不可撤销。
             </p>
-            <div className="bg-[#0a0a0f] rounded-lg p-3 mb-5 mt-3">
+            <div className="bg-ink rounded-lg p-3 mb-5 mt-3">
               <div className="text-white text-sm font-medium">
                 {deleteTarget.username || '未设置'}
               </div>
-              <div className="text-[#5a5a6e] text-xs mt-0.5">{deleteTarget.email}</div>
+              <div className="text-faint text-xs mt-0.5">{deleteTarget.email}</div>
             </div>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 text-sm text-[#8a8a9e] hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-muted hover:text-white transition-colors"
               >
                 取消
               </button>
@@ -464,12 +464,12 @@ export default function AdminDashboard() {
       {/* 用户详情弹窗 */}
       {detailUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#1a1a24] rounded-2xl p-6 w-full max-w-md border border-white/[0.06] mx-4">
+          <div className="bg-raised rounded-2xl p-6 w-full max-w-md border border-white/[0.06] mx-4">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-white">用户详情</h3>
               <button
                 onClick={() => setDetailUser(null)}
-                className="text-[#5a5a6e] hover:text-white transition-colors"
+                className="text-faint hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -491,36 +491,36 @@ export default function AdminDashboard() {
                 <div className="text-white font-medium text-lg">
                   {detailUser.username || '未设置'}
                 </div>
-                <div className="text-[#5a5a6e] text-sm">{detailUser.email}</div>
+                <div className="text-faint text-sm">{detailUser.email}</div>
               </div>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-[#5a5a6e] text-sm">用户 ID</span>
+                <span className="text-faint text-sm">用户 ID</span>
                 <span className="text-white text-sm font-mono">{detailUser.id}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-[#5a5a6e] text-sm">登录方式</span>
+                <span className="text-faint text-sm">登录方式</span>
                 <span className="text-white text-sm">
                   {detailUser.auth_provider === 'github' ? 'GitHub' : '邮箱'}
                 </span>
               </div>
               {detailUser.github_username && (
                 <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                  <span className="text-[#5a5a6e] text-sm">GitHub 用户名</span>
+                  <span className="text-faint text-sm">GitHub 用户名</span>
                   <span className="text-white text-sm">{detailUser.github_username}</span>
                 </div>
               )}
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-[#5a5a6e] text-sm flex items-center space-x-1">
+                <span className="text-faint text-sm flex items-center space-x-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>注册时间</span>
                 </span>
                 <span className="text-white text-sm">{formatDate(detailUser.created_at)}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-[#5a5a6e] text-sm flex items-center space-x-1">
+                <span className="text-faint text-sm flex items-center space-x-1">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>更新时间</span>
                 </span>

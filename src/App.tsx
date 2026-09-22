@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { uiColors } from '@/constants/config';
 import { useEffect } from "react";
 import ClickSpark from "@/components/ClickSpark";
 import Home from "@/pages/Home";
@@ -29,7 +30,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ClickSpark
-        sparkColor="#06d6a0"
+        sparkColor={uiColors.primary}
         sparkSize={10}
         sparkRadius={15}
         sparkCount={8}
@@ -62,11 +63,11 @@ export default function App() {
           <Route
             path="*"
             element={
-              <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
+              <div className="min-h-screen bg-ink flex items-center justify-center px-6">
                 <Empty
                   title="这个地址下没有页面"
                   description="可能是链接抄断了，或者那一页还没做。从首页开始走一遍最稳。"
-                  className="max-w-md bg-[#141419]"
+                  className="max-w-md bg-surface"
                   action={
                     <a href="/" className="px-4 py-2 bg-primary-500/15 text-primary-500 rounded-xl text-sm">
                       回首页

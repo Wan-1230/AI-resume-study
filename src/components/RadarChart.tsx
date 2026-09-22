@@ -1,4 +1,5 @@
 import type { DimensionScore } from '@/lib/interviewApi';
+import { uiColors } from '@/constants/config';
 
 /**
  * 六维能力雷达图。手写 SVG，不引图表库 —— 六个点一条折线，
@@ -36,29 +37,29 @@ export default function RadarChart({ dimensions }: { dimensions: DimensionScore[
             return `${x.toFixed(1)},${y.toFixed(1)}`;
           }).join(' ')}
           fill="none"
-          stroke="#2a2a38"
+          stroke={uiColors.edge}
           strokeWidth={ring === MAX ? 1.2 : 0.7}
         />
       ))}
 
       {dimensions.map((dim, i) => {
         const { x, y } = point(i, 1);
-        return <line key={dim.key} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke="#2a2a38" strokeWidth={0.7} />;
+        return <line key={dim.key} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke={uiColors.edge} strokeWidth={0.7} />;
       })}
 
-      <polygon points={shape} fill="rgba(6,214,160,0.18)" stroke="#06d6a0" strokeWidth={1.8} strokeLinejoin="round" />
+      <polygon points={shape} fill={uiColors.primary} fillOpacity={0.18} stroke={uiColors.primary} strokeWidth={1.8} strokeLinejoin="round" />
 
       {dimensions.map((dim, i) => {
         const dot = point(i, (dim.score ?? 0) / MAX);
         const label = point(i, 1.32);
         return (
           <g key={dim.key}>
-            <circle cx={dot.x} cy={dot.y} r={3} fill="#06d6a0" />
+            <circle cx={dot.x} cy={dot.y} r={3} fill={uiColors.primary} />
             <text
               x={label.x}
               y={label.y}
               textAnchor={Math.abs(label.x - CENTER) < 12 ? 'middle' : label.x > CENTER ? 'start' : 'end'}
-              className="fill-[#8b8b9a]"
+              className="fill-muted"
               fontSize="10"
             >
               {dim.name}
@@ -67,7 +68,7 @@ export default function RadarChart({ dimensions }: { dimensions: DimensionScore[
               x={label.x}
               y={label.y + 11}
               textAnchor={Math.abs(label.x - CENTER) < 12 ? 'middle' : label.x > CENTER ? 'start' : 'end'}
-              className="fill-[#e8e8ed]"
+              className="fill-bright"
               fontSize="10"
               fontWeight="600"
             >

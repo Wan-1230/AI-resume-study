@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { uiColors } from '@/constants/config';
 
 const PillNav = ({
   logo,
@@ -9,15 +10,15 @@ const PillNav = ({
   activeHref,
   className = '',
   ease = 'power3.easeOut',
-  baseColor = '#0f0f14',
-  pillColor = '#1a1a22',
-  hoveredPillTextColor = '#06d6a0',
+  baseColor = uiColors.inkSoft,
+  pillColor = uiColors.raised,
+  hoveredPillTextColor = uiColors.primary,
   pillTextColor,
   onMobileMenuClick,
   onItemClick,
   initialLoadAnimation = true
 }) => {
-  const resolvedPillTextColor = pillTextColor ?? '#8b8b9a';
+  const resolvedPillTextColor = pillTextColor ?? uiColors.muted;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const circleRefs = useRef([]);
   const tlRefs = useRef([]);

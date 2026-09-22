@@ -206,14 +206,14 @@ export default function ResumePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+    <div className="min-h-screen bg-ink flex flex-col">
       {/* Header */}
-      <header className="bg-[#0f0f14]/90 backdrop-blur-xl border-b border-[#1e1e28] sticky top-0 z-50">
+      <header className="bg-ink-soft/90 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-[#8b8b9a] hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
@@ -221,12 +221,12 @@ export default function ResumePage() {
             
             <div className="flex items-center space-x-2">
               <Sparkles className="w-5 h-5 text-purple-500" />
-              <h1 className="text-lg font-semibold text-[#e8e8ed]">简历优化</h1>
+              <h1 className="text-lg font-semibold text-bright">简历优化</h1>
             </div>
 
             <button
               onClick={handleReset}
-              className="p-2 text-[#5a5a6e] hover:text-[#8b8b9a] hover:bg-[#1a1a22] rounded-xl transition-colors"
+              className="p-2 text-faint hover:text-muted hover:bg-raised rounded-xl transition-colors"
               title="重置"
             >
               <RotateCcw className="w-5 h-5" />
@@ -242,34 +242,34 @@ export default function ResumePage() {
             {/* 左侧：输入区 */}
             <div className="flex flex-col gap-4">
               {/* JD 输入 */}
-              <div className="flex-1 flex flex-col bg-[#141419] border border-[#1e1e28] rounded-2xl overflow-hidden">
-                <div className="flex items-center space-x-2 px-4 py-3 border-b border-[#1e1e28]">
+              <div className="flex-1 flex flex-col bg-surface border border-line rounded-2xl overflow-hidden">
+                <div className="flex items-center space-x-2 px-4 py-3 border-b border-line">
                   <Briefcase className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm font-medium text-[#e8e8ed]">职位描述 (JD)</span>
-                  <span className="text-xs text-[#5a5a6e]">粘贴目标岗位的 JD</span>
+                  <span className="text-sm font-medium text-bright">职位描述 (JD)</span>
+                  <span className="text-xs text-faint">粘贴目标岗位的 JD</span>
                 </div>
                 <textarea
                   value={jd}
                   onChange={(e) => setJd(e.target.value)}
                   placeholder={`例如：\n\n高级 Java 开发工程师\n\n岗位职责：\n1. 负责核心系统设计与开发\n2. 参与技术方案评审\n3. 解决线上疑难问题\n\n任职要求：\n1. 3年以上 Java 开发经验\n2. 熟悉 Spring Boot、微服务架构\n3. 有高并发系统经验优先`}
-                  className="flex-1 w-full bg-transparent px-4 py-3 text-[#e8e8ed] placeholder-[#3a3a4a] focus:outline-none resize-none text-sm leading-relaxed"
+                  className="flex-1 w-full bg-transparent px-4 py-3 text-bright placeholder-ghost focus:outline-none resize-none text-sm leading-relaxed"
                 />
               </div>
 
               {/* 简历输入 */}
               <div 
-                className={`relative flex-1 flex flex-col bg-[#141419] border rounded-2xl overflow-hidden transition-colors ${
-                  isDragging ? 'border-purple-500 bg-purple-500/5' : 'border-[#1e1e28]'
+                className={`relative flex-1 flex flex-col bg-surface border rounded-2xl overflow-hidden transition-colors ${
+                  isDragging ? 'border-purple-500 bg-purple-500/5' : 'border-line'
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e28]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-line">
                   <div className="flex items-center space-x-2">
                     <FileText className="w-4 h-4 text-primary-500" />
-                    <span className="text-sm font-medium text-[#e8e8ed]">我的简历</span>
-                    <span className="text-xs text-[#5a5a6e]">粘贴或拖拽文件</span>
+                    <span className="text-sm font-medium text-bright">我的简历</span>
+                    <span className="text-xs text-faint">粘贴或拖拽文件</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -282,7 +282,7 @@ export default function ResumePage() {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={parsingFile}
-                      className="flex items-center space-x-1 px-3 py-1.5 text-xs text-[#8b8b9a] hover:text-purple-400 hover:bg-[#1a1a22] rounded-lg transition-colors disabled:opacity-50"
+                      className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-purple-400 hover:bg-raised rounded-lg transition-colors disabled:opacity-50"
                     >
                       {parsingFile ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -299,13 +299,13 @@ export default function ResumePage() {
                   <div className="flex items-center justify-between px-4 py-2 bg-purple-500/10 border-b border-purple-500/20">
                     <div className="flex items-center space-x-2">
                       <File className="w-4 h-4 text-purple-400" />
-                      <span className="text-sm text-[#e8e8ed]">{uploadedFile.name}</span>
-                      <span className="text-xs text-[#5a5a6e]">{uploadedFile.size}</span>
+                      <span className="text-sm text-bright">{uploadedFile.name}</span>
+                      <span className="text-xs text-faint">{uploadedFile.size}</span>
                       <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded">{uploadedFile.type}</span>
                     </div>
                     <button
                       onClick={removeFile}
-                      className="p-1 text-[#5a5a6e] hover:text-rose-400 transition-colors"
+                      className="p-1 text-faint hover:text-rose-400 transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -326,7 +326,7 @@ export default function ResumePage() {
                   value={resume}
                   onChange={(e) => setResume(e.target.value)}
                   placeholder={uploadedFile ? '文件内容已加载，可在下方编辑...' : `拖拽文件到此处，或点击"上传文件"按钮\n\n支持格式：PDF、DOCX、MD、TXT\n\n也可以直接粘贴简历内容`}
-                  className="flex-1 w-full bg-transparent px-4 py-3 text-[#e8e8ed] placeholder-[#3a3a4a] focus:outline-none resize-none text-sm leading-relaxed relative"
+                  className="flex-1 w-full bg-transparent px-4 py-3 text-bright placeholder-ghost focus:outline-none resize-none text-sm leading-relaxed relative"
                 />
                 
                 {/* 底部导入文件按钮 */}
@@ -335,17 +335,17 @@ export default function ResumePage() {
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={parsingFile}
-                      className="w-full py-6 border-2 border-dashed border-[#2a2a38] rounded-xl flex flex-col items-center justify-center space-y-2 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all disabled:opacity-50"
+                      className="w-full py-6 border-2 border-dashed border-edge rounded-xl flex flex-col items-center justify-center space-y-2 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all disabled:opacity-50"
                     >
                       {parsingFile ? (
                         <Loader2 className="w-8 h-8 text-purple-400 animate-spin" />
                       ) : (
-                        <Upload className="w-8 h-8 text-[#5a5a6e]" />
+                        <Upload className="w-8 h-8 text-faint" />
                       )}
-                      <span className="text-sm text-[#8b8b9a]">
+                      <span className="text-sm text-muted">
                         {parsingFile ? '正在解析文件...' : '点击或拖拽上传简历文件'}
                       </span>
-                      <span className="text-xs text-[#5a5a6e]">支持 PDF、DOCX、MD、TXT 格式</span>
+                      <span className="text-xs text-faint">支持 PDF、DOCX、MD、TXT 格式</span>
                     </button>
                   </div>
                 )}
@@ -355,7 +355,7 @@ export default function ResumePage() {
               <button
                 onClick={handleOptimize}
                 disabled={!jd.trim() || !resume.trim() || isLoading}
-                className="w-full py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-[#2a2a38] disabled:to-[#2a2a38] disabled:text-[#5a5a6e] text-white font-semibold rounded-2xl transition-all duration-200 btn-hover-scale flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-edge disabled:to-edge disabled:text-faint text-white font-semibold rounded-2xl transition-all duration-200 btn-hover-scale flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
                   <>
@@ -375,28 +375,28 @@ export default function ResumePage() {
                 type="button"
                 onClick={handleMatch}
                 disabled={!jd.trim() || !resume.trim() || matching}
-                className="w-full py-3 border border-[#2a2a38] hover:border-primary-500/50 disabled:opacity-50 text-[#e8e8ed] rounded-2xl transition-colors flex items-center justify-center space-x-2"
+                className="w-full py-3 border border-edge hover:border-primary-500/50 disabled:opacity-50 text-bright rounded-2xl transition-colors flex items-center justify-center space-x-2"
               >
                 {matching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Gauge className="w-4 h-4" />}
                 <span>{matching ? '逐条核对中（约 20~40 秒）…' : '生成匹配报告'}</span>
               </button>
               {matchError && <p className="text-sm text-rose-400">{matchError}</p>}
-              {exported && <p className="text-sm text-[#8b8b9a]">{exported}</p>}
+              {exported && <p className="text-sm text-muted">{exported}</p>}
             </div>
 
             {/* 右侧：结果区 */}
-            <div className="flex flex-col bg-[#141419] border border-[#1e1e28] rounded-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e28]">
+            <div className="flex flex-col bg-surface border border-line rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-line">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 rounded bg-purple-500/20 flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-purple-400" />
                   </div>
-                  <span className="text-sm font-medium text-[#e8e8ed]">优化结果</span>
+                  <span className="text-sm font-medium text-bright">优化结果</span>
                 </div>
                 {result && (
                   <button
                     onClick={handleCopy}
-                    className="flex items-center space-x-1 px-3 py-1.5 text-xs text-[#8b8b9a] hover:text-purple-400 hover:bg-[#1a1a22] rounded-lg transition-colors"
+                    className="flex items-center space-x-1 px-3 py-1.5 text-xs text-muted hover:text-purple-400 hover:bg-raised rounded-lg transition-colors"
                   >
                     {copied ? (
                       <>
@@ -416,17 +416,17 @@ export default function ResumePage() {
               <div className="flex-1 overflow-y-auto p-6">
                 {result ? (
                   <div className="prose prose-invert max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm text-[#c8c8d8] leading-relaxed font-sans">
+                    <pre className="whitespace-pre-wrap text-sm text-bright/80 leading-relaxed font-sans">
                       {result}
                     </pre>
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-[#1a1a22] border border-[#2a2a38] flex items-center justify-center mb-4">
-                      <FileText className="w-8 h-8 text-[#3a3a4a]" />
+                    <div className="w-16 h-16 rounded-2xl bg-raised border border-edge flex items-center justify-center mb-4">
+                      <FileText className="w-8 h-8 text-ghost" />
                     </div>
-                    <p className="text-[#5a5a6e] text-sm mb-1">粘贴 JD 和简历后</p>
-                    <p className="text-[#3a3a4a] text-xs">AI 将为你生成优化建议</p>
+                    <p className="text-faint text-sm mb-1">粘贴 JD 和简历后</p>
+                    <p className="text-ghost text-xs">AI 将为你生成优化建议</p>
                   </div>
                 )}
                 
@@ -436,7 +436,7 @@ export default function ResumePage() {
                       <div className="absolute inset-0 bg-purple-500/10 rounded-full blur-xl animate-pulse"></div>
                       <Loader2 className="w-10 h-10 text-purple-500 animate-spin relative" />
                     </div>
-                    <p className="text-[#5a5a6e] text-sm mt-4">AI 正在分析 JD 并优化简历...</p>
+                    <p className="text-faint text-sm mt-4">AI 正在分析 JD 并优化简历...</p>
                   </div>
                 )}
               </div>
@@ -444,15 +444,15 @@ export default function ResumePage() {
           </div>
 
           {report && (
-            <div className="mt-6 bg-[#141419] border border-[#1e1e28] rounded-2xl p-6">
+            <div className="mt-6 bg-surface border border-line rounded-2xl p-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div className="flex items-center space-x-3">
                   <Gauge className="w-5 h-5 text-primary-500" />
-                  <h3 className="text-lg font-semibold text-[#e8e8ed]">匹配报告</h3>
+                  <h3 className="text-lg font-semibold text-bright">匹配报告</h3>
                   <span className="text-2xl font-bold text-primary-500">{report.scores.overall}%</span>
-                  <span className="text-xs text-[#5a5a6e]">总体</span>
+                  <span className="text-xs text-faint">总体</span>
                 </div>
-                <div className="flex items-center space-x-2 text-xs text-[#8b8b9a]">
+                <div className="flex items-center space-x-2 text-xs text-muted">
                   <span>技能 {fmtScore(report.scores.groups.skill)}</span>
                   <span>·</span>
                   <span>经验 {fmtScore(report.scores.groups.experience)}</span>
@@ -461,7 +461,7 @@ export default function ResumePage() {
                 </div>
               </div>
 
-              <p className="text-xs text-[#5a5a6e] mb-4">
+              <p className="text-xs text-faint mb-4">
                 JD 拆出 {report.items.length} 条要求，命中 {report.scores.counts.hit} · 部分 {report.scores.counts.partial} · 未命中 {report.scores.counts.missing}。
                 分数是按逐条判定汇总算的（命中 1 / 部分 0.5 / 未命中 0），不是模型直接报的数；证据一栏是简历原句，可直接回去核对。
               </p>
@@ -471,11 +471,11 @@ export default function ResumePage() {
               </div>
 
               {report.strengths.length > 0 && (
-                <div className="mt-5 pt-5 border-t border-[#1e1e28]">
-                  <p className="text-sm font-medium text-[#e8e8ed] mb-2">已经站得住的部分</p>
+                <div className="mt-5 pt-5 border-t border-line">
+                  <p className="text-sm font-medium text-bright mb-2">已经站得住的部分</p>
                   <ul className="space-y-1">
                     {report.strengths.map((text) => (
-                      <li key={text} className="text-sm text-[#8b8b9a] flex items-start space-x-2">
+                      <li key={text} className="text-sm text-muted flex items-start space-x-2">
                         <CircleCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" /><span>{text}</span>
                       </li>
                     ))}
@@ -485,7 +485,7 @@ export default function ResumePage() {
 
               <button
                 onClick={handleExport}
-                className="mt-6 w-full py-3 rounded-2xl bg-[#1a1a22] border border-[#2a2a38] hover:border-primary-500/40 text-[#e8e8ed] font-medium flex items-center justify-center space-x-2 transition-colors"
+                className="mt-6 w-full py-3 rounded-2xl bg-raised border border-edge hover:border-primary-500/40 text-bright font-medium flex items-center justify-center space-x-2 transition-colors"
               >
                 <Download className="w-4 h-4" />
                 <span>导出 .docx（简历 + 优化稿 + 这份报告）</span>
@@ -512,18 +512,18 @@ function MatchRow({ item }: { item: MatchItem }) {
   const style = VERDICT_STYLE[item.verdict];
   const Icon = style.icon;
   return (
-    <div className="px-4 py-3 bg-[#0f0f14] border border-[#1e1e28] rounded-xl">
+    <div className="px-4 py-3 bg-ink-soft border border-line rounded-xl">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm text-[#e8e8ed]">{item.text}</p>
+        <p className="text-sm text-bright">{item.text}</p>
         <span className={`flex items-center space-x-1 text-xs shrink-0 ${style.className}`}>
           <Icon className="w-4 h-4" /><span>{style.label}</span>
         </span>
       </div>
-      <p className="mt-1.5 text-xs text-[#8b8b9a]">
-        证据：{item.evidence ? <span className="text-[#e8e8ed]">“{item.evidence}”</span> : '简历里没找到支撑的原句'}
+      <p className="mt-1.5 text-xs text-muted">
+        证据：{item.evidence ? <span className="text-bright">“{item.evidence}”</span> : '简历里没找到支撑的原句'}
         {item.demoted && <span className="text-amber-400">（判定被下调：说命中但给不出原文）</span>}
       </p>
-      {item.note && <p className="mt-1 text-xs text-[#5a5a6e]">说明：{item.note}</p>}
+      {item.note && <p className="mt-1 text-xs text-faint">说明：{item.note}</p>}
       {item.study?.length ? <p className="mt-1 text-xs text-primary-400">可补：{item.study.join('、')}</p> : null}
     </div>
   );

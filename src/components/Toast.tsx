@@ -2,7 +2,7 @@ import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import { useToasts, type ToastKind } from '@/lib/toast';
 
 const STYLE: Record<ToastKind, { icon: typeof Info; ring: string; text: string }> = {
-  info: { icon: Info, ring: 'border-[#2a2a38]', text: 'text-[#e8e8ed]' },
+  info: { icon: Info, ring: 'border-edge', text: 'text-bright' },
   success: { icon: CheckCircle, ring: 'border-emerald-500/30', text: 'text-emerald-400' },
   error: { icon: AlertCircle, ring: 'border-rose-500/30', text: 'text-rose-400' },
 };
@@ -24,13 +24,13 @@ export default function ToastViewport() {
         return (
           <div
             key={item.id}
-            className={`flex max-w-md items-start space-x-2.5 rounded-xl border bg-[#141419]/95 px-4 py-3 shadow-xl shadow-black/40 backdrop-blur ${style.ring}`}
+            className={`flex max-w-md items-start space-x-2.5 rounded-xl border bg-surface/95 px-4 py-3 shadow-xl shadow-black/40 backdrop-blur ${style.ring}`}
           >
             <Icon className={`mt-0.5 w-4 h-4 shrink-0 ${style.text}`} />
-            <p className="flex-1 text-sm leading-relaxed text-[#e8e8ed]">{item.text}</p>
+            <p className="flex-1 text-sm leading-relaxed text-bright">{item.text}</p>
             <button
               onClick={() => dismiss(item.id)}
-              className="p-0.5 text-[#5a5a6e] hover:text-[#8b8b9a] transition-colors"
+              className="p-0.5 text-faint hover:text-muted transition-colors"
               title="关掉这条提示"
             >
               <X className="w-3.5 h-3.5" />

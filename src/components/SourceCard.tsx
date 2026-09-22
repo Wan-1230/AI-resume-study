@@ -16,8 +16,8 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
   return (
     <div
       id={`source-card-${index + 1}`}
-      className={`bg-[#1a1a22] border rounded-xl p-4 transition-colors ${
-        highlighted ? 'border-primary-500/70 ring-1 ring-primary-500/30' : 'border-[#2a2a38] hover:border-primary-500/20'
+      className={`bg-raised border rounded-xl p-4 transition-colors ${
+        highlighted ? 'border-primary-500/70 ring-1 ring-primary-500/30' : 'border-edge hover:border-primary-500/20'
       }`}
     >
       <div className="flex items-start justify-between mb-2">
@@ -32,7 +32,7 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
           }`}>
             {isArticle ? '文章' : '题目'}
           </span>
-          <span className="px-2 py-0.5 bg-[#2a2a38] text-[#8b8b9a] rounded-lg text-xs">
+          <span className="px-2 py-0.5 bg-edge text-muted rounded-lg text-xs">
             {source.category}
           </span>
         </div>
@@ -41,14 +41,14 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1 text-[#5a5a6e] hover:text-primary-500 transition-colors"
+            className="p-1 text-faint hover:text-primary-500 transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
           </a>
         )}
       </div>
       
-      <h4 className="font-medium text-[#e8e8ed] mb-2 line-clamp-2">
+      <h4 className="font-medium text-bright mb-2 line-clamp-2">
         {isArticle ? <BookOpen className="w-4 h-4 inline mr-1" /> : <HelpCircle className="w-4 h-4 inline mr-1" />}
         {source.title}
       </h4>
@@ -59,8 +59,8 @@ export default function SourceCard({ source, index, highlighted }: SourceCardPro
         className="w-full text-left"
         title={expanded ? '收起原文' : '展开原文'}
       >
-        <p className={`text-sm text-[#8b8b9a] ${expanded ? '' : 'line-clamp-3'}`}>{source.content}</p>
-        <span className="mt-1 flex items-center space-x-1 text-[11px] text-[#5a5a6e]">
+        <p className={`text-sm text-muted ${expanded ? '' : 'line-clamp-3'}`}>{source.content}</p>
+        <span className="mt-1 flex items-center space-x-1 text-[11px] text-faint">
           <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
           <span>{expanded ? '收起' : '展开原文'}</span>
         </span>

@@ -23,6 +23,7 @@
   
   --color-border: #1e1e28;
   --color-border-hover: #2a2a38;
+  --color-border-active: #3a3a4a;
   
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -101,18 +102,18 @@ body::after {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a38;
+  background: var(--color-border-hover);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a4a;
+  background: var(--color-border-active);
 }
 
 /* 自定义选择文本 */
 ::selection {
   background: rgba(6, 214, 160, 0.2);
-  color: #e8e8ed;
+  color: var(--color-text-primary);
 }
 
 /* 动画定义 */

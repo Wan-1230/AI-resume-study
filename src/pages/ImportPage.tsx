@@ -130,18 +130,18 @@ export default function ImportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      <header className="bg-[#0f0f14]/90 backdrop-blur-xl border-b border-[#1e1e28] sticky top-0 z-50">
+    <div className="min-h-screen bg-ink">
+      <header className="bg-ink-soft/90 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-[#8b8b9a] hover:text-primary-500 transition-colors btn-hover-scale"
+              className="flex items-center space-x-2 text-muted hover:text-primary-500 transition-colors btn-hover-scale"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>返回首页</span>
             </button>
-            <h1 className="text-lg font-semibold text-[#e8e8ed]">数据导入</h1>
+            <h1 className="text-lg font-semibold text-bright">数据导入</h1>
             <div className="w-20"></div>
           </div>
         </div>
@@ -149,8 +149,8 @@ export default function ImportPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!isAuthenticated && (
-          <div className="bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
-            <span className="text-sm text-[#8b8b9a]">导入的题目会保存到你登录后的账号，请先登录。</span>
+          <div className="bg-raised border border-edge rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+            <span className="text-sm text-muted">导入的题目会保存到你登录后的账号，请先登录。</span>
             <button onClick={() => navigate('/login')} className="shrink-0 text-sm text-primary-500 hover:text-primary-400 font-medium">
               去登录
             </button>
@@ -174,7 +174,7 @@ export default function ImportPage() {
                   成功导入 {result.created} 道
                   {result.failed.length ? `，${result.failed.length} 道被跳过` : ''}
                 </p>
-                <p className="text-[#5a5a6e] text-sm">
+                <p className="text-faint text-sm">
                   {result.created ? '可在「我的题库」查看与编辑。' : '没有题目入库。'}
                 </p>
               </div>
@@ -200,17 +200,17 @@ export default function ImportPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-6">
-            <h2 className="text-xl font-semibold text-[#e8e8ed] mb-4">上传文件</h2>
+          <div className="bg-surface border border-line rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-bright mb-4">上传文件</h2>
 
             <div
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-[#2a2a38] rounded-xl p-8 text-center hover:border-primary-500/30 transition-colors bg-[#1a1a22]"
+              className="border-2 border-dashed border-edge rounded-xl p-8 text-center hover:border-primary-500/30 transition-colors bg-raised"
             >
-              <Upload className="w-12 h-12 text-[#5a5a6e] mx-auto mb-4" />
-              <p className="text-[#8b8b9a] mb-2">拖拽文件到此处，或点击选择文件</p>
-              <p className="text-[#5a5a6e] text-sm">支持 Excel (.xlsx, .xls) 和 CSV 文件</p>
+              <Upload className="w-12 h-12 text-faint mx-auto mb-4" />
+              <p className="text-muted mb-2">拖拽文件到此处，或点击选择文件</p>
+              <p className="text-faint text-sm">支持 Excel (.xlsx, .xls) 和 CSV 文件</p>
               <input
                 type="file"
                 accept=".xlsx,.xls,.csv"
@@ -230,18 +230,18 @@ export default function ImportPage() {
             {files.length > 0 && (
               <div className="mt-4 space-y-2">
                 {files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-3">
+                  <div key={index} className="flex items-center justify-between bg-raised border border-edge rounded-xl p-3">
                     <div className="flex items-center space-x-3">
                       {file.name.endsWith('.csv') ? (
                         <FileText className="w-5 h-5 text-amber-500" />
                       ) : (
                         <FileSpreadsheet className="w-5 h-5 text-emerald-500" />
                       )}
-                      <span className="text-[#8b8b9a] text-sm">{file.name}</span>
+                      <span className="text-muted text-sm">{file.name}</span>
                     </div>
                     <button
                       onClick={() => removeFile(index)}
-                      className="p-1 text-[#5a5a6e] hover:text-rose-500 transition-colors"
+                      className="p-1 text-faint hover:text-rose-500 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -250,9 +250,9 @@ export default function ImportPage() {
               </div>
             )}
 
-            <div className="mt-6 p-4 bg-[#1a1a22] border border-[#2a2a38] rounded-xl">
-              <p className="text-[#5a5a6e] text-sm mb-3">文件格式要求：</p>
-              <ul className="text-[#5a5a6e] text-xs space-y-1">
+            <div className="mt-6 p-4 bg-raised border border-edge rounded-xl">
+              <p className="text-faint text-sm mb-3">文件格式要求：</p>
+              <ul className="text-faint text-xs space-y-1">
                 <li>• 列名：title, content, option_a, option_b, option_c, option_d, answer, explanation, difficulty, category</li>
                 <li>• 支持中文列名：标题, 题目内容, 选项A-D, 正确答案, 解析, 难度, 分类</li>
                 <li>• difficulty 值：easy, medium, hard</li>
@@ -267,10 +267,10 @@ export default function ImportPage() {
             </div>
           </div>
 
-          <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl p-6">
+          <div className="bg-surface border border-line rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#e8e8ed]">数据预览</h2>
-              <span className="text-[#5a5a6e] text-sm">共 {importData.length} 条</span>
+              <h2 className="text-xl font-semibold text-bright">数据预览</h2>
+              <span className="text-faint text-sm">共 {importData.length} 条</span>
             </div>
 
             {loading ? (
@@ -279,27 +279,27 @@ export default function ImportPage() {
               </div>
             ) : importData.length === 0 ? (
               <div className="text-center py-12">
-                <FileSpreadsheet className="w-12 h-12 text-[#2a2a38] mx-auto mb-4" />
-                <p className="text-[#5a5a6e]">上传文件后预览数据</p>
+                <FileSpreadsheet className="w-12 h-12 text-edge mx-auto mb-4" />
+                <p className="text-faint">上传文件后预览数据</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {importData.map((item, index) => (
-                  <div key={index} className="bg-[#1a1a22] border border-[#2a2a38] rounded-xl p-4">
+                  <div key={index} className="bg-raised border border-edge rounded-xl p-4">
                     <div className="flex items-start justify-between mb-2">
-                      <span className="text-xs text-[#5a5a6e]">第 {index + 1} 条</span>
+                      <span className="text-xs text-faint">第 {index + 1} 条</span>
                       <button
                         onClick={() => removeRow(index)}
-                        className="p-1 text-[#5a5a6e] hover:text-rose-500 transition-colors"
+                        className="p-1 text-faint hover:text-rose-500 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <h4 className="font-medium text-[#e8e8ed] text-sm mb-2">{item.title}</h4>
+                    <h4 className="font-medium text-bright text-sm mb-2">{item.title}</h4>
                     <div className="flex items-center space-x-2 text-xs">
                       <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 rounded">{item.category}</span>
                       <span className={`px-2 py-0.5 rounded ${diffClass(item.difficulty)}`}>{difficultyLabel(item.difficulty)}</span>
-                      <span className="text-[#5a5a6e]">答案: {item.answer}</span>
+                      <span className="text-faint">答案: {item.answer}</span>
                     </div>
                   </div>
                 ))}

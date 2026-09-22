@@ -116,18 +116,18 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ink flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* 返回按钮 */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-[#5a5a6e] hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
+          className="flex items-center space-x-2 text-faint hover:text-primary-500 mb-6 transition-colors btn-hover-scale"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>返回首页</span>
         </button>
 
-        <div className="bg-[#141419] border border-[#1e1e28] rounded-2xl overflow-hidden">
+        <div className="bg-surface border border-line rounded-2xl overflow-hidden">
           {/* 顶部渐变区域 */}
           <div className="bg-gradient-to-r from-primary-500/90 to-purple-600/90 p-8 text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -145,6 +145,7 @@ export default function AuthPage() {
             {/* GitHub 登录：弹窗授权，结果由后端页面 postMessage 回传（token 不经 URL） */}
             {githubEnabled && (
               <>
+                {/* 这两个 hex 是 GitHub 品牌灰，不属于站内调色板，不要收敛成语义 token */}
                 <button
                   type="button"
                   onClick={openGitHubLogin}
@@ -161,10 +162,10 @@ export default function AuthPage() {
                 {/* 分隔线 */}
                 <div className="relative mb-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#2a2a38]"></div>
+                    <div className="w-full border-t border-edge"></div>
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-[#141419] px-4 text-[#5a5a6e]">或使用邮箱</span>
+                    <span className="bg-surface px-4 text-faint">或使用邮箱</span>
                   </div>
                 </div>
               </>
@@ -181,14 +182,14 @@ export default function AuthPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === 'register' && (
                 <div>
-                  <label className="block text-[#8b8b9a] text-sm mb-1 font-medium">用户名</label>
+                  <label className="block text-muted text-sm mb-1 font-medium">用户名</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                     <input
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-[#1a1a22] border border-[#2a2a38] rounded-xl pl-10 pr-4 py-2.5 text-[#e8e8ed] placeholder-[#5a5a6e] focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
+                      className="w-full bg-raised border border-edge rounded-xl pl-10 pr-4 py-2.5 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
                       placeholder="输入用户名"
                     />
                   </div>
@@ -196,36 +197,36 @@ export default function AuthPage() {
               )}
 
               <div>
-                <label className="block text-[#8b8b9a] text-sm mb-1 font-medium">邮箱</label>
+                <label className="block text-muted text-sm mb-1 font-medium">邮箱</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-[#1a1a22] border border-[#2a2a38] rounded-xl pl-10 pr-4 py-2.5 text-[#e8e8ed] placeholder-[#5a5a6e] focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
+                    className="w-full bg-raised border border-edge rounded-xl pl-10 pr-4 py-2.5 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
                     placeholder="输入邮箱地址"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#8b8b9a] text-sm mb-1 font-medium">密码</label>
+                <label className="block text-muted text-sm mb-1 font-medium">密码</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-[#1a1a22] border border-[#2a2a38] rounded-xl pl-10 pr-10 py-2.5 text-[#e8e8ed] placeholder-[#5a5a6e] focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
+                    className="w-full bg-raised border border-edge rounded-xl pl-10 pr-10 py-2.5 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
                     placeholder="输入密码"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5a5a6e] hover:text-[#8b8b9a]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-faint hover:text-muted"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -234,15 +235,15 @@ export default function AuthPage() {
 
               {mode === 'register' && (
                 <div>
-                  <label className="block text-[#8b8b9a] text-sm mb-1 font-medium">确认密码</label>
+                  <label className="block text-muted text-sm mb-1 font-medium">确认密码</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5a5a6e]" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-faint" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="w-full bg-[#1a1a22] border border-[#2a2a38] rounded-xl pl-10 pr-4 py-2.5 text-[#e8e8ed] placeholder-[#5a5a6e] focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
+                      className="w-full bg-raised border border-edge rounded-xl pl-10 pr-4 py-2.5 text-bright placeholder-faint focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/20"
                       placeholder="再次输入密码"
                     />
                   </div>
@@ -267,7 +268,7 @@ export default function AuthPage() {
 
             {/* 切换登录/注册 */}
             <div className="mt-6 text-center">
-              <p className="text-[#5a5a6e] text-sm">
+              <p className="text-faint text-sm">
                 {mode === 'login' ? '还没有账户？' : '已有账户？'}
                 <button
                   onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(null); }}
@@ -280,7 +281,7 @@ export default function AuthPage() {
           </div>
         </div>
 
-        <p className="text-center text-[#5a5a6e] text-xs mt-6">
+        <p className="text-center text-faint text-xs mt-6">
           登录即表示您同意我们的服务条款和隐私政策
         </p>
       </div>

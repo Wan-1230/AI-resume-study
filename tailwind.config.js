@@ -56,7 +56,21 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
-        }
+        },
+        // 语义底色与文字色：组件里只写这些名字，不要再写字面 hex。
+        // 与 src/index.css 的 :root 变量、src/constants/config.ts 的 uiColors 一一对应。
+        ink: '#0a0a0f',        // 页面底色
+        'ink-soft': '#0f0f14', // 顶栏与输入区底色
+        panel: '#12121a',      // 管理后台面板
+        surface: '#141419',    // 卡片
+        raised: '#1a1a22',     // hover 与输入框
+        lift: '#222228',       // raised 再亮一档：可点卡片的 hover
+        line: '#1e1e28',       // 分隔线与进度轨道
+        edge: '#2a2a38',       // 更强的描边
+        ghost: '#3a3a4a',      // 描边高亮与最弱的文字、占位
+        faint: '#5a5a6e',      // 次要图标与提示
+        muted: '#8b8b9a',      // 次要正文
+        bright: '#e8e8ed',     // 主要正文
       },
       fontFamily: {
         sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
