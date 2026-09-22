@@ -8,6 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const crypto = require('crypto');
 const fs = require('fs');
 
 const { createRagService } = require('./rag/langchain');
@@ -19,6 +20,7 @@ const interviewRoutes = require('./interview');
 const chatThreadRoutes = require('./chat');
 const { logRetrieval, retrievalStats } = require('./chat/log');
 const { analyzeMatch } = require('./resume/match');
+const { getQuestions, getArticles, filterList, sendWithCache } = require('./dataload');
 const { requireAdmin, authenticateToken, optionalAuth } = require('./auth/middleware');
 const { chatLimiter, resumeLimiter, llmConcurrencyGate } = require('./guard');
 const usersManager = require('./auth/users');
@@ -290,28 +292,23 @@ app.post('/api/chat/stream', optionalAuth, requireRag, limitChat, gateLlm, async
   }
 });
 
-// 获取文章列表
+// 获取文章列表（进程内缓存 + ETag，详见 dataload.js）
 app.get('/api/articles', (req, res) => {
-  const articlesPath = path.join(__dirname, 'data', 'articles.json');
-  
-  if (fs.existsSync(articlesPath)) {
-    const articles = JSON.parse(fs.readFileSync(articlesPath, 'utf-8'));
-    res.json(articles);
-  } else {
-    res.json([]);
-  }
+  const { data, etag } = getArticles();
+  sendWithCache(req, res, { data: filterList(data, req.query), etag });
 });
 
-// 获取题目列表
+// 获取题目列表。不传查询参数时返回全量数组，与既有前端契约一致；
+// 传了就在服务端筛，省得练习页每次把 700KB 全拉下来再本地过滤
 app.get('/api/questions', (req, res) => {
-  const questionsPath = path.join(__dirname, 'data', 'questions.json');
-  
-  if (fs.existsSync(questionsPath)) {
-    const questions = JSON.parse(fs.readFileSync(questionsPath, 'utf-8'));
-    res.json(questions);
-  } else {
-    res.json([]);
+  const { data, etag } = getQuestions();
+  const { category, difficulty, limit } = req.query;
+  if (category || difficulty || limit) {
+    // 过滤结果与全量是不同表示，共用一个 ETag 会让缓存拿到"对的校验号、错的内容"
+    const variant = `${etag}-f${crypto.createHash('sha1').update(`${category}|${difficulty}|${limit}`).digest('hex').slice(0, 8)}`;
+    return sendWithCache(req, res, { data: filterList(data, req.query), etag: variant });
   }
+  sendWithCache(req, res, { data, etag });
 });
 
 // 简历优化接口（流式）
@@ -420,7 +417,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 // 统一 JSON 错误响应：路由内抛出的异常默认会被 Express 以 HTML 堆栈返回，前端 JSON 解析直接崩
-// eslint-disable-next-line no-unused-vars
+// 四个参数是 Express 识别错误中间件的依据，少一个就不会被调用
 app.use((error, req, res, next) => {
   console.error(`[api] ${req.method} ${req.originalUrl} →`, error.message);
   if (res.headersSent) return;

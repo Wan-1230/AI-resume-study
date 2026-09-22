@@ -463,8 +463,29 @@
 >   现在 0 error / 1 warning（TypewriterChat 的 exhaustive-deps，改它要动打字机动画的依赖数组，
 >   没有视觉回归手段时不碰）。
 >
-> **未做**：题库接口索引化 + ETag、设计令牌收敛（含难度色三处冲突）、alert/confirm → toast、
+> **未做**：设计令牌收敛（含难度色三处冲突）、alert/confirm → toast、
 > Empty/Skeleton、路由级 errorElement、移动端表格、主题开关与 i18n。
+>
+> **进度补记（2026-09-23，性能行）**：`/api/questions` 与 `/api/articles` 不再每请求
+> `readFileSync + JSON.parse`，改为 `backend/dataload.js` 的进程内缓存（按文件 mtime 失效，
+> 所以 `repair-questions.js` 改完语料不用重启后端就能生效 —— 只缓存不失效会骗人），
+> 连**序列化结果**一起缓存，并加弱 ETag + `If-None-Match`。
+>
+> 实测（本机 localhost，各 30 次平均；同一台机器上还跑着 Chroma 与向量索引，
+> 全量请求两次测量分别是 9.4 与 19.7 ms，抖动很大，所以只报区间不报单点）：
+>
+> | | 每次耗时 | 响应体 |
+> |---|---|---|
+> | 旧：每请求 readFileSync + parse + stringify | CPU 侧 ~12.4ms（读+parse 10.5，序列化 1.9），还没算发送 | 677KB |
+> | 新：全量请求 | 9.4 ~ 19.7ms（含传输） | 677KB |
+> | 新：命中 ETag | **1.5ms** | **0 字节（304）** |
+> | 新：`?category=RAG` | 4.6ms | 244KB（36%） |
+> | 新：`?category=RAG&limit=20` | 1.9ms | **19.3KB（2.8%）** |
+> | 新：`/api/articles` | 1.3ms | 4KB |
+>
+> 过滤是**可选**的：不传参数时响应结构与以前完全一样（255 条数组），前端不用改就能跑；
+> 练习页要缩量时才带 query。过滤结果的 ETag 带变体后缀，避免"校验号对、内容不对"。
+> 端到端回归：`/api/articles` 200、筛选变体二次请求 304、单测 25/26 通过（1 条显式跳过）。
 
 | 项 | 内容 | 备注 |
 |---|---|---|
