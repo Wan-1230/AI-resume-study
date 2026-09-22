@@ -17,11 +17,6 @@ export default function Sidebar({
   onCategoryChange,
   onDifficultyChange,
 }: SidebarProps) {
-  const difficultyColors = {
-    easy: 'bg-emerald-500',
-    medium: 'bg-amber-500',
-    hard: 'bg-rose-500',
-  };
 
   return (
     <aside className="w-72 shrink-0">
@@ -94,7 +89,7 @@ export default function Sidebar({
                 }`}
               >
                 <div className="flex items-center space-x-2">
-                  <span className={`w-2 h-2 rounded-full ${difficultyColors[diff.value as keyof typeof difficultyColors]}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${diff.color}`}></span>
                   <span>{diff.label}</span>
                 </div>
                 {selectedDifficulty === diff.value && <ChevronRight className="w-4 h-4" />}

@@ -5,6 +5,16 @@ import * as XLSX from 'xlsx';
 import { api } from '@/lib/api';
 import { useStore } from '@/store';
 import { ImportData } from '@/types';
+import { difficultyBadge, difficultyConfig } from '@/constants/config';
+
+// 导入预览里的难度标签与其余页面共用同一份配色与文案，不再各自写一遍
+const diffClass = (value?: string) => {
+  const badge = difficultyBadge[value as keyof typeof difficultyBadge];
+  return badge ? `${badge.bg} ${badge.text}` : 'bg-primary-500/10 text-primary-500';
+};
+
+const difficultyLabel = (value?: string) =>
+  difficultyConfig[value as keyof typeof difficultyConfig]?.label ?? value ?? '未标注';
 
 interface ImportResult {
   created: number;
@@ -288,11 +298,7 @@ export default function ImportPage() {
                     <h4 className="font-medium text-[#e8e8ed] text-sm mb-2">{item.title}</h4>
                     <div className="flex items-center space-x-2 text-xs">
                       <span className="px-2 py-0.5 bg-primary-500/10 text-primary-500 rounded">{item.category}</span>
-                      <span className={`px-2 py-0.5 rounded ${
-                        item.difficulty === 'easy' ? 'bg-emerald-500/10 text-emerald-400' :
-                        item.difficulty === 'hard' ? 'bg-rose-500/10 text-rose-400' :
-                        'bg-amber-500/10 text-amber-400'
-                      }`}>{item.difficulty}</span>
+                      <span className={`px-2 py-0.5 rounded ${diffClass(item.difficulty)}`}>{difficultyLabel(item.difficulty)}</span>
                       <span className="text-[#5a5a6e]">答案: {item.answer}</span>
                     </div>
                   </div>

@@ -2,7 +2,7 @@ import { ArrowRight, Star, Clock, MessageSquare } from 'lucide-react';
 import { Question } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store';
-import { difficultyConfig } from '@/constants/config';
+import { difficultyConfig, difficultyPill, difficultyDot } from '@/constants/config';
 
 interface QuestionCardProps {
   question: Question;
@@ -13,17 +13,6 @@ export default function QuestionCard({ question }: QuestionCardProps) {
   const { favorites, toggleFavorite, isAuthenticated } = useStore();
   const isFavorited = favorites.includes(question.id);
 
-  const difficultyColors = {
-    easy: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    medium: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    hard: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-  };
-
-  const difficultyDotColors = {
-    easy: 'bg-emerald-500',
-    medium: 'bg-amber-500',
-    hard: 'bg-rose-500',
-  };
 
   return (
     <div 
@@ -41,8 +30,8 @@ export default function QuestionCard({ question }: QuestionCardProps) {
             <span className="px-3 py-1.5 bg-[#1a1a22] border border-[#2a2a38] text-[#8b8b9a] text-xs rounded-lg font-mono">
               {question.category?.name || '未分类'}
             </span>
-            <span className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border ${difficultyColors[question.difficulty as keyof typeof difficultyColors]}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${difficultyDotColors[question.difficulty as keyof typeof difficultyDotColors]}`}></span>
+            <span className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border ${difficultyPill[question.difficulty as keyof typeof difficultyPill]}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${difficultyDot[question.difficulty as keyof typeof difficultyDot]}`}></span>
               <span className="text-xs font-medium">{difficultyConfig[question.difficulty].label}</span>
             </span>
           </div>

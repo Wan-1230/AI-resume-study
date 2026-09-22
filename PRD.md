@@ -463,8 +463,19 @@
 >   现在 0 error / 1 warning（TypewriterChat 的 exhaustive-deps，改它要动打字机动画的依赖数组，
 >   没有视觉回归手段时不碰）。
 >
-> **未做**：设计令牌收敛（含难度色三处冲突）、alert/confirm → toast、
+> **未做**：字面 hex 收敛为 Tailwind token、alert/confirm → toast、
 > Empty/Skeleton、路由级 errorElement、移动端表格、主题开关与 i18n。
+>
+> **进度补记（2026-09-23，难度色冲突）**：三处冲突已清零，改为 `src/constants/config.ts` 单一定义。
+> 实际情况是：`config.ts` 用 green/yellow/red，而 QuestionCard、QuestionDetail、MyQuestionsPage
+> 各自又抄了一份 emerald/amber/rose —— 同一个"困难"标签在练习页和题目列表是两种红，
+> 类型系统一声不吭。现在 config 里一份 palette 派生出 `difficultyConfig`（label/color/textColor/bgColor）、
+> `difficultyBadge`（bg/text/dot/border）、`difficultyPill`（拼好的字符串）、`difficultyDot`，
+> 四处组件全部改为引用；ImportPage 顺手把裸 `easy/medium/hard` 换成中文标签并共用同一套色。
+> 校验：`grep` 确认 src 下再无第二处难度色定义，tsc / eslint(0 error) / vite build / 31 个单测全过。
+> 有意保留的红色：TypewriterChat 的连接状态灯、AdminDashboard 的删除按钮 —— 那不是难度语义。
+> 没做视觉回归（这台机器的内嵌浏览器 viewport 是 0×0，截不了图）；
+> 唯一的可见变化就是练习页的难度点从 green/yellow/red 变成 emerald/amber/rose，与其他页面一致。
 >
 > **进度补记（2026-09-23，性能行）**：`/api/questions` 与 `/api/articles` 不再每请求
 > `readFileSync + JSON.parse`，改为 `backend/dataload.js` 的进程内缓存（按文件 mtime 失效，

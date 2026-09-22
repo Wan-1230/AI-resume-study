@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api, type QuestionStats } from '@/lib/api';
 import { Question } from '@/types';
 import { useStore } from '@/store';
-import { difficultyConfig } from '@/constants/config';
+import { difficultyConfig, difficultyBadge } from '@/constants/config';
 
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>();
@@ -111,11 +111,7 @@ export default function QuestionDetail() {
 
   const difficulty = difficultyConfig[question.difficulty];
 
-  const difficultyColors = {
-    easy: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-500', border: 'border-emerald-500/20' },
-    medium: { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-500', border: 'border-amber-500/20' },
-    hard: { bg: 'bg-rose-500/10', text: 'text-rose-400', dot: 'bg-rose-500', border: 'border-rose-500/20' },
-  };
+  const difficultyColors = difficultyBadge;
 
   const diffColors = difficultyColors[question.difficulty as keyof typeof difficultyColors];
 

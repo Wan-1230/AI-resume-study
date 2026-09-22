@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { api, type MyQuestionInput } from '@/lib/api';
 import { useStore } from '@/store';
 import { Question, Category } from '@/types';
-import { difficultyConfig } from '@/constants/config';
+import { difficultyConfig, difficultyBadge } from '@/constants/config';
 
 const EMPTY_FORM: MyQuestionInput = {
   title: '',
@@ -160,11 +160,7 @@ export default function MyQuestionsPage() {
     setNewQuestion(prev => ({ ...prev, options: newOptions }));
   };
 
-  const difficultyColors = {
-    easy: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-    medium: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
-    hard: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
-  };
+  const difficultyColors = difficultyBadge;
 
   if (!isAuthenticated) {
     return (
